@@ -168,13 +168,16 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
   "blocks": [],
   "presets": [
     {
-      "name": "⚡ [Short name]"
+      "name": "⚡ [Short name]",
+      "category": "WOW Sections"
     }
   ]
 }
 ```
 
 **Schema name: max 25 chars — use format `"⚡ [Short name]"` (the ⚡ emoji is the WOW brand marker).** Shopify hard-limits `schema.name` to 25 characters; sections exceeding this fail to load in the Theme Editor. The `presets[].name` must match the schema `name`.
+
+**Preset category: always `"category": "WOW Sections"`.** This groups WOW sections together in the Theme Editor's "Add section" picker so merchants can find them as a distinct set. The left-rail (already-added sections) uses Shopify's hard-coded Header/Template/Footer tree and cannot be customized — the `⚡` prefix in `name` is the only differentiator there.
 
 ### 4.2 Settings sorrend — KÖTELEZŐ
 

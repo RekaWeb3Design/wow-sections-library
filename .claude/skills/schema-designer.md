@@ -4,6 +4,23 @@ Rules for designing Theme Editor settings (the `{% schema %}` block) on every WO
 
 ---
 
+## 0. Preset category — MANDATORY
+
+Every preset must include `"category": "WOW Sections"`. Shopify groups sections in the Theme Editor's "Add section" picker by this category, so this is how merchants find WOW sections as a distinct group rather than scattered among the theme's native sections.
+
+```json
+"presets": [
+  {
+    "name": "⚡ [Short name]",
+    "category": "WOW Sections"
+  }
+]
+```
+
+The Theme Editor's left-rail (already-added sections) cannot have custom groups — that tree is hard-coded to Header/Template/Footer. The `⚡` in the `name` field is the only distinguishing marker there. But the "Add section" picker respects `category`, so that's where this rule applies.
+
+---
+
 ## 1. Settings group order — MANDATORY
 
 Settings must always be grouped in this order:
