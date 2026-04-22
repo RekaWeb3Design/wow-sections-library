@@ -8,6 +8,7 @@
     "generate": "node scripts/generate/liquid-generator.js",
     "validate": "shopify theme check sections/",
     "registry": "node scripts/registry/generate-index.js",
+    "sync": "node scripts/sync-sections.js",
     "pipeline": "npm run extract && npm run generate && npm run validate && npm run registry",
     "dev": "shopify theme dev",
     "push": "shopify theme push"
