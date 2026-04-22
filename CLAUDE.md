@@ -50,3 +50,35 @@ shopify theme push              # Push current theme to connected store
 - `feat/wow-[name]` — new section development (e.g. `feat/wow-hero-basic`)
 
 Branch per section. Merge to `main` only after passing validation and manual review.
+
+## Hard rules
+
+These are non-negotiable. Violating any of them means the section is broken.
+
+### Pipeline
+- Read [.claude/skills/SKILL.md](.claude/skills/SKILL.md), [.claude/skills/shopify-liquid.md](.claude/skills/shopify-liquid.md), and [.claude/skills/shadcn-extraction.md](.claude/skills/shadcn-extraction.md) before generating or editing any section.
+- Never generate a section without following all 7 pipeline steps: Extract → Schema Design → Generate → Performance → Compatibility → Validate → Registry.
+- Run `shopify theme check --path .` before marking any section complete.
+- Create the registry JSON file and update `registry/index.json` after every new section.
+
+### CSS
+- Never use `!important`.
+- Never use max-width media queries — mobile-first `min-width` only.
+- Never hardcode colors — CSS variables only (no hex, no `rgb()`, no `hsl()`).
+- Never use `display: none` — use Liquid `{% if %}` to skip rendering instead.
+- Scope every CSS selector inside `#shopify-section-{{ section.id }}`.
+- Prefix every CSS class with `wow_`.
+
+### JavaScript
+- No external JavaScript libraries in sections — vanilla JS only.
+
+### Schema
+- Every section includes `padding_top` and `padding_bottom` settings.
+- Every section includes a `color_scheme` setting.
+- Every section includes a `presets` block.
+- Every `image_picker` is paired with an `image_alt` text setting.
+- Every button label is paired with a button url setting.
+
+### Commits
+- Format: `feat: wow-[name] — [one line description]` for new sections.
+- Prefix every commit with `feat:`, `fix:`, or `docs:`.
