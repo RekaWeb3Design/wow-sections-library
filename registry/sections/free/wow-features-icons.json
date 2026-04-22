@@ -8,7 +8,7 @@
   "description": "Features/benefits grid with 3 or 4 icon cards. Each card (icon, title, description) is a merchant-editable block, reorderable in the Theme Editor. Supports emoji icons, outlined/filled/plain card styles, optional scroll-triggered animations, and full color-scheme integration.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/wow-features-icons.liquid",
+  "liquid_file": "sections/free/features/wow-features-icons.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 13,

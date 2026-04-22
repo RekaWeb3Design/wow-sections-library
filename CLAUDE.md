@@ -8,6 +8,19 @@ Shopify Liquid section library that:
 - Developers can pull via Claude Code MCP
 - Merchants can install via copy-paste
 
+## Folder layout
+
+Sections are organized by **tier** (free/pro), then by **category**:
+
+- `sections/free/[category]/wow-[name].liquid` — free-tier sections
+- `sections/pro/[category]/wow-[name].liquid` — pro-tier sections
+- `snippets/` — shared Liquid snippets reusable across sections
+- `scripts/wow/` — standalone vanilla JS modules (loaded only when a section needs them)
+- `effects/` — standalone CSS effect files (animations, transitions, visual flourishes)
+- `registry/sections/free/` and `registry/sections/pro/` — metadata JSON mirroring the tier split
+
+Categories in use: `hero`, `features`, `social-proof`, `collections`, `conversion`, `navigation`, `content`, `contact`. The same category slugs exist under both `free/` and `pro/`.
+
 ## Key skill files to always read
 
 Always read these before generating or modifying any section:
@@ -39,7 +52,7 @@ Pipeline workflow (no scraping scripts needed):
 ## Shopify CLI commands
 
 ```bash
-shopify theme check sections/   # Lint/validate sections
+shopify theme check --path .    # Lint/validate all sections across tiers
 shopify theme dev               # Start local dev server with live reload
 shopify theme push              # Push current theme to connected store
 ```

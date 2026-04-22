@@ -8,7 +8,7 @@
   "description": "Hero section with heading, subheading, CTA button, and background image with adjustable overlay. Supports left/center/right content alignment and optional full-viewport height.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/wow-hero-basic.liquid",
+  "liquid_file": "sections/free/hero/wow-hero-basic.liquid",
   "compatible_themes": ["dawn", "sense", "debut"],
   "shopify_version": "2.0",
   "settings_count": 13,
