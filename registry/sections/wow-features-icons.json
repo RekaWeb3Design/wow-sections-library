@@ -1,0 +1,18 @@
+{
+  "name": "wow-features-icons",
+  "display_name": "WOW Features — Icons",
+  "category": "features",
+  "tags": ["features", "benefits", "icons", "grid", "cards", "free"],
+  "tier": "free",
+  "version": "1.0.0",
+  "description": "Features/benefits grid with 3 or 4 icon cards. Each card (icon, title, description) is a merchant-editable block, reorderable in the Theme Editor. Supports emoji icons, outlined/filled/plain card styles, optional scroll-triggered animations, and full color-scheme integration.",
+  "preview_url": "",
+  "screenshot": "",
+  "liquid_file": "sections/wow-features-icons.liquid",
+  "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
+  "shopify_version": "2.0",
+  "settings_count": 13,
+  "blocks_supported": true,
+  "created_at": "2026-04-22",
+  "source": "original"
+}
