@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# PostToolUse hook — runs `npm run sync` after any Write/Edit on a
-# .liquid file located under sections/. Copies to ../dawn-dev/sections/
-# and pushes to the Shopify dev store. Non-sections edits pass through.
+# PostToolUse hook — copies sections to ../dawn-dev/sections/ after any
+# Write/Edit on a .liquid file located under sections/. Non-sections
+# edits pass through.
 
 set -u
 
@@ -22,11 +22,11 @@ normalized="$(printf '%s' "$file_path" | tr '\\' '/')"
 case "$normalized" in
   */sections/*.liquid)
     echo ""
-    echo "=== npm run sync (triggered by edit to $file_path) ==="
-    if command -v npm >/dev/null 2>&1; then
-      npm run --silent sync || true
+    echo "=== sync-sections (triggered by edit to $file_path) ==="
+    if command -v node >/dev/null 2>&1; then
+      node scripts/sync-sections.js || true
     else
-      echo "npm not found on PATH — skipping sync." >&2
+      echo "node not found on PATH — skipping sync." >&2
     fi
     echo "=== end sync ==="
     ;;
