@@ -1,0 +1,319 @@
+{% comment %} 1. Schema beolvasás & LCP optimization {% endcomment %}
+{% assign section_id = section.id %}
+
+{% if section.index <= 2 %}
+  {% assign image_loading = 'eager' %}
+  {% assign image_fetchpriority = 'high' %}
+{% else %}
+  {% assign image_loading = 'lazy' %}
+  {% assign image_fetchpriority = 'auto' %}
+{% endif %}
+
+{% assign overlay_opacity = section.settings.image_overlay_opacity | divided_by: 100.0 %}
+
+{% comment %} 2. HTML struktúra {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_hero_basic wow_hero_basic--align-{{ section.settings.content_alignment }}{% if section.settings.full_height %} wow_hero_basic--full-height{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'Hero section' | escape }}"
+  >
+    {% if section.settings.image != blank %}
+      <div class="wow_hero_basic__media">
+        {{ section.settings.image
+          | image_url: width: 1920
+          | image_tag:
+            alt: section.settings.heading | default: 'Hero image',
+            loading: image_loading,
+            fetchpriority: image_fetchpriority,
+            class: 'wow_hero_basic__image',
+            widths: '400, 600, 800, 1000, 1200, 1600, 1920',
+            sizes: '100vw'
+        }}
+        <div class="wow_hero_basic__overlay"></div>
+      </div>
+    {% endif %}
+
+    <div class="wow_hero_basic__inner">
+      <div class="wow_hero_basic__content">
+        {% if section.settings.heading != blank %}
+          <h2 class="wow_hero_basic__title">{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <p class="wow_hero_basic__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
+        {% endif %}
+
+        {% if section.settings.button_label != blank %}
+          <a
+            href="{{ section.settings.button_url | default: '#' }}"
+            class="wow_hero_basic__btn wow_hero_basic__btn--{{ section.settings.button_style }}"
+            aria-label="{{ section.settings.button_label | escape }}"
+          >
+            {{ section.settings.button_label | escape }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scope-olva {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_hero_basic {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic--full-height {
+    min-height: 100vh;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-foreground);
+    opacity: {{ overlay_opacity }};
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-inline: clamp(1rem, 4vw, 3rem);
+    display: flex;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-left .wow_hero_basic__inner {
+    justify-content: flex-start;
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-center .wow_hero_basic__inner {
+    justify-content: center;
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-right .wow_hero_basic__inner {
+    justify-content: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__content {
+    max-width: {{ section.settings.content_max_width }}px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-left .wow_hero_basic__content {
+    text-align: left;
+    align-items: flex-start;
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-center .wow_hero_basic__content {
+    text-align: center;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--align-right .wow_hero_basic__content {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__title {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__subtitle {
+    margin: 0;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--color-foreground-75);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2.25rem);
+    font-size: clamp(0.875rem, 1vw, 1rem);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__btn--primary {
+    background-color: var(--color-button);
+    color: var(--color-button-text);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__btn--secondary {
+    background-color: transparent;
+    color: var(--color-foreground);
+    border-color: var(--color-border);
+  }
+
+  #shopify-section-{{ section.id }} .wow_hero_basic__btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "WOW Hero — Basic",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Make it wow."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "image_overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_height",
+      "label": "Full viewport height",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 700
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "WOW Hero — Basic"
+    }
+  ]
+}
+{% endschema %}

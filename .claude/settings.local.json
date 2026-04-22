@@ -6,7 +6,9 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(npm install *)",
-      "Bash(shopify version *)"
+      "Bash(shopify version *)",
+      "Bash(node scripts/registry/generate-index.js)",
+      "Bash(shopify theme *)"
     ]
   }
 }
