@@ -1,0 +1,382 @@
+{% comment %} 1. Schema beolvasás {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign display_mode = section.settings.display_mode
+  assign marquee_speed = section.settings.marquee_speed
+  assign bar_height = section.settings.bar_height
+  assign show_close = section.settings.show_close_button
+  assign text = section.settings.text
+  assign link_label = section.settings.link_label
+  assign link_url = section.settings.link_url
+%}
+
+{% comment %} 2. HTML struktúra {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient wow_announcement_bar__wrap">
+  <aside
+    id="wow-{{ section_id }}"
+    class="wow_announcement_bar wow_announcement_bar--{{ display_mode }} wow_section"
+    role="complementary"
+    aria-label="{{ text | default: 'Announcement' | escape }}"
+    data-wow-announcement-id="{{ section_id }}"
+  >
+    <div class="wow_announcement_bar__inner">
+      {% if display_mode == 'marquee' %}
+        <div class="wow_announcement_bar__viewport" aria-hidden="false">
+          <div class="wow_announcement_bar__track">
+            {% for i in (1..2) %}
+              <div class="wow_announcement_bar__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
+                {% for j in (1..4) %}
+                  <span class="wow_announcement_bar__item">
+                    {% if text != blank %}
+                      <span class="wow_announcement_bar__text">{{ text | escape }}</span>
+                    {% endif %}
+                    {% if link_label != blank and link_url != blank %}
+                      <a
+                        href="{{ link_url }}"
+                        class="wow_announcement_bar__link"
+                        aria-label="{{ link_label | escape }}"
+                      >
+                        {{ link_label | escape }}
+                      </a>
+                    {% endif %}
+                    <span class="wow_announcement_bar__sep" aria-hidden="true">•</span>
+                  </span>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="wow_announcement_bar__static">
+          {% if text != blank %}
+            <span class="wow_announcement_bar__text">{{ text | escape }}</span>
+          {% endif %}
+          {% if link_label != blank and link_url != blank %}
+            <a
+              href="{{ link_url }}"
+              class="wow_announcement_bar__link"
+              aria-label="{{ link_label | escape }}"
+            >
+              {{ link_label | escape }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if show_close %}
+        <button
+          type="button"
+          class="wow_announcement_bar__close"
+          aria-label="Dismiss announcement"
+          data-wow-announcement-close
+        >
+          <svg
+            class="wow_announcement_bar__close-icon"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M4 4L12 12M12 4L4 12" />
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+
+{% comment %} 3. CSS — section scope-olva {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_announcement_bar__wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar {
+    width: 100%;
+    min-height: {{ bar_height }}px;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: {{ bar_height }}px;
+    padding-inline: clamp(0.75rem, 3vw, 2rem);
+    gap: clamp(0.5rem, 2vw, 1.5rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__static {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+    line-height: 1.4;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__viewport {
+    flex: 1 1 auto;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      var(--color-foreground) 3rem,
+      var(--color-foreground) calc(100% - 3rem),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      var(--color-foreground) 3rem,
+      var(--color-foreground) calc(100% - 3rem),
+      transparent 100%
+    );
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: wow_announcement_marquee_{{ section.id }}
+      calc(var(--wow-ab-distance, 2400px) / {{ marquee_speed }} * 1s) linear infinite;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding-inline-end: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__item {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.25vw, 1rem);
+    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__sep {
+    opacity: 0.5;
+    font-size: 0.75em;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__link {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__link:hover {
+    opacity: 0.75;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__close {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__close:hover,
+  #shopify-section-{{ section.id }} .wow_announcement_bar__close:focus-visible {
+    opacity: 1;
+    background-color: var(--color-border);
+    outline: none;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__close-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  @keyframes wow_announcement_marquee_{{ section.id }} {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_announcement_bar__track {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .wow_announcement_bar__inner {
+      padding-inline: clamp(1.5rem, 4vw, 3rem);
+    }
+  }
+</style>
+
+{% comment %} 4. JavaScript — close button dismiss (marquee animation is pure CSS) {% endcomment %}
+{% if show_close %}
+  <script>
+    (function () {
+      var section = document.getElementById('wow-{{ section.id }}');
+      if (!section) return;
+
+      var wrap = section.parentElement;
+      var storageKey = 'wow_announcement_bar_dismissed_{{ section.id }}';
+      var closeBtn = section.querySelector('[data-wow-announcement-close]');
+
+      try {
+        if (window.localStorage && localStorage.getItem(storageKey) === '1' && !window.Shopify) {
+          if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+          return;
+        }
+      } catch (err) {
+        /* localStorage unavailable — continue */
+      }
+
+      function handleClose() {
+        try {
+          if (window.localStorage) localStorage.setItem(storageKey, '1');
+        } catch (err) {
+          /* ignore */
+        }
+        if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      }
+
+      function handleUnload(e) {
+        if (e.target !== section) return;
+        if (closeBtn) closeBtn.removeEventListener('click', handleClose);
+        document.removeEventListener('shopify:section:unload', handleUnload);
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', handleClose);
+      document.addEventListener('shopify:section:unload', handleUnload);
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "WOW Announcement Bar — Basic",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Announcement text",
+      "default": "Free shipping on orders over $50 🎉"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "display_mode",
+      "label": "Display mode",
+      "options": [
+        { "value": "static", "label": "Static (centered)" },
+        { "value": "marquee", "label": "Marquee (scrolling)" }
+      ],
+      "default": "static"
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "Marquee speed",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px/s",
+      "default": 40,
+      "visible_if": "{{ section.settings.display_mode == 'marquee' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close_button",
+      "label": "Show close button",
+      "default": true
+    },
+
+    { "type": "header", "content": "Appearance" },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar height",
+      "min": 32,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 44
+    },
+
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    { "name": "WOW Announcement Bar — Basic" }
+  ]
+}
+{% endschema %}
