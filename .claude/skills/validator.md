@@ -33,6 +33,7 @@ After `shopify theme check` passes, walk through this checklist for the section.
 - [ ] `padding_bottom` setting present (range 0–120, step 4, default 60)
 - [ ] `color_scheme` setting present (default `scheme-1`)
 - [ ] Schema includes a `presets` block
+- [ ] Schema name is 25 characters or fewer (Shopify hard limit)
 - [ ] Every image has alt text handled (paired `image_alt` setting + `alt:` on `image_tag`)
 - [ ] Every button has both label **and** url settings, with blank checks before rendering the link
 - [ ] If the section has JavaScript, it is wrapped in an IIFE and scoped to `section.id`

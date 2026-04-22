@@ -158,7 +158,7 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 ```json
 {
-  "name": "WOW [Szekció neve]",
+  "name": "⚡ [Short name]",
   "tag": "section",
   "class": "wow_section",
   "disabled_on": {
@@ -168,11 +168,13 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
   "blocks": [],
   "presets": [
     {
-      "name": "WOW [Szekció neve]"
+      "name": "⚡ [Short name]"
     }
   ]
 }
 ```
+
+**Schema name: max 25 chars — use format `"⚡ [Short name]"` (the ⚡ emoji is the WOW brand marker).** Shopify hard-limits `schema.name` to 25 characters; sections exceeding this fail to load in the Theme Editor. The `presets[].name` must match the schema `name`.
 
 ### 4.2 Settings sorrend — KÖTELEZŐ
 
