@@ -151,8 +151,7 @@
     display: flex;
     width: max-content;
     will-change: transform;
-    animation: wow_announcement_marquee_{{ section.id }}
-      calc(var(--wow-ab-distance, 2400px) / {{ marquee_speed }} * 1s) linear infinite;
+    animation: wow_announcement_marquee_{{ section.id }} {{ marquee_speed }}s linear infinite;
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__group {
@@ -320,11 +319,11 @@
     {
       "type": "range",
       "id": "marquee_speed",
-      "label": "Marquee speed",
+      "label": "Scroll speed (s)",
       "min": 20,
       "max": 100,
       "step": 10,
-      "unit": "px/s",
+      "unit": "s",
       "default": 40,
       "visible_if": "{{ section.settings.display_mode == 'marquee' }}"
     },
