@@ -1,0 +1,15 @@
+{
+  "name": "wow-sections-library",
+  "version": "1.0.0",
+  "description": "Shopify Liquid section library — developer-first, MCP-compatible, copy-paste ready.",
+  "private": true,
+  "scripts": {
+    "extract": "node scripts/extract/scrape-shadcn.js",
+    "generate": "node scripts/generate/liquid-generator.js",
+    "validate": "shopify theme check sections/",
+    "registry": "node scripts/registry/generate-index.js",
+    "pipeline": "npm run extract && npm run generate && npm run validate && npm run registry",
+    "dev": "shopify theme dev",
+    "push": "shopify theme push"
+  }
+}

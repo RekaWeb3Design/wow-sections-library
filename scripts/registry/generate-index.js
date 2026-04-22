@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const registryDir = path.join(__dirname, '..', 'registry');
+const registryDir = path.join(__dirname, '..', '..', 'registry');
 const indexPath = path.join(registryDir, 'index.json');
 const files = fs.readdirSync(registryDir).filter(f => f.endsWith('.json') && f !== 'index.json');
 const sections = files.map(f => JSON.parse(fs.readFileSync(path.join(registryDir, f), 'utf8')));

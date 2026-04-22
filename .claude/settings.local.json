@@ -4,7 +4,9 @@
       "Bash(git init *)",
       "Bash(mkdir -p .claude/skills sections registry scripts preview)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm install *)",
+      "Bash(shopify version *)"
     ]
   }
 }
