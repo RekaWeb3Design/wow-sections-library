@@ -73,6 +73,7 @@ These are non-negotiable. Violating any of them means the section is broken.
 - Never generate a section without following all 7 pipeline steps: Extract → Schema Design → Generate → Performance → Compatibility → Validate → Registry.
 - Run `shopify theme check --path .` before marking any section complete.
 - Create the registry JSON file and update `registry/index.json` after every new section.
+- After generating or editing any section, run `npm run sync` to copy the section into `../dawn-dev/sections/` and push it to the live dev store. The PostToolUse hook triggers this automatically on any `.liquid` edit under `sections/`, but the command must also be runnable manually from the project root.
 
 ### CSS
 - Never use `!important`.

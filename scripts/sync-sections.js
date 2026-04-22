@@ -1,12 +1,14 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const projectRoot = path.join(__dirname, '..');
 const sourceRoots = [
   path.join(projectRoot, 'sections', 'free'),
   path.join(projectRoot, 'sections', 'pro'),
 ];
-const targetDir = path.resolve(projectRoot, '..', 'dawn-dev', 'sections');
+const dawnDevRoot = path.resolve(projectRoot, '..', 'dawn-dev');
+const targetDir = path.join(dawnDevRoot, 'sections');
 
 function collectLiquidFiles(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -36,3 +38,15 @@ for (const root of sourceRoots) {
 }
 
 console.log(`Sync complete — ${copied} sections copied to dawn-dev/`);
+
+console.log('\n→ Pushing to wow-sections.myshopify.com...');
+try {
+  execSync(
+    'shopify theme push --store wow-sections.myshopify.com --path ../dawn-dev --only "sections/*"',
+    { cwd: projectRoot, stdio: 'inherit', shell: true }
+  );
+  console.log('✅ Push complete');
+} catch (err) {
+  console.error(`⚠️  Push failed (exit code ${err.status ?? 'unknown'}). Local copy succeeded.`);
+  process.exitCode = err.status || 1;
+}
