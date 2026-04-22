@@ -18,20 +18,23 @@ Always read these before generating or modifying any section:
 
 ## Workflow
 
-Run the pipeline in this order:
+Available MCP servers for section generation:
 
-```bash
-npm run extract    # Scrape source (shadcn/ui, etc.)
-npm run generate   # Generate Liquid sections from extracted data
-npm run validate   # Run shopify theme check on sections/
-npm run registry   # Regenerate registry/index.json
-```
+- **shadcn MCP** — direct shadcn/ui component access (search, view, get items)
+- **reactbits MCP** — React component inspiration source
+- **magic-ui MCP** — additional UI component source
+- **firecrawl MCP** — web scraping for shadcnblocks.com and shadcncraft.com
+- **cloudflare MCP** — deployment for preview site
 
-Or run all at once:
+Pipeline workflow (no scraping scripts needed):
 
-```bash
-npm run pipeline
-```
+1. Use **shadcn** or **reactbits** or **firecrawl** MCP to get source component
+2. **Schema Designer** — design Theme Editor settings
+3. **Generator** — write Liquid code following [SKILL.md](.claude/skills/SKILL.md) conventions
+4. **Performance check** — follow [performance.md](.claude/skills/performance.md) rules
+5. **Compatibility check** — follow [compatibility.md](.claude/skills/compatibility.md) rules
+6. **Validator** — run `shopify theme check`
+7. **Registry** — create JSON metadata, update index
 
 ## Shopify CLI commands
 
