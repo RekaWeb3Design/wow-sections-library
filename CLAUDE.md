@@ -94,4 +94,4 @@ These are non-negotiable. Violating any of them means the section is broken.
 
 ### Commits
 - Format: `feat: wow-[name] — [one line description]` for new sections.
-- Prefix every commit with `feat:`, `fix:`, or `docs:`.
+- Prefix every commit with one of: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`.
