@@ -1,5 +1,11 @@
-{% comment %} 1. Schema beolvasás & LCP optimization {% endcomment %}
-{% assign section_id = section.id %}
+{% comment %} 1. Assigns & LCP optimization {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign overlay_opacity = section.settings.image_overlay_opacity | divided_by: 100.0
+  assign overlay_color_pct = section.settings.image_overlay_color_opacity
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+%}
 
 {% if section.index <= 2 %}
   {% assign image_loading = 'eager' %}
@@ -9,13 +15,21 @@
   {% assign image_fetchpriority = 'auto' %}
 {% endif %}
 
-{% assign overlay_opacity = section.settings.image_overlay_opacity | divided_by: 100.0 %}
+{% comment %} Aspect-ratio value for CSS {% endcomment %}
+{% case section.settings.image_aspect_ratio %}
+  {% when '1-1' %}{% assign aspect_ratio_css = '1 / 1' %}
+  {% when '4-3' %}{% assign aspect_ratio_css = '4 / 3' %}
+  {% when '16-9' %}{% assign aspect_ratio_css = '16 / 9' %}
+  {% when '3-2' %}{% assign aspect_ratio_css = '3 / 2' %}
+  {% when '2-3' %}{% assign aspect_ratio_css = '2 / 3' %}
+  {% else %}{% assign aspect_ratio_css = 'auto' %}
+{% endcase %}
 
-{% comment %} 2. HTML struktúra {% endcomment %}
+{% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="wow-{{ section_id }}"
-    class="wow_hero_basic wow_hero_basic--align-{{ section.settings.content_alignment }}{% if section.settings.full_height %} wow_hero_basic--full-height{% endif %} wow_section"
+    class="wow_hero_basic wow_hero_basic--align-{{ section.settings.content_alignment }}{% if section.settings.full_height %} wow_hero_basic--full-height{% endif %} wow_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} wow_section"
     aria-label="{{ section.settings.heading | default: 'Hero section' | escape }}"
   >
     {% if section.settings.image != blank %}
@@ -23,7 +37,7 @@
         {{ section.settings.image
           | image_url: width: 1920
           | image_tag:
-            alt: section.settings.heading | default: 'Hero image',
+            alt: section.settings.image_alt | default: section.settings.heading | default: 'Hero image',
             loading: image_loading,
             fetchpriority: image_fetchpriority,
             class: 'wow_hero_basic__image',
@@ -47,7 +61,7 @@
         {% if section.settings.button_label != blank %}
           <a
             href="{{ section.settings.button_url | default: '#' }}"
-            class="wow_hero_basic__btn wow_hero_basic__btn--{{ section.settings.button_style }}"
+            class="wow_hero_basic__btn"
             aria-label="{{ section.settings.button_label | escape }}"
           >
             {{ section.settings.button_label | escape }}
@@ -58,7 +72,7 @@
   </section>
 </div>
 
-{% comment %} 3. CSS — section scope-olva {% endcomment %}
+{% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
   #shopify-section-{{ section.id }} .wow_hero_basic {
     position: relative;
@@ -68,8 +82,19 @@
     overflow: hidden;
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
-    background-color: var(--color-background);
     color: var(--color-foreground);
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_hero_basic--full-height {
@@ -80,19 +105,26 @@
     position: absolute;
     inset: 0;
     z-index: 0;
+    {% if section.settings.image_border_radius > 0 %}
+      border-radius: {{ section.settings.image_border_radius }}px;
+      overflow: hidden;
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_hero_basic__image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: {{ section.settings.image_object_fit }};
+    {% if aspect_ratio_css != 'auto' %}
+      aspect-ratio: {{ aspect_ratio_css }};
+    {% endif %}
     display: block;
   }
 
   #shopify-section-{{ section.id }} .wow_hero_basic__overlay {
     position: absolute;
     inset: 0;
-    background-color: var(--color-foreground);
+    background-color: color-mix(in srgb, {{ section.settings.image_overlay_color }} {{ overlay_color_pct }}%, transparent);
     opacity: {{ overlay_opacity }};
   }
 
@@ -137,47 +169,96 @@
 
   #shopify-section-{{ section.id }} .wow_hero_basic__title {
     margin: 0;
-    font-size: clamp(2rem, 5vw, 4.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--color-foreground);
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_hero_basic__subtitle {
     margin: 0;
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
-    line-height: 1.5;
-    color: var(--color-foreground-75);
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_hero_basic__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2.25rem);
-    font-size: clamp(0.875rem, 1vw, 1rem);
+    padding: {{ section.settings.button_padding_y }}px {{ section.settings.button_padding_x }}px;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    border: {{ section.settings.button_border_width }}px solid {% if section.settings.button_border_color != blank %}color-mix(in srgb, {{ section.settings.button_border_color }} {{ section.settings.button_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
     font-weight: 600;
     text-decoration: none;
-    border-radius: 0.5rem;
-    border: 1px solid transparent;
-    transition: opacity 0.2s ease, transform 0.2s ease;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    {% if section.settings.button_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.button_bg_color }} {{ section.settings.button_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if section.settings.button_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.button_text_color }} {{ section.settings.button_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__btn--primary {
-    background-color: var(--color-button);
-    color: var(--color-button-text);
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-fill .wow_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-darken .wow_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-lift .wow_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-glow .wow_hero_basic__btn:hover {
+    {% if section.settings.button_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.button_hover_bg_color }} {{ section.settings.button_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.button_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.button_hover_text_color }} {{ section.settings.button_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.button_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.button_hover_border_color }} {{ section.settings.button_hover_border_color_opacity }}%, transparent);
+    {% endif %}
   }
-
-  #shopify-section-{{ section.id }} .wow_hero_basic__btn--secondary {
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-darken .wow_hero_basic__btn:hover {
+    filter: brightness(0.88);
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-lift .wow_hero_basic__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-glow .wow_hero_basic__btn:hover {
+    box-shadow: 0 0 24px {% if section.settings.button_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.button_hover_bg_color }} 60%, transparent){% else %}rgba(0, 0, 0, 0.18){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-outline .wow_hero_basic__btn:hover {
     background-color: transparent;
-    color: var(--color-foreground);
-    border-color: var(--color-border);
+    {% if section.settings.button_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.button_hover_text_color }} {{ section.settings.button_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.button_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.button_hover_border_color }} {{ section.settings.button_hover_border_color_opacity }}%, transparent);
+    {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_hero_basic__btn {
+      transition: none;
+    }
+    #shopify-section-{{ section.id }} .wow_hero_basic__btn:hover {
+      transform: none;
+    }
   }
 </style>
 
@@ -190,64 +271,107 @@
     "groups": ["header", "footer"]
   },
   "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Make it wow." },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "A short supporting line that explains the value." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
+    { "type": "url", "id": "button_url", "label": "Button link" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 48 },
     {
-      "type": "header",
-      "content": "Content"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Make it wow."
-    },
-    {
-      "type": "textarea",
-      "id": "subheading",
-      "label": "Subheading"
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "Button label"
-    },
-    {
-      "type": "url",
-      "id": "button_url",
-      "label": "Button link"
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
     },
     {
       "type": "select",
-      "id": "button_style",
-      "label": "Button style",
+      "id": "heading_transform",
+      "label": "Heading transform",
       "options": [
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" }
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
       ],
-      "default": "primary"
+      "default": "none"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -2, "info": "1/100em (0 = 0em, 10 = 0.1em)" },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 11, "info": "1/10 (15 = 1.5)" },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 18 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
     },
     {
-      "type": "header",
-      "content": "Media"
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
+
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Background image" },
+    { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Hero background" },
+    { "type": "range", "id": "image_border_radius", "label": "Image border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 0 },
+    { "type": "color", "id": "image_overlay_color", "label": "Image overlay color", "default": "#000000" },
+    { "type": "range", "id": "image_overlay_color_opacity", "label": "Image overlay color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "image_overlay_opacity", "label": "Image overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 30 },
+    {
+      "type": "select",
+      "id": "image_object_fit",
+      "label": "Image object fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "cover"
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Background image"
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "natural", "label": "Natural" },
+        { "value": "1-1", "label": "1:1" },
+        { "value": "4-3", "label": "4:3" },
+        { "value": "16-9", "label": "16:9" },
+        { "value": "3-2", "label": "3:2" },
+        { "value": "2-3", "label": "2:3" }
+      ],
+      "default": "natural"
     },
-    {
-      "type": "range",
-      "id": "image_overlay_opacity",
-      "label": "Image overlay opacity",
-      "min": 0,
-      "max": 80,
-      "step": 5,
-      "unit": "%",
-      "default": 30
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
+
+    { "type": "header", "content": "Layout" },
     {
       "type": "select",
       "id": "content_alignment",
@@ -259,56 +383,65 @@
       ],
       "default": "center"
     },
+    { "type": "checkbox", "id": "full_height", "label": "Full viewport height", "default": false },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1200, "step": 50, "unit": "px", "default": 700 },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
     {
-      "type": "checkbox",
-      "id": "full_height",
-      "label": "Full viewport height",
-      "default": false
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
     },
+
+    { "type": "color", "id": "button_bg_color", "label": "Button background color" },
+    { "type": "range", "id": "button_bg_color_opacity", "label": "Button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "button_text_color", "label": "Button text color" },
+    { "type": "range", "id": "button_text_color_opacity", "label": "Button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "button_border_color", "label": "Button border color" },
+    { "type": "range", "id": "button_border_color_opacity", "label": "Button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "button_border_width", "label": "Button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "button_border_radius", "label": "Button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "button_padding_x", "label": "Button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "button_padding_y", "label": "Button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
     {
-      "type": "range",
-      "id": "content_max_width",
-      "label": "Content max width",
-      "min": 400,
-      "max": 1200,
-      "step": 50,
-      "unit": "px",
-      "default": 700
+      "type": "select",
+      "id": "button_hover_effect",
+      "label": "Button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
     },
-    {
-      "type": "header",
-      "content": "Appearance"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "Spacing"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "label": "Padding top",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 80
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Padding bottom",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 80
-    }
+    { "type": "color", "id": "button_hover_bg_color", "label": "Button hover background color" },
+    { "type": "range", "id": "button_hover_bg_color_opacity", "label": "Button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "button_hover_text_color", "label": "Button hover text color" },
+    { "type": "range", "id": "button_hover_text_color_opacity", "label": "Button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "button_hover_border_color", "label": "Button hover border color" },
+    { "type": "range", "id": "button_hover_border_color_opacity", "label": "Button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 }
   ],
   "presets": [
     {

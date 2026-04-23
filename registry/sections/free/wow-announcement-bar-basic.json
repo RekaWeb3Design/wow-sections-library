@@ -11,7 +11,7 @@
   "liquid_file": "sections/free/navigation/wow-announcement-bar-basic.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
-  "settings_count": 10,
+  "settings_count": 45,
   "blocks_supported": false,
   "created_at": "2026-04-23",
   "source": "original"

@@ -4,17 +4,21 @@
   assign columns = section.settings.columns | default: 3
   assign alignment = section.settings.content_alignment | default: 'center'
   assign icon_type = section.settings.icon_type | default: 'emoji'
-  assign card_style = section.settings.card_style | default: 'outlined'
   assign animation_enabled = section.settings.animation_enabled
   assign animation_type = section.settings.animation_type | default: 'fade'
   assign animation_delay = section.settings.animation_delay | default: 0
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+  assign card_hover = section.settings.feature_card_hover_transform
 %}
+
+{% comment %} Card shadow variant classes map to CSS tokens {% endcomment %}
 
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="wow-{{ section_id }}"
-    class="wow_features_icons wow_features_icons--cols-{{ columns }} wow_features_icons--align-{{ alignment }} wow_features_icons--card-{{ card_style }}{% if section.settings.mobile_stack %} wow_features_icons--mobile-stack{% endif %}{% if animation_enabled %} wow_features_icons--animated wow_features_icons--anim-{{ animation_type }}{% endif %} wow_section"
+    class="wow_features_icons wow_features_icons--cols-{{ columns }} wow_features_icons--align-{{ alignment }} wow_features_icons--shadow-{{ section.settings.feature_card_shadow }} wow_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} wow_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} wow_features_icons--mobile-stack{% endif %}{% if animation_enabled %} wow_features_icons--animated wow_features_icons--anim-{{ animation_type }}{% endif %} wow_section"
     aria-label="{{ section.settings.heading | default: 'Features' | escape }}"
   >
     <div class="wow_features_icons__inner">
@@ -33,10 +37,23 @@
         <ul class="wow_features_icons__grid" role="list">
           {% for block in section.blocks %}
             {% if block.type == 'feature' %}
+              {% liquid
+                if block.settings.card_title_color != blank
+                  assign ct_color = 'color-mix(in srgb, ' | append: block.settings.card_title_color | append: ' ' | append: block.settings.card_title_color_opacity | append: '%, transparent)'
+                else
+                  assign ct_color = 'var(--color-foreground)'
+                endif
+                if block.settings.card_desc_color != blank
+                  assign cd_color = 'color-mix(in srgb, ' | append: block.settings.card_desc_color | append: ' ' | append: block.settings.card_desc_color_opacity | append: '%, transparent)'
+                else
+                  assign cd_color = 'var(--color-foreground-75)'
+                endif
+                assign anim_offset = forloop.index0 | times: animation_delay
+              %}
               <li
                 class="wow_features_icons__card"
                 {{ block.shopify_attributes }}
-                {% if animation_enabled %}style="--wow-anim-offset: {{ forloop.index0 | times: animation_delay }}ms;"{% endif %}
+                style="--wow-ct-size: {{ block.settings.card_title_size }}px; --wow-ct-weight: {{ block.settings.card_title_weight }}; --wow-ct-transform: {{ block.settings.card_title_transform }}; --wow-ct-color: {{ ct_color }}; --wow-ct-ls: calc({{ block.settings.card_title_letter_spacing }} / 100 * 1em); --wow-ct-lh: calc({{ block.settings.card_title_line_height }} / 10); --wow-cd-size: {{ block.settings.card_desc_size }}px; --wow-cd-weight: {{ block.settings.card_desc_weight }}; --wow-cd-transform: {{ block.settings.card_desc_transform }}; --wow-cd-color: {{ cd_color }}; --wow-cd-ls: calc({{ block.settings.card_desc_letter_spacing }} / 100 * 1em); --wow-cd-lh: calc({{ block.settings.card_desc_line_height }} / 10);{% if animation_enabled %} --wow-anim-offset: {{ anim_offset }}ms;{% endif %}"
               >
                 {% if icon_type == 'emoji' and block.settings.icon != blank %}
                   <span class="wow_features_icons__icon" aria-hidden="true">{{ block.settings.icon | escape }}</span>
@@ -61,8 +78,19 @@
   #shopify-section-{{ section.id }} .wow_features_icons {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
-    background-color: var(--color-background);
     color: var(--color-foreground);
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons__inner {
@@ -97,17 +125,30 @@
 
   #shopify-section-{{ section.id }} .wow_features_icons__title {
     margin: 0;
-    font-size: clamp(1.75rem, 4vw, 3rem);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--color-foreground);
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons__subtitle {
     margin: 0;
-    font-size: clamp(1rem, 1.4vw, 1.125rem);
-    line-height: 1.6;
-    color: var(--color-foreground-75);
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons__grid {
@@ -116,10 +157,6 @@
     padding: 0;
     display: grid;
     gap: clamp(1rem, 2.5vw, 2rem);
-    grid-template-columns: 1fr;
-  }
-
-  #shopify-section-{{ section.id }} .wow_features_icons--mobile-stack .wow_features_icons__grid {
     grid-template-columns: 1fr;
   }
 
@@ -142,29 +179,46 @@
     display: flex;
     flex-direction: column;
     gap: clamp(0.5rem, 1vw, 0.875rem);
-    padding: clamp(1.25rem, 2.5vw, 2rem);
-    border-radius: 0.75rem;
-    background-color: transparent;
-    border: 1px solid transparent;
-    transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+    padding: {{ section.settings.feature_card_padding }}px;
+    border-radius: {{ section.settings.feature_card_border_radius }}px;
+    border: {{ section.settings.feature_card_border_width }}px solid {% if section.settings.feature_card_border_color != blank %}color-mix(in srgb, {{ section.settings.feature_card_border_color }} {{ section.settings.feature_card_border_color_opacity }}%, transparent){% else %}var(--color-border){% endif %};
+    transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+    {% if section.settings.feature_card_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.feature_card_bg_color }} {{ section.settings.feature_card_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: transparent;
+    {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--card-outlined .wow_features_icons__card {
-    border-color: var(--color-border);
-  }
-
-  #shopify-section-{{ section.id }} .wow_features_icons--card-filled .wow_features_icons__card {
-    background-color: var(--color-foreground);
-    color: var(--color-background);
-  }
-
-  #shopify-section-{{ section.id }} .wow_features_icons--card-filled .wow_features_icons__card-title,
-  #shopify-section-{{ section.id }} .wow_features_icons--card-filled .wow_features_icons__card-desc {
-    color: var(--color-background);
-  }
+  #shopify-section-{{ section.id }} .wow_features_icons--shadow-none .wow_features_icons__card { box-shadow: none; }
+  #shopify-section-{{ section.id }} .wow_features_icons--shadow-soft .wow_features_icons__card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .wow_features_icons--shadow-medium .wow_features_icons__card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .wow_features_icons--shadow-strong .wow_features_icons__card { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
 
   #shopify-section-{{ section.id }} .wow_features_icons__card:hover {
-    transform: translateY(-2px);
+    {% if section.settings.feature_card_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.feature_card_hover_bg_color }} {{ section.settings.feature_card_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.feature_card_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.feature_card_hover_border_color }} {{ section.settings.feature_card_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-soft .wow_features_icons__card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-medium .wow_features_icons__card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-strong .wow_features_icons__card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
+
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-lift .wow_features_icons__card:hover {
+    transform: translateY(-4px);
+  }
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-scale .wow_features_icons__card:hover {
+    transform: scale(1.02);
+  }
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-border .wow_features_icons__card:hover {
+    border-color: {% if section.settings.feature_card_hover_border_color != blank %}color-mix(in srgb, {{ section.settings.feature_card_hover_border_color }} {{ section.settings.feature_card_hover_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_features_icons--hover-glow .wow_features_icons__card:hover {
+    box-shadow: 0 0 28px {% if section.settings.feature_card_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.feature_card_hover_bg_color }} 45%, transparent){% else %}rgba(0, 0, 0, 0.16){% endif %};
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons--align-left .wow_features_icons__card {
@@ -194,17 +248,22 @@
 
   #shopify-section-{{ section.id }} .wow_features_icons__card-title {
     margin: 0;
-    font-size: clamp(1.125rem, 1.75vw, 1.375rem);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: var(--color-foreground);
+    font-size: var(--wow-ct-size, 20px);
+    font-weight: var(--wow-ct-weight, 600);
+    text-transform: var(--wow-ct-transform, none);
+    letter-spacing: var(--wow-ct-ls, 0);
+    line-height: var(--wow-ct-lh, 1.3);
+    color: var(--wow-ct-color, var(--color-foreground));
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons__card-desc {
     margin: 0;
-    font-size: clamp(0.9375rem, 1.2vw, 1rem);
-    line-height: 1.55;
-    color: var(--color-foreground-75);
+    font-size: var(--wow-cd-size, 16px);
+    font-weight: var(--wow-cd-weight, 400);
+    text-transform: var(--wow-cd-transform, none);
+    letter-spacing: var(--wow-cd-ls, 0);
+    line-height: var(--wow-cd-lh, 1.55);
+    color: var(--wow-cd-color, var(--color-foreground-75));
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons--animated .wow_features_icons__card {
@@ -276,18 +335,69 @@
   },
   "settings": [
     { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Everything you need" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "A short line that sums up the benefits below." },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 40 },
     {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Everything you need"
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
     },
     {
-      "type": "textarea",
-      "id": "subheading",
-      "label": "Subheading",
-      "default": "A short line that sums up the benefits below."
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
     },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -2, "info": "1/100em" },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12, "info": "1/10 (15 = 1.5)" },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 17 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 16 },
 
     { "type": "header", "content": "Media" },
     {
@@ -298,8 +408,7 @@
         { "value": "emoji", "label": "Emoji / text" },
         { "value": "none", "label": "No icon" }
       ],
-      "default": "emoji",
-      "info": "Choose how each card renders its icon. Emoji lets you paste any character per block."
+      "default": "emoji"
     },
 
     { "type": "header", "content": "Layout" },
@@ -324,39 +433,81 @@
       ],
       "default": "center"
     },
-    {
-      "type": "checkbox",
-      "id": "mobile_stack",
-      "label": "Stack cards on mobile",
-      "default": true
-    },
+    { "type": "checkbox", "id": "mobile_stack", "label": "Stack cards on mobile", "default": true },
 
     { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "scheme-1"
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "feature_card_bg_color", "label": "Card background color" },
+    { "type": "range", "id": "feature_card_bg_color_opacity", "label": "Card background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "feature_card_border_color", "label": "Card border color" },
+    { "type": "range", "id": "feature_card_border_color_opacity", "label": "Card border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "feature_card_border_width", "label": "Card border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "feature_card_border_radius", "label": "Card border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "feature_card_shadow",
+      "label": "Card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "none"
+    },
+    { "type": "range", "id": "feature_card_padding", "label": "Card padding", "min": 8, "max": 80, "step": 4, "unit": "px", "default": 24 },
+    { "type": "color", "id": "feature_card_hover_bg_color", "label": "Card hover background color" },
+    { "type": "range", "id": "feature_card_hover_bg_color_opacity", "label": "Card hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "feature_card_hover_border_color", "label": "Card hover border color" },
+    { "type": "range", "id": "feature_card_hover_border_color_opacity", "label": "Card hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    {
+      "type": "select",
+      "id": "feature_card_hover_shadow",
+      "label": "Card hover shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "soft"
     },
     {
       "type": "select",
-      "id": "card_style",
-      "label": "Card style",
+      "id": "feature_card_hover_transform",
+      "label": "Card hover effect",
       "options": [
-        { "value": "plain", "label": "Plain" },
-        { "value": "outlined", "label": "Outlined" },
-        { "value": "filled", "label": "Filled" }
+        { "value": "none", "label": "None" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "scale", "label": "Scale" },
+        { "value": "border", "label": "Border highlight" },
+        { "value": "glow", "label": "Glow" }
       ],
-      "default": "outlined"
+      "default": "lift"
     },
 
     { "type": "header", "content": "Animation" },
-    {
-      "type": "checkbox",
-      "id": "animation_enabled",
-      "label": "Enable animation",
-      "default": false
-    },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
     {
       "type": "select",
       "id": "animation_type",
@@ -373,59 +524,84 @@
       "type": "range",
       "id": "animation_delay",
       "label": "Animation delay (per card)",
-      "min": 0,
-      "max": 500,
-      "step": 50,
-      "unit": "ms",
-      "default": 100,
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 100,
       "visible_if": "{{ section.settings.animation_enabled }}"
     },
 
     { "type": "header", "content": "Spacing" },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "label": "Padding top",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 60
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Padding bottom",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 60
-    }
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 }
   ],
   "blocks": [
     {
       "type": "feature",
       "name": "Feature card",
       "settings": [
+        { "type": "header", "content": "Content" },
+        { "type": "text", "id": "icon", "label": "Icon (emoji or character)", "default": "⚡" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Fast by default" },
+        { "type": "textarea", "id": "description", "label": "Description", "default": "Short sentence that explains the value of this feature to the shopper." },
+
+        { "type": "header", "content": "Typography" },
+        { "type": "range", "id": "card_title_size", "label": "Title size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 20 },
         {
-          "type": "text",
-          "id": "icon",
-          "label": "Icon (emoji or character)",
-          "default": "⚡"
+          "type": "select",
+          "id": "card_title_weight",
+          "label": "Title weight",
+          "options": [
+            { "value": "300", "label": "Thin" },
+            { "value": "400", "label": "Regular" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" },
+            { "value": "700", "label": "Bold" }
+          ],
+          "default": "600"
         },
         {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Fast by default"
+          "type": "select",
+          "id": "card_title_transform",
+          "label": "Title transform",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "uppercase", "label": "Uppercase" },
+            { "value": "capitalize", "label": "Capitalize" }
+          ],
+          "default": "none"
+        },
+        { "type": "color", "id": "card_title_color", "label": "Title color" },
+        { "type": "range", "id": "card_title_color_opacity", "label": "Title color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "range", "id": "card_title_letter_spacing", "label": "Title letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1, "info": "1/100em" },
+        { "type": "range", "id": "card_title_line_height", "label": "Title line height", "min": 10, "max": 30, "step": 1, "default": 13, "info": "1/10" },
+
+        { "type": "range", "id": "card_desc_size", "label": "Description size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+        {
+          "type": "select",
+          "id": "card_desc_weight",
+          "label": "Description weight",
+          "options": [
+            { "value": "300", "label": "Thin" },
+            { "value": "400", "label": "Regular" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" },
+            { "value": "700", "label": "Bold" }
+          ],
+          "default": "400"
         },
         {
-          "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": "Short sentence that explains the value of this feature to the shopper."
-        }
+          "type": "select",
+          "id": "card_desc_transform",
+          "label": "Description transform",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "uppercase", "label": "Uppercase" },
+            { "value": "capitalize", "label": "Capitalize" }
+          ],
+          "default": "none"
+        },
+        { "type": "color", "id": "card_desc_color", "label": "Description color" },
+        { "type": "range", "id": "card_desc_color_opacity", "label": "Description color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "range", "id": "card_desc_letter_spacing", "label": "Description letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+        { "type": "range", "id": "card_desc_line_height", "label": "Description line height", "min": 10, "max": 30, "step": 1, "default": 16 }
       ]
     }
   ],

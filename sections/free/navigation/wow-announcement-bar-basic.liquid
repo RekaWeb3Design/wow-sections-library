@@ -1,22 +1,24 @@
-{% comment %} 1. Schema beolvasás {% endcomment %}
+{% comment %} 1. Assigns {% endcomment %}
 {% liquid
   assign section_id = section.id
   assign display_mode = section.settings.display_mode
   assign marquee_speed = section.settings.marquee_speed
   assign bar_height = section.settings.bar_height
   assign show_close = section.settings.show_close_button
-  assign text = section.settings.text
+  assign bar_text = section.settings.bar_text
   assign link_label = section.settings.link_label
   assign link_url = section.settings.link_url
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
 %}
 
-{% comment %} 2. HTML struktúra {% endcomment %}
+{% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient wow_announcement_bar__wrap">
   <aside
     id="wow-{{ section_id }}"
-    class="wow_announcement_bar wow_announcement_bar--{{ display_mode }} wow_section"
+    class="wow_announcement_bar wow_announcement_bar--{{ display_mode }} wow_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} wow_section"
     role="complementary"
-    aria-label="{{ text | default: 'Announcement' | escape }}"
+    aria-label="{{ bar_text | default: 'Announcement' | escape }}"
     data-wow-announcement-id="{{ section_id }}"
   >
     <div class="wow_announcement_bar__inner">
@@ -27,8 +29,8 @@
               <div class="wow_announcement_bar__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
                 {% for j in (1..4) %}
                   <span class="wow_announcement_bar__item">
-                    {% if text != blank %}
-                      <span class="wow_announcement_bar__text">{{ text | escape }}</span>
+                    {% if bar_text != blank %}
+                      <span class="wow_announcement_bar__text">{{ bar_text | escape }}</span>
                     {% endif %}
                     {% if link_label != blank and link_url != blank %}
                       <a
@@ -48,8 +50,8 @@
         </div>
       {% else %}
         <div class="wow_announcement_bar__static">
-          {% if text != blank %}
-            <span class="wow_announcement_bar__text">{{ text | escape }}</span>
+          {% if bar_text != blank %}
+            <span class="wow_announcement_bar__text">{{ bar_text | escape }}</span>
           {% endif %}
           {% if link_label != blank and link_url != blank %}
             <a
@@ -88,7 +90,7 @@
   </aside>
 </div>
 
-{% comment %} 3. CSS — section scope-olva {% endcomment %}
+{% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
   #shopify-section-{{ section.id }} .wow_announcement_bar__wrap {
     position: sticky;
@@ -101,10 +103,21 @@
     min-height: {{ bar_height }}px;
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
-    background-color: var(--color-background);
     color: var(--color-foreground);
     border-bottom: 1px solid var(--color-border);
     overflow: hidden;
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__inner {
@@ -122,10 +135,20 @@
     align-items: center;
     justify-content: center;
     gap: clamp(0.5rem, 1.5vw, 1rem);
-    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
-    line-height: 1.4;
-    text-align: center;
     flex-wrap: wrap;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__text {
+    font-size: {{ section.settings.bar_text_size }}px;
+    font-weight: {{ section.settings.bar_text_weight }};
+    text-transform: {{ section.settings.bar_text_transform }};
+    letter-spacing: calc({{ section.settings.bar_text_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.bar_text_line_height }} / 10);
+    {% if section.settings.bar_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.bar_text_color }} {{ section.settings.bar_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__viewport {
@@ -166,8 +189,6 @@
     display: inline-flex;
     align-items: center;
     gap: clamp(0.5rem, 1.25vw, 1rem);
-    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
-    line-height: 1.4;
     white-space: nowrap;
   }
 
@@ -177,15 +198,59 @@
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__link {
-    color: var(--color-foreground);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ section.settings.link_padding_y }}px {{ section.settings.link_padding_x }}px;
+    border-radius: {{ section.settings.link_border_radius }}px;
+    border: {{ section.settings.link_border_width }}px solid {% if section.settings.link_border_color != blank %}color-mix(in srgb, {{ section.settings.link_border_color }} {{ section.settings.link_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
     text-decoration: underline;
     text-underline-offset: 0.2em;
     font-weight: 600;
-    transition: opacity 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    {% if section.settings.link_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.link_bg_color }} {{ section.settings.link_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: transparent;
+    {% endif %}
+    {% if section.settings.link_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.link_text_color }} {{ section.settings.link_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__link:hover {
-    opacity: 0.75;
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-fill .wow_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-darken .wow_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-lift .wow_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-glow .wow_announcement_bar__link:hover {
+    {% if section.settings.link_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.link_hover_bg_color }} {{ section.settings.link_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.link_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.link_hover_text_color }} {{ section.settings.link_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.link_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.link_hover_border_color }} {{ section.settings.link_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-darken .wow_announcement_bar__link:hover {
+    filter: brightness(0.85);
+  }
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-lift .wow_announcement_bar__link:hover {
+    transform: translateY(-1px);
+  }
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-glow .wow_announcement_bar__link:hover {
+    box-shadow: 0 0 18px {% if section.settings.link_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.link_hover_bg_color }} 55%, transparent){% else %}rgba(0, 0, 0, 0.15){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-outline .wow_announcement_bar__link:hover {
+    background-color: transparent;
+    {% if section.settings.link_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.link_hover_text_color }} {{ section.settings.link_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.link_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.link_hover_border_color }} {{ section.settings.link_hover_border_color_opacity }}%, transparent);
+    {% endif %}
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__close {
@@ -226,6 +291,9 @@
     #shopify-section-{{ section.id }} .wow_announcement_bar__track {
       animation: none;
       transform: none;
+    }
+    #shopify-section-{{ section.id }} .wow_announcement_bar__link {
+      transition: none;
     }
   }
 
@@ -287,23 +355,40 @@
   },
   "settings": [
     { "type": "header", "content": "Content" },
+    { "type": "text", "id": "bar_text", "label": "Announcement text", "default": "Free shipping on orders over $50 🎉" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop now" },
+    { "type": "url", "id": "link_url", "label": "Link URL" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "bar_text_size", "label": "Text size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 14 },
     {
-      "type": "text",
-      "id": "text",
-      "label": "Announcement text",
-      "default": "Free shipping on orders over $50 🎉"
+      "type": "select",
+      "id": "bar_text_weight",
+      "label": "Text weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
     },
     {
-      "type": "text",
-      "id": "link_label",
-      "label": "Link label",
-      "default": "Shop now"
+      "type": "select",
+      "id": "bar_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
     },
-    {
-      "type": "url",
-      "id": "link_url",
-      "label": "Link URL"
-    },
+    { "type": "color", "id": "bar_text_color", "label": "Text color" },
+    { "type": "range", "id": "bar_text_color_opacity", "label": "Text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "bar_text_letter_spacing", "label": "Text letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0, "info": "1/100em" },
+    { "type": "range", "id": "bar_text_line_height", "label": "Text line height", "min": 10, "max": 30, "step": 1, "default": 14, "info": "1/10" },
 
     { "type": "header", "content": "Layout" },
     {
@@ -319,7 +404,7 @@
     {
       "type": "range",
       "id": "marquee_speed",
-      "label": "Scroll speed (s)",
+      "label": "Scroll speed",
       "min": 20,
       "max": 100,
       "step": 10,
@@ -327,52 +412,65 @@
       "default": 40,
       "visible_if": "{{ section.settings.display_mode == 'marquee' }}"
     },
-    {
-      "type": "checkbox",
-      "id": "show_close_button",
-      "label": "Show close button",
-      "default": true
-    },
+    { "type": "checkbox", "id": "show_close_button", "label": "Show close button", "default": true },
 
     { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "bar_height", "label": "Bar height", "min": 32, "max": 80, "step": 4, "unit": "px", "default": 44 },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "scheme-1"
-    },
-    {
-      "type": "range",
-      "id": "bar_height",
-      "label": "Bar height",
-      "min": 32,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "default": 44
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to right",
+      "visible_if": "{{ section.settings.bg_gradient }}"
     },
 
-    { "type": "header", "content": "Spacing" },
+    { "type": "color", "id": "link_bg_color", "label": "Link background color" },
+    { "type": "range", "id": "link_bg_color_opacity", "label": "Link background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "link_text_color", "label": "Link text color" },
+    { "type": "range", "id": "link_text_color_opacity", "label": "Link text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "link_border_color", "label": "Link border color" },
+    { "type": "range", "id": "link_border_color_opacity", "label": "Link border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "link_border_width", "label": "Link border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "link_border_radius", "label": "Link border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 4 },
+    { "type": "range", "id": "link_padding_x", "label": "Link horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "link_padding_y", "label": "Link vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 4 },
     {
-      "type": "range",
-      "id": "padding_top",
-      "label": "Padding top",
-      "min": 0,
-      "max": 40,
-      "step": 4,
-      "unit": "px",
-      "default": 0
+      "type": "select",
+      "id": "link_hover_effect",
+      "label": "Link hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
     },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Padding bottom",
-      "min": 0,
-      "max": 40,
-      "step": 4,
-      "unit": "px",
-      "default": 0
-    }
+    { "type": "color", "id": "link_hover_bg_color", "label": "Link hover background color" },
+    { "type": "range", "id": "link_hover_bg_color_opacity", "label": "Link hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "link_hover_text_color", "label": "Link hover text color" },
+    { "type": "range", "id": "link_hover_text_color_opacity", "label": "Link hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "link_hover_border_color", "label": "Link hover border color" },
+    { "type": "range", "id": "link_hover_border_color_opacity", "label": "Link hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 40, "step": 4, "unit": "px", "default": 0 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 40, "step": 4, "unit": "px", "default": 0 }
   ],
   "presets": [
     {
