@@ -28,10 +28,11 @@ Settings must always be grouped in this order:
 1. **Content** — text, headings, links, copy
 2. **Typography** — sizes, weights, colors, letter spacing, line height of every text element
 3. **Media** — images, videos, icons
-4. **Layout** — alignment, columns, mobile behavior
+4. **Layout** — alignment, columns, mobile behavior, visibility, section width
 5. **Appearance** — color scheme, section background, cards, buttons, borders, shadows
 6. **Animation** — transitions, scroll effects
 7. **Spacing** — padding, margins
+8. **Custom CSS** — escape hatch `custom_css` textarea (always last, immediately before `presets`)
 
 Each group is introduced with a `header` setting:
 
@@ -203,6 +204,8 @@ These rules apply to every element group below:
    - Section background settings → **Appearance** group
    - Image element settings → **Media** group
    - Layout & alignment settings (§8.8) → **Layout** group
+   - Visibility + section width settings (§8.9) → **Layout** group
+   - `custom_css` (§8.9) → **Custom CSS** group (always last, immediately before `presets`)
 
 `[id]` in every template below is the element's identifier slug (e.g. `heading`, `subheading`, `cta`, `secondary_cta`, `testimonial_card`, `hero_image`). Use `snake_case` and a consistent slug across all settings for the same element.
 
@@ -820,6 +823,111 @@ CSS pattern:
 
 ---
 
+### 8.9 Universal Section Settings — MANDATORY on every section
+
+These settings apply to **every WOW section without exception**. No exceptions.
+
+**Rules**
+
+1. **§8.9 settings are mandatory on every section. No exceptions.** Every schema must include `hide_on_mobile`, `hide_on_desktop`, `section_width`, and `custom_css`, regardless of section type.
+2. **`hide_on_mobile` and `hide_on_desktop` use `max-width: 749px` / `min-width: 750px` breakpoints consistently across all sections.** Do not vary these breakpoints per section — the values above are the single source of truth.
+3. **`section_width` always controls the `__inner` wrapper, never the section root element itself.** The section root keeps its full-bleed box (so the background-color / gradient / color-scheme wrapper still spans the viewport edge-to-edge); only the inner wrapper width changes.
+4. **Custom CSS field always comes last, immediately before `presets`, in its own `Custom CSS` header group** — after the Spacing group.
+
+---
+
+**Visibility** — goes in the **Layout** group:
+
+```json
+{
+  "type": "checkbox",
+  "id": "hide_on_mobile",
+  "label": "Hide on mobile",
+  "default": false
+},
+{
+  "type": "checkbox",
+  "id": "hide_on_desktop",
+  "label": "Hide on desktop",
+  "default": false
+}
+```
+
+CSS implementation:
+
+```liquid
+{% if section.settings.hide_on_mobile %}
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} { display: none; }
+  }
+{% endif %}
+{% if section.settings.hide_on_desktop %}
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} { display: none; }
+  }
+{% endif %}
+```
+
+**Note:** this is the **one allowed exception** to the "no `display: none` in CSS" rule — because it applies to the entire section wrapper, not to individual elements inside it. The `display: none` applied to the whole `#shopify-section-…` node still hides the DOM at the section boundary, which is what the merchant asked for.
+
+---
+
+**Section max width** — goes in the **Layout** group:
+
+```json
+{
+  "type": "select",
+  "id": "section_width",
+  "label": "Section width",
+  "options": [
+    { "value": "full", "label": "Full width" },
+    { "value": "boxed", "label": "Boxed (theme width)" },
+    { "value": "narrow", "label": "Narrow" }
+  ],
+  "default": "boxed"
+}
+```
+
+CSS implementation (always on `.wow_[name]__inner`, never on the section root):
+
+```liquid
+#shopify-section-{{ section.id }} .wow_[name]__inner {
+  width: 100%;
+  max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
+  margin-inline: auto;
+  padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+}
+```
+
+---
+
+**Custom CSS field** — goes at the very end of the schema, after the Spacing group and before `presets`:
+
+```json
+{
+  "type": "header",
+  "content": "Custom CSS"
+},
+{
+  "type": "textarea",
+  "id": "custom_css",
+  "label": "Custom CSS",
+  "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+}
+```
+
+Liquid implementation — add this at the **end of every section's `<style>` block**:
+
+```liquid
+{% if section.settings.custom_css != blank %}
+  #shopify-section-{{ section.id }} {
+    {{ section.settings.custom_css }}
+  }
+{% endif %}
+```
+
+---
+
 ## 9. Spacing group rules
 
 - The Spacing group must always **end** with `padding_top` and `padding_bottom`.
@@ -1043,6 +1151,19 @@ CSS pattern:
       ],
       "default": "stack"
     },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
 
     { "type": "header", "content": "Appearance" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
@@ -1121,7 +1242,15 @@ CSS pattern:
 
     { "type": "header", "content": "Spacing" },
     { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 }
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
   ],
   "presets": [
     {
