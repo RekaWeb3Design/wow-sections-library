@@ -154,6 +154,9 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 ## 4. Schema konvenciók
 
+- **All schema labels, default text values, info fields, option labels, and preset names must be in English — no exceptions. This library targets the international market.**
+- **Before designing any schema, read schema-designer.md § UI Element Settings Standard and apply ALL relevant element rules.**
+
 ### 4.1 Alap schema template
 
 ```json
