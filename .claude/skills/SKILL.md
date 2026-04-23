@@ -156,6 +156,7 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 - **All schema labels, default text values, info fields, option labels, and preset names must be in English — no exceptions. This library targets the international market.**
 - **Before designing any schema, read schema-designer.md § UI Element Settings Standard and apply ALL relevant element rules.**
+- **Layout & alignment settings (schema-designer.md §8.8) are mandatory**: add `[id]_text_align` to every text element (after `[id]_transform`); add `content_position` to every hero / banner / full-width image section; use `items_gap` and `items_align` in every grid/flex container (never hardcode the gap); add `content_max_width` to every section with a centered content block.
 
 ### 4.1 Alap schema template
 

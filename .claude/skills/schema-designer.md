@@ -100,6 +100,7 @@ Each group is introduced with a `header` setting:
 
 - Must include `content_alignment` (select: `left` / `center` / `right`).
 - Sections that contain images must also include `mobile_layout` (select: `stack` / `reverse`).
+- The additional layout settings defined in **§8.8 Layout & Alignment elements** (`content_position`, `content_max_width`, `items_gap`, `items_align`) are mandatory whenever the section type triggers their rule — all of them live in the Layout group.
 
 ```json
 {
@@ -201,6 +202,7 @@ These rules apply to every element group below:
    - Divider / border element settings → **Appearance** group
    - Section background settings → **Appearance** group
    - Image element settings → **Media** group
+   - Layout & alignment settings (§8.8) → **Layout** group
 
 `[id]` in every template below is the element's identifier slug (e.g. `heading`, `subheading`, `cta`, `secondary_cta`, `testimonial_card`, `hero_image`). Use `snake_case` and a consistent slug across all settings for the same element.
 
@@ -244,6 +246,17 @@ Apply to every **heading, subheading, body text, label, badge** in the section. 
     { "value": "capitalize", "label": "Capitalize" }
   ],
   "default": "none"
+},
+{
+  "type": "select",
+  "id": "[id]_text_align",
+  "label": "[Element] text alignment",
+  "options": [
+    { "value": "left", "label": "Left" },
+    { "value": "center", "label": "Center" },
+    { "value": "right", "label": "Right" }
+  ],
+  "default": "left"
 },
 {
   "type": "color",
@@ -684,6 +697,129 @@ Apply to every **divider line, separator, decorative border**. Settings go in th
 
 ---
 
+### 8.8 Layout & Alignment elements
+
+Applies to every section that has positionable content, a grid/flex container, or a centered content block. Settings go in the **Layout** group.
+
+**Section-wide rules**
+
+1. **`content_position`** is mandatory for **hero, banner, and full-width image sections**. For these sections, the CSS must use absolute positioning on the content wrapper with `top` / `bottom` / `left` / `right` values derived from the setting value.
+2. **`[id]_text_align`** is a mandatory setting in §8.2 Text elements, placed after `[id]_transform`. Every text element in the Typography group already carries it.
+3. **`items_gap`** replaces hardcoded gap values in grid/flex CSS — always use `{{ section.settings.items_gap }}px` (never a literal `gap: 16px` or a `clamp()` call). This rule applies wherever the section renders a grid or flex list of repeating items.
+
+---
+
+**Content position** — mandatory for hero, banner, and full-width image sections (content wrapper is absolutely positioned against the section root):
+
+```json
+{
+  "type": "select",
+  "id": "content_position",
+  "label": "Content position",
+  "options": [
+    { "value": "top-left", "label": "Top left" },
+    { "value": "top-center", "label": "Top center" },
+    { "value": "top-right", "label": "Top right" },
+    { "value": "center-left", "label": "Middle left" },
+    { "value": "center", "label": "Middle center" },
+    { "value": "center-right", "label": "Middle right" },
+    { "value": "bottom-left", "label": "Bottom left" },
+    { "value": "bottom-center", "label": "Bottom center" },
+    { "value": "bottom-right", "label": "Bottom right" }
+  ],
+  "default": "center"
+}
+```
+
+CSS pattern (one class per value, toggled on the section root):
+
+```css
+#shopify-section-{{ section.id }} .wow_[name]__content {
+  position: absolute;
+}
+#shopify-section-{{ section.id }} .wow_[name]--pos-top-left .wow_[name]__content    { top: 0; left: 0; }
+#shopify-section-{{ section.id }} .wow_[name]--pos-top-center .wow_[name]__content  { top: 0; left: 50%; transform: translateX(-50%); }
+#shopify-section-{{ section.id }} .wow_[name]--pos-top-right .wow_[name]__content   { top: 0; right: 0; }
+#shopify-section-{{ section.id }} .wow_[name]--pos-center-left .wow_[name]__content { top: 50%; left: 0; transform: translateY(-50%); }
+#shopify-section-{{ section.id }} .wow_[name]--pos-center .wow_[name]__content      { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+#shopify-section-{{ section.id }} .wow_[name]--pos-center-right .wow_[name]__content{ top: 50%; right: 0; transform: translateY(-50%); }
+#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-left .wow_[name]__content { bottom: 0; left: 0; }
+#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-center .wow_[name]__content { bottom: 0; left: 50%; transform: translateX(-50%); }
+#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-right .wow_[name]__content { bottom: 0; right: 0; }
+```
+
+---
+
+**Content max width** — for sections with a centered content block:
+
+```json
+{
+  "type": "range",
+  "id": "content_max_width",
+  "label": "Content max width",
+  "min": 400,
+  "max": 1400,
+  "step": 50,
+  "unit": "px",
+  "default": 800
+}
+```
+
+---
+
+**Items gap** — for every section that renders a grid or flex list (features, products, testimonials, columns). Replaces any hardcoded gap value:
+
+```json
+{
+  "type": "range",
+  "id": "items_gap",
+  "label": "Gap between items",
+  "min": 0,
+  "max": 80,
+  "step": 4,
+  "unit": "px",
+  "default": 24
+}
+```
+
+CSS pattern:
+
+```css
+#shopify-section-{{ section.id }} .wow_[name]__grid {
+  display: grid;
+  gap: {{ section.settings.items_gap }}px;
+}
+```
+
+---
+
+**Items alignment** — for flex/grid containers where items can align to the cross axis (top / center / bottom / stretch):
+
+```json
+{
+  "type": "select",
+  "id": "items_align",
+  "label": "Items alignment",
+  "options": [
+    { "value": "start", "label": "Top" },
+    { "value": "center", "label": "Center" },
+    { "value": "end", "label": "Bottom" },
+    { "value": "stretch", "label": "Stretch" }
+  ],
+  "default": "start"
+}
+```
+
+CSS pattern:
+
+```css
+#shopify-section-{{ section.id }} .wow_[name]__grid {
+  align-items: {{ section.settings.items_align }};
+}
+```
+
+---
+
 ## 9. Spacing group rules
 
 - The Spacing group must always **end** with `padding_top` and `padding_bottom`.
@@ -777,6 +913,17 @@ Apply to every **divider line, separator, decorative border**. Settings go in th
       ],
       "default": "none"
     },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
     { "type": "color", "id": "heading_color", "label": "Heading color" },
     { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
     { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0, "info": "1/100em" },
@@ -806,6 +953,17 @@ Apply to every **divider line, separator, decorative border**. Settings go in th
         { "value": "capitalize", "label": "Capitalize" }
       ],
       "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
     },
     { "type": "color", "id": "subheading_color", "label": "Subheading color" },
     { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
@@ -857,6 +1015,24 @@ Apply to every **divider line, separator, decorative border**. Settings go in th
       ],
       "default": "center"
     },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 800 },
     {
       "type": "select",
       "id": "mobile_layout",
