@@ -336,7 +336,7 @@
     var section = document.getElementById('lab-{{ section.id }}');
     if (!section) return;
 
-    var endDateStr = section.dataset.wowCountdownEnd;
+    var endDateStr = section.dataset.labCountdownEnd;
     var endDate = new Date(endDateStr);
     if (isNaN(endDate.getTime())) return;
 
