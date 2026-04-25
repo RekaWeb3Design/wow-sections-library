@@ -1261,3 +1261,122 @@ Liquid implementation — add this at the **end of every section's `<style>` blo
 }
 {% endschema %}
 ```
+
+---
+
+## 11. Multiple Presets Standard — MANDATORY
+
+Every WOW section must ship **exactly three presets** in its `presets` array. The three presets give merchants three distinct visual starting points that each correspond to a recognised design language. Merchants pick the one closest to their brand and tweak from there — this dramatically reduces the "blank section" friction.
+
+### 11.1 The three preset styles
+
+Every section must implement these three styles, in this order:
+
+#### 1. Minimal — clean, stripped back, lots of whitespace
+
+For brands with a quiet, editorial, or utility-first aesthetic. Keep ornament near zero.
+
+- Card / button `border_width`: `0` (or `1` if a hairline border is the only definition)
+- Card `shadow`: `"none"`
+- Card `border_radius`: `0` or `4` (square or near-square)
+- Card `padding`: smaller end of the range (`16`–`24`)
+- Heading `weight`: `"300"` or `"400"`
+- Heading `transform`: `"none"`
+- Hover `transform`: `"none"`
+- `animation_enabled`: `false`
+- `bg_gradient`: `false`
+
+#### 2. Bold — strong, high contrast, impactful
+
+For brands that want to grab attention and project confidence. Heavy weight, sharp shadow, motion.
+
+- Card `border_width`: `0` (preferred) or `2`
+- Card `shadow`: `"strong"`
+- Card `border_radius`: medium (`16`–`24`)
+- Card `padding`: larger (`28`–`40`)
+- Heading `weight`: `"700"`
+- Heading `transform`: `"uppercase"`
+- Hover `transform`: `"lift"` or `"scale"`
+- `animation_enabled`: `true`
+- `animation_type`: `"slide"`
+
+#### 3. Soft — rounded, gentle, approachable
+
+For wellness, beauty, lifestyle, kids, and feminine-coded brands. Round everything, lean on light shadow and gentle motion.
+
+- Card `border_width`: `0` or `1`
+- Card `shadow`: `"soft"`
+- Card `border_radius`: maximum (`32`–`48`)
+- Card `padding`: comfortable (`28`–`36`)
+- Heading `weight`: `"400"` or `"500"`
+- Heading `transform`: `"none"`
+- Hover `transform`: `"scale"` or `"glow"`
+- `animation_enabled`: `true`
+- `animation_type`: `"fade"`
+
+### 11.2 Preset rules
+
+1. **Naming format**: `"⚡ [Section short name] — [Style]"` — e.g. `"⚡ Testimonials — Minimal"`, `"⚡ Hero — Bold"`, `"⚡ Features — Soft"`. The "short name" is the same one used in the schema `name` (everything after `⚡ ` and before any other em-dash). The `⚡` and the style suffix are mandatory.
+2. **Category**: every preset must include `"category": "WOW Sections"`. No exceptions.
+3. **Order**: presets must appear in this exact order — Minimal first, then Bold, then Soft. Minimal is the primary preset shown first in the picker.
+4. **Settings: only override what differs from defaults.** Do not repeat every setting in every preset. If a preset's value matches the schema `default`, omit it. The presets exist to *deviate*, not to restate.
+5. **Blocks: when the section supports blocks, every preset must seed a representative `blocks` array** with realistic content. Do not ship an empty block list — merchants need to see what "good" looks like for each style. Tailor the seeded copy to the style where it makes sense (a Bold preset can have shorter, punchier copy than a Soft one).
+6. **No forbidden settings**: never reference setting IDs that don't exist in the section's schema. The Theme Editor will silently drop unknown IDs, and `theme check` will not flag this — so the preset would silently degrade.
+
+### 11.3 Template
+
+```json
+"presets": [
+  {
+    "name": "⚡ [Short name] — Minimal",
+    "category": "WOW Sections",
+    "settings": {
+      "[card]_border_width": 1,
+      "[card]_border_radius": 8,
+      "[card]_shadow": "none",
+      "[card]_padding": 20,
+      "[card]_hover_transform": "none",
+      "heading_weight": "300",
+      "animation_enabled": false
+    },
+    "blocks": [
+      { "type": "[block]", "settings": { "...": "..." } }
+    ]
+  },
+  {
+    "name": "⚡ [Short name] — Bold",
+    "category": "WOW Sections",
+    "settings": {
+      "[card]_border_width": 0,
+      "[card]_border_radius": 20,
+      "[card]_shadow": "strong",
+      "[card]_padding": 32,
+      "[card]_hover_transform": "lift",
+      "heading_weight": "700",
+      "heading_transform": "uppercase",
+      "animation_enabled": true,
+      "animation_type": "slide"
+    },
+    "blocks": [
+      { "type": "[block]", "settings": { "...": "..." } }
+    ]
+  },
+  {
+    "name": "⚡ [Short name] — Soft",
+    "category": "WOW Sections",
+    "settings": {
+      "[card]_border_width": 0,
+      "[card]_border_radius": 48,
+      "[card]_shadow": "soft",
+      "[card]_padding": 32,
+      "[card]_hover_transform": "scale",
+      "heading_weight": "400",
+      "animation_enabled": true,
+      "animation_type": "fade"
+    },
+    "blocks": [
+      { "type": "[block]", "settings": { "...": "..." } }
+    ]
+  }
+]
+```
