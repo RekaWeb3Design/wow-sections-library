@@ -1,0 +1,1525 @@
+{%- comment -%} 1. Assigns {%- endcomment -%}
+{%- liquid
+  assign section_id = section.id
+  assign s = section.settings
+
+  assign slides = section.blocks | where: 'type', 'slide'
+  assign filters = section.blocks | where: 'type', 'filter'
+  assign slide_count = slides.size
+
+  assign autoplay = s.slider_autoplay
+  assign anim_enabled = s.entrance_animation
+  assign anim_type = s.entrance_type
+  assign bg_pct = s.bg_opacity
+  assign bg_grad_pct = s.bg_gradient_color_opacity
+
+  assign card_shadow = s.finder_card_shadow
+  case card_shadow
+    when 'soft'
+      assign card_shadow_css = '0 2px 8px color-mix(in srgb, #000 12%, transparent)'
+    when 'medium'
+      assign card_shadow_css = '0 6px 18px color-mix(in srgb, #000 18%, transparent)'
+    when 'strong'
+      assign card_shadow_css = '0 12px 32px color-mix(in srgb, #000 28%, transparent)'
+    else
+      assign card_shadow_css = 'none'
+  endcase
+
+  assign overlay_style = s.slide_overlay_style
+  assign finder_position = s.finder_position
+-%}
+
+{%- comment -%} 2. HTML structure {%- endcomment -%}
+<div class="color-{{ s.color_scheme }} gradient">
+  <section
+    id="lab-{{ section_id }}"
+    class="lab_hero_finder lab_hero_finder--width-{{ s.section_width }} lab_hero_finder--transition-{{ s.slider_transition }}{% if anim_enabled %} lab_hero_finder--animated lab_hero_finder--anim-{{ anim_type }}{% endif %} lab_section"
+    aria-label="{{ s.finder_heading | default: 'Hero with product finder' | escape }}"
+    data-lab-position="{{ finder_position }}"
+    data-lab-autoplay="{% if autoplay %}true{% else %}false{% endif %}"
+    data-lab-speed="{{ s.slider_speed }}"
+    data-lab-swipe="{% if s.slider_swipe_mobile %}true{% else %}false{% endif %}"
+  >
+    <div class="lab_hero_finder__inner">
+      <div
+        class="lab_hero_finder__slider"
+        role="region"
+        aria-roledescription="slideshow"
+        aria-label="{{ 'Hero slideshow' | escape }}"
+        tabindex="0"
+        data-lab-slider
+      >
+        <div class="lab_hero_finder__track" data-lab-slider-track>
+          {%- if slide_count > 0 -%}
+            {%- for block in slides -%}
+              {%- liquid
+                assign overlay_color = s.slide_overlay_color
+                assign overlay_opacity = s.slide_overlay_opacity
+                if block.settings.use_custom_overlay
+                  assign overlay_color = block.settings.slide_overlay_color
+                  assign overlay_opacity = block.settings.slide_overlay_opacity
+                endif
+
+                if forloop.first and section.index <= 2
+                  assign img_loading = 'eager'
+                  assign img_priority = 'high'
+                else
+                  assign img_loading = 'lazy'
+                  assign img_priority = 'auto'
+                endif
+
+                assign mobile_image = block.settings.slide_image_mobile
+                assign desktop_image = block.settings.slide_image
+              -%}
+              <div
+                class="lab_hero_finder__slide"
+                role="group"
+                aria-roledescription="slide"
+                aria-label="Slide {{ forloop.index }} of {{ slide_count }}"
+                {% if forloop.first %}aria-current="true"{% else %}aria-hidden="true"{% endif %}
+                data-lab-slide-index="{{ forloop.index0 }}"
+                data-lab-slide-id="{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="lab_hero_finder__slide-media">
+                  {%- if desktop_image != blank -%}
+                    {{- desktop_image
+                      | image_url: width: 2000
+                      | image_tag:
+                        alt: '',
+                        loading: img_loading,
+                        fetchpriority: img_priority,
+                        width: 2000,
+                        height: 1200,
+                        widths: '600, 900, 1200, 1600, 2000',
+                        sizes: '100vw',
+                        class: 'lab_hero_finder__slide-image lab_hero_finder__slide-image--desktop' -}}
+                  {%- else -%}
+                    <div class="lab_hero_finder__slide-image lab_hero_finder__slide-image--placeholder lab_hero_finder__slide-image--desktop" aria-hidden="true"></div>
+                  {%- endif -%}
+                  {%- if mobile_image != blank -%}
+                    {{- mobile_image
+                      | image_url: width: 900
+                      | image_tag:
+                        alt: '',
+                        loading: img_loading,
+                        fetchpriority: img_priority,
+                        width: 900,
+                        height: 1200,
+                        widths: '400, 600, 900',
+                        sizes: '100vw',
+                        class: 'lab_hero_finder__slide-image lab_hero_finder__slide-image--mobile' -}}
+                  {%- endif -%}
+                </div>
+
+                <div
+                  class="lab_hero_finder__slide-overlay lab_hero_finder__slide-overlay--{{ overlay_style }}"
+                  style="--lab-slide-overlay-color: {{ overlay_color }}; --lab-slide-overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};"
+                  aria-hidden="true"
+                ></div>
+
+                {%- if block.settings.slide_heading != blank or block.settings.slide_subheading != blank -%}
+                  <div class="lab_hero_finder__slide-content">
+                    {%- if block.settings.slide_heading != blank -%}
+                      <h2 class="lab_hero_finder__slide-heading">{{ block.settings.slide_heading }}</h2>
+                    {%- endif -%}
+                    {%- if block.settings.slide_subheading != blank -%}
+                      <p class="lab_hero_finder__slide-subheading">{{ block.settings.slide_subheading | escape | newline_to_br }}</p>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            <div class="lab_hero_finder__slide lab_hero_finder__slide--empty" aria-hidden="true">
+              <div class="lab_hero_finder__slide-media">
+                <div class="lab_hero_finder__slide-image lab_hero_finder__slide-image--placeholder" aria-hidden="true"></div>
+              </div>
+              <div class="lab_hero_finder__slide-overlay lab_hero_finder__slide-overlay--solid" aria-hidden="true"></div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if s.slider_show_arrows and slide_count > 1 -%}
+          <button type="button" class="lab_hero_finder__arrow lab_hero_finder__arrow--prev" aria-label="Previous slide" data-lab-slider-prev>
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16">
+              <path d="M10 2L4 8l6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button type="button" class="lab_hero_finder__arrow lab_hero_finder__arrow--next" aria-label="Next slide" data-lab-slider-next>
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16">
+              <path d="M6 2l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {%- endif -%}
+
+        {%- if s.slider_show_dots and slide_count > 1 -%}
+          <div class="lab_hero_finder__dots" role="tablist" aria-label="Slide navigation">
+            {%- for block in slides -%}
+              <button
+                type="button"
+                class="lab_hero_finder__dot"
+                role="tab"
+                aria-label="Go to slide {{ forloop.index }}"
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                data-lab-slider-dot="{{ forloop.index0 }}"
+              ></button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="lab_hero_finder__overlay">
+        {%- render 'liquid-lab-product-finder',
+          show_heading: s.finder_show_heading,
+          heading: s.finder_heading,
+          show_subheading: s.finder_show_subheading,
+          subheading: s.finder_subheading,
+          form_target: s.finder_form_target,
+          submit_label: s.finder_submit_label,
+          blocks: filters,
+          card_settings: section,
+          context: 'overlay'
+        -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{%- comment -%} 3. CSS — section scoped {%- endcomment -%}
+<style>
+  /* Section root */
+  #shopify-section-{{ section_id }} .lab_hero_finder {
+    position: relative;
+    padding-top: {{ s.padding_top }}px;
+    padding-bottom: {{ s.padding_bottom }}px;
+    {% if s.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if s.bg_gradient and s.bg_color != blank and s.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ s.bg_gradient_direction }},
+        color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ s.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  /* Section inner — width control per §8.9 */
+  #shopify-section-{{ section_id }} .lab_hero_finder__inner {
+    position: relative;
+    width: 100%;
+    max-width: {% if s.section_width == 'full' %}100%{% elsif s.section_width == 'narrow' %}1024px{% else %}var(--page-width, 1400px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if s.section_width == 'full' %}0{% else %}clamp(0rem, 2vw, 1rem){% endif %};
+  }
+
+  /* Slider */
+  #shopify-section-{{ section_id }} .lab_hero_finder__slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: {{ s.slider_height_mobile }}px;
+    {% if s.section_width != 'full' %}
+      border-radius: clamp(0px, 1vw, 12px);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slider:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 4px;
+  }
+
+  /* Track */
+  #shopify-section-{{ section_id }} .lab_hero_finder__track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder--transition-fade .lab_hero_finder__track {
+    transition: none;
+    transform: none !important;
+  }
+
+  /* Slide */
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide {
+    position: relative;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder--transition-fade .lab_hero_finder__slide {
+    position: absolute;
+    inset: 0;
+    flex: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder--transition-fade .lab_hero_finder__slide[aria-current="true"] {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  /* Slide media */
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-media {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-image--placeholder {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-foreground) 12%, var(--color-background)), color-mix(in srgb, var(--color-foreground) 22%, var(--color-background)));
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-image--desktop { display: none; }
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-image--mobile { display: block; }
+
+  /* Slide overlay */
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-overlay--solid {
+    background-color: color-mix(in srgb, var(--lab-slide-overlay-color) calc(var(--lab-slide-overlay-opacity) * 100%), transparent);
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-overlay--gradient-bottom {
+    background: linear-gradient(to top, color-mix(in srgb, var(--lab-slide-overlay-color) calc(var(--lab-slide-overlay-opacity) * 100%), transparent), transparent 80%);
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-overlay--gradient-radial {
+    background: radial-gradient(circle at center, transparent 30%, color-mix(in srgb, var(--lab-slide-overlay-color) calc(var(--lab-slide-overlay-opacity) * 100%), transparent) 100%);
+  }
+
+  /* Slide content */
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-content {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(1rem, 4vw, 3rem);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-heading {
+    margin: 0 0 0.5rem;
+    max-width: {{ s.slide_content_max_width }}px;
+    font-size: {{ s.slide_heading_size_mobile }}px;
+    font-weight: {{ s.slide_heading_weight }};
+    text-transform: {{ s.slide_heading_transform }};
+    text-align: {{ s.slide_content_align }};
+    letter-spacing: calc({{ s.slide_heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ s.slide_heading_line_height }} / 10);
+    {% if s.slide_heading_color != blank %}
+      color: color-mix(in srgb, {{ s.slide_heading_color }} {{ s.slide_heading_color_opacity }}%, transparent);
+    {% else %}
+      color: #ffffff;
+    {% endif %}
+    pointer-events: auto;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__slide-subheading {
+    margin: 0;
+    max-width: {{ s.slide_content_max_width }}px;
+    font-size: {{ s.slide_subheading_size_mobile }}px;
+    font-weight: {{ s.slide_subheading_weight }};
+    text-align: {{ s.slide_content_align }};
+    {% if s.slide_subheading_color != blank %}
+      color: color-mix(in srgb, {{ s.slide_subheading_color }} {{ s.slide_subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: color-mix(in srgb, #ffffff 90%, transparent);
+    {% endif %}
+    pointer-events: auto;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder--align-left .lab_hero_finder__slide-content {
+    align-items: flex-start;
+  }
+  #shopify-section-{{ section_id }} .lab_hero_finder--align-center .lab_hero_finder__slide-content {
+    align-items: center;
+  }
+  #shopify-section-{{ section_id }} .lab_hero_finder--align-right .lab_hero_finder__slide-content {
+    align-items: flex-end;
+  }
+
+  /* Arrows */
+  #shopify-section-{{ section_id }} .lab_hero_finder__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, #ffffff 35%, transparent);
+    border-radius: 999px;
+    background-color: color-mix(in srgb, #000000 30%, transparent);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__arrow:hover {
+    background-color: color-mix(in srgb, #000000 55%, transparent);
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__arrow:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__arrow--prev { left: 12px; }
+  #shopify-section-{{ section_id }} .lab_hero_finder__arrow--next { right: 12px; }
+
+  /* Dots */
+  #shopify-section-{{ section_id }} .lab_hero_finder__dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, #000000 30%, transparent);
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__dot {
+    width: 10px;
+    height: 10px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, #ffffff 50%, transparent);
+    transition: background-color 0.2s ease, width 0.2s ease;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__dot[aria-selected="true"]::before {
+    background-color: #ffffff;
+    width: 22px;
+    border-radius: 999px;
+  }
+
+  #shopify-section-{{ section_id }} .lab_hero_finder__dot:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  /* Finder overlay container — mobile-first: stacked below slider */
+  #shopify-section-{{ section_id }} .lab_hero_finder__overlay {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: calc(100% - 32px);
+    margin: -32px auto 0;
+  }
+
+  /* Desktop: absolute overlay */
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_hero_finder__slider {
+      height: {{ s.slider_height_desktop }}px;
+    }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder__slide-image--desktop { display: block; }
+    #shopify-section-{{ section_id }} .lab_hero_finder__slide-image--mobile { display: none; }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder__slide-heading {
+      font-size: {{ s.slide_heading_size_desktop }}px;
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder__slide-subheading {
+      font-size: {{ s.slide_subheading_size_desktop }}px;
+    }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder__overlay {
+      position: absolute;
+      z-index: 10;
+      width: auto;
+      max-width: {{ s.finder_max_width }}px;
+      margin: 0;
+    }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder[data-lab-position="right"] .lab_hero_finder__overlay {
+      top: 50%;
+      right: {{ s.finder_edge_offset }}%;
+      transform: translateY(-50%);
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder[data-lab-position="left"] .lab_hero_finder__overlay {
+      top: 50%;
+      left: {{ s.finder_edge_offset }}%;
+      transform: translateY(-50%);
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder[data-lab-position="center-overlay"] .lab_hero_finder__overlay {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder__arrow {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder__arrow--prev { left: 24px; }
+    #shopify-section-{{ section_id }} .lab_hero_finder__arrow--next { right: 24px; }
+
+    #shopify-section-{{ section_id }} .lab_hero_finder__dots {
+      bottom: 24px;
+    }
+  }
+
+  /* === Finder card styling (rendered by snippet, styled here) === */
+
+  #shopify-section-{{ section_id }} .lab_finder { display: block; width: 100%; }
+
+  #shopify-section-{{ section_id }} .lab_finder__card {
+    width: 100%;
+    max-width: {{ s.finder_max_width }}px;
+    margin-inline: auto;
+    padding: {{ s.finder_card_padding_mobile }}px;
+    border-radius: {{ s.finder_card_border_radius }}px;
+    border: {{ s.finder_card_border_width }}px solid {% if s.finder_card_border_color != blank %}color-mix(in srgb, {{ s.finder_card_border_color }} {{ s.finder_card_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    box-shadow: {{ card_shadow_css }};
+    {% if s.finder_card_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.finder_card_bg_color }} {{ s.finder_card_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__card {
+      padding: {{ s.finder_card_padding_desktop }}px;
+    }
+  }
+
+  /* Finder heading */
+  #shopify-section-{{ section_id }} .lab_finder__heading {
+    margin: 0;
+    font-size: {{ s.finder_heading_size_mobile }}px;
+    font-weight: {{ s.finder_heading_weight }};
+    text-transform: {{ s.finder_heading_transform }};
+    text-align: {{ s.finder_heading_text_align }};
+    letter-spacing: calc({{ s.finder_heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ s.finder_heading_line_height }} / 10);
+    {% if s.finder_heading_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_heading_color }} {{ s.finder_heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__heading {
+      font-size: {{ s.finder_heading_size_desktop }}px;
+    }
+  }
+
+  /* Finder subheading */
+  #shopify-section-{{ section_id }} .lab_finder__subheading {
+    margin: 0;
+    font-size: {{ s.finder_subheading_size_mobile }}px;
+    font-weight: {{ s.finder_subheading_weight }};
+    {% if s.finder_subheading_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_subheading_color }} {{ s.finder_subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: color-mix(in srgb, var(--color-foreground) 75%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__subheading > * { margin: 0; }
+  #shopify-section-{{ section_id }} .lab_finder__subheading > * + * { margin-top: 0.5em; }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__subheading {
+      font-size: {{ s.finder_subheading_size_desktop }}px;
+    }
+  }
+
+  /* Finder form */
+  #shopify-section-{{ section_id }} .lab_finder__form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1rem);
+    margin: 0;
+  }
+
+  /* Fields container */
+  #shopify-section-{{ section_id }} .lab_finder__fields {
+    display: flex;
+    flex-direction: column;
+    gap: {{ s.fields_gap_mobile }}px;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__fields {
+      gap: {{ s.fields_gap_desktop }}px;
+    }
+    #shopify-section-{{ section_id }} .lab_finder--fields-horizontal-row .lab_finder__fields {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    #shopify-section-{{ section_id }} .lab_finder--fields-horizontal-row .lab_finder__field {
+      flex: 1 1 140px;
+      min-width: 0;
+    }
+  }
+
+  /* Field */
+  #shopify-section-{{ section_id }} .lab_finder__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__label {
+    font-size: {{ s.finder_label_size }}px;
+    font-weight: {{ s.finder_label_weight }};
+    text-transform: {{ s.finder_label_transform }};
+    letter-spacing: 0.02em;
+    {% if s.finder_label_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_label_color }} {{ s.finder_label_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select-wrap {
+    position: relative;
+    display: block;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    min-height: 44px;
+    padding: {{ s.finder_field_padding_y }}px {{ s.finder_field_padding_x | plus: 32 }}px {{ s.finder_field_padding_y }}px {{ s.finder_field_padding_x }}px;
+    border: {{ s.finder_field_border_width }}px solid {% if s.finder_field_border_color != blank %}color-mix(in srgb, {{ s.finder_field_border_color }} {{ s.finder_field_border_color_opacity }}%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 22%, transparent){% endif %};
+    border-radius: {{ s.finder_field_border_radius }}px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    {% if s.finder_field_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.finder_field_bg_color }} {{ s.finder_field_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if s.finder_field_text_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_field_text_color }} {{ s.finder_field_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select:focus,
+  #shopify-section-{{ section_id }} .lab_finder__select:focus-visible {
+    outline: none;
+    border-color: {% if s.finder_field_focus_color != blank %}color-mix(in srgb, {{ s.finder_field_focus_color }} {{ s.finder_field_focus_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
+    box-shadow: 0 0 0 3px {% if s.finder_field_focus_color != blank %}color-mix(in srgb, {{ s.finder_field_focus_color }} 25%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 18%, transparent){% endif %};
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 8px;
+    pointer-events: none;
+    color: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Submit button */
+  #shopify-section-{{ section_id }} .lab_finder__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: {{ s.finder_cta_padding_y }}px {{ s.finder_cta_padding_x }}px;
+    border-radius: {{ s.finder_cta_border_radius }}px;
+    border: {{ s.finder_cta_border_width }}px solid {% if s.finder_cta_border_color != blank %}color-mix(in srgb, {{ s.finder_cta_border_color }} {{ s.finder_cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    align-self: flex-start;
+    {% if s.finder_cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.finder_cta_bg_color }} {{ s.finder_cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if s.finder_cta_text_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_cta_text_color }} {{ s.finder_cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--submit-full .lab_finder__submit {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  /* Hover variants — class set by snippet from cta_hover_effect (unprefixed) */
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-fill .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-darken .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-lift .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-glow .lab_finder__submit:hover {
+    {% if s.finder_cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.finder_cta_hover_bg_color }} {{ s.finder_cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.finder_cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_cta_hover_text_color }} {{ s.finder_cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.finder_cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ s.finder_cta_hover_border_color }} {{ s.finder_cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-darken .lab_finder__submit:hover {
+    filter: brightness(0.88);
+  }
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-lift .lab_finder__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  }
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-glow .lab_finder__submit:hover {
+    box-shadow: 0 0 24px {% if s.finder_cta_hover_bg_color != blank %}color-mix(in srgb, {{ s.finder_cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-outline .lab_finder__submit:hover {
+    background-color: transparent;
+    {% if s.finder_cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ s.finder_cta_hover_text_color }} {{ s.finder_cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.finder_cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ s.finder_cta_hover_border_color }} {{ s.finder_cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__submit:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* Entrance animation */
+  {% if anim_enabled %}
+    #shopify-section-{{ section_id }} .lab_hero_finder--animated .lab_hero_finder__overlay {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-delay: 0.2s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder--anim-fade .lab_hero_finder__overlay {
+      animation-name: lab_hero_finder_fade_{{ section_id }};
+    }
+    #shopify-section-{{ section_id }} .lab_hero_finder--anim-slide-up .lab_hero_finder__overlay {
+      animation-name: lab_hero_finder_slide_{{ section_id }};
+    }
+    @keyframes lab_hero_finder_fade_{{ section_id }} {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes lab_hero_finder_slide_{{ section_id }} {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 750px) {
+      #shopify-section-{{ section_id }} .lab_hero_finder[data-lab-position="right"].lab_hero_finder--animated .lab_hero_finder__overlay,
+      #shopify-section-{{ section_id }} .lab_hero_finder[data-lab-position="left"].lab_hero_finder--animated .lab_hero_finder__overlay {
+        animation-name: lab_hero_finder_fade_{{ section_id }};
+      }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} *,
+    #shopify-section-{{ section_id }} *::before,
+    #shopify-section-{{ section_id }} *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if s.custom_css != blank %}
+    #shopify-section-{{ section_id }} {
+      {{ s.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{%- comment -%} 4. JavaScript — slider {%- endcomment -%}
+<script>
+  (function () {
+    var section = document.getElementById('lab-{{ section_id }}');
+    if (!section) return;
+
+    var slider = section.querySelector('[data-lab-slider]');
+    var track = section.querySelector('[data-lab-slider-track]');
+    var slides = section.querySelectorAll('[data-lab-slide-index]');
+    var prevBtn = section.querySelector('[data-lab-slider-prev]');
+    var nextBtn = section.querySelector('[data-lab-slider-next]');
+    var dots = section.querySelectorAll('[data-lab-slider-dot]');
+
+    if (!slider || !track || slides.length === 0) return;
+
+    var slideCount = slides.length;
+    var currentIndex = 0;
+    var intervalId = null;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var autoplayEnabled = section.dataset.labAutoplay === 'true' && !reduceMotion;
+    var swipeEnabled = section.dataset.labSwipe === 'true';
+    var speed = (parseFloat(section.dataset.labSpeed) || 5) * 1000;
+    var isFade = section.classList.contains('lab_hero_finder--transition-fade');
+    var isDesignMode = window.Shopify && window.Shopify.designMode;
+
+    function applyTransform() {
+      if (isFade) {
+        track.style.transform = '';
+        return;
+      }
+      track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+    }
+
+    function syncAria() {
+      slides.forEach(function (slide, i) {
+        if (i === currentIndex) {
+          slide.setAttribute('aria-current', 'true');
+          slide.setAttribute('aria-hidden', 'false');
+          slide.removeAttribute('inert');
+        } else {
+          slide.removeAttribute('aria-current');
+          slide.setAttribute('aria-hidden', 'true');
+          if ('inert' in HTMLElement.prototype) {
+            slide.setAttribute('inert', '');
+          }
+        }
+      });
+      dots.forEach(function (dot, i) {
+        dot.setAttribute('aria-selected', i === currentIndex ? 'true' : 'false');
+      });
+    }
+
+    function goTo(index) {
+      currentIndex = ((index % slideCount) + slideCount) % slideCount;
+      applyTransform();
+      syncAria();
+    }
+
+    function nextSlide() { goTo(currentIndex + 1); }
+    function prevSlide() { goTo(currentIndex - 1); }
+
+    function startAutoplay() {
+      stopAutoplay();
+      if (!autoplayEnabled || isDesignMode || slideCount <= 1) return;
+      intervalId = setInterval(nextSlide, speed);
+    }
+
+    function stopAutoplay() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', function () { prevSlide(); stopAutoplay(); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { nextSlide(); stopAutoplay(); });
+
+    dots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () { goTo(i); stopAutoplay(); });
+    });
+
+    function onKey(e) {
+      if (e.key === 'ArrowLeft') { prevSlide(); stopAutoplay(); }
+      else if (e.key === 'ArrowRight') { nextSlide(); stopAutoplay(); }
+    }
+    slider.addEventListener('keydown', onKey);
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    function onTouchStart(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }
+    function onTouchEnd(e) {
+      var dx = e.changedTouches[0].screenX - touchStartX;
+      var dy = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) prevSlide(); else nextSlide();
+        stopAutoplay();
+      }
+    }
+    if (swipeEnabled) {
+      slider.addEventListener('touchstart', onTouchStart, { passive: true });
+      slider.addEventListener('touchend', onTouchEnd, { passive: true });
+    }
+
+    function onMouseEnter() { stopAutoplay(); }
+    function onMouseLeave() { startAutoplay(); }
+    slider.addEventListener('mouseenter', onMouseEnter);
+    slider.addEventListener('mouseleave', onMouseLeave);
+    slider.addEventListener('focusin', onMouseEnter);
+    slider.addEventListener('focusout', onMouseLeave);
+
+    function onBlockSelect(e) {
+      var blockId = e.detail && e.detail.blockId;
+      if (!blockId) return;
+      slides.forEach(function (slide, i) {
+        if (slide.getAttribute('data-lab-slide-id') === blockId) {
+          goTo(i);
+        }
+      });
+    }
+    if (isDesignMode) {
+      document.addEventListener('shopify:block:select', onBlockSelect);
+    }
+
+    function cleanup(e) {
+      if (e.target !== section) return;
+      stopAutoplay();
+      slider.removeEventListener('keydown', onKey);
+      slider.removeEventListener('touchstart', onTouchStart);
+      slider.removeEventListener('touchend', onTouchEnd);
+      slider.removeEventListener('mouseenter', onMouseEnter);
+      slider.removeEventListener('mouseleave', onMouseLeave);
+      slider.removeEventListener('focusin', onMouseEnter);
+      slider.removeEventListener('focusout', onMouseLeave);
+      if (isDesignMode) document.removeEventListener('shopify:block:select', onBlockSelect);
+      document.removeEventListener('shopify:section:unload', cleanup);
+    }
+    document.addEventListener('shopify:section:unload', cleanup);
+
+    syncAria();
+    applyTransform();
+    startAutoplay();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "🧪 Hero + Finder",
+  "tag": "section",
+  "class": "lab_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Slider" },
+    { "type": "checkbox", "id": "slider_autoplay", "label": "Auto-rotate slides", "default": true },
+    { "type": "range", "id": "slider_speed", "label": "Slide duration", "min": 3, "max": 10, "step": 1, "unit": "s", "default": 5, "visible_if": "{{ section.settings.slider_autoplay }}" },
+    {
+      "type": "select",
+      "id": "slider_transition",
+      "label": "Transition",
+      "options": [
+        { "value": "slide", "label": "Slide" },
+        { "value": "fade", "label": "Fade" }
+      ],
+      "default": "slide"
+    },
+    { "type": "checkbox", "id": "slider_show_arrows", "label": "Show arrows", "default": true },
+    { "type": "checkbox", "id": "slider_show_dots", "label": "Show dot indicators", "default": true },
+    { "type": "checkbox", "id": "slider_swipe_mobile", "label": "Enable swipe on mobile", "default": true },
+    { "type": "range", "id": "slider_height_mobile", "label": "Slider height (mobile)", "min": 320, "max": 700, "step": 10, "unit": "px", "default": 480 },
+    { "type": "range", "id": "slider_height_desktop", "label": "Slider height (desktop)", "min": 400, "max": 900, "step": 20, "unit": "px", "default": 640 },
+
+    { "type": "header", "content": "Slide overlay (default)" },
+    { "type": "color", "id": "slide_overlay_color", "label": "Overlay color", "default": "#000000" },
+    { "type": "range", "id": "slide_overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
+    {
+      "type": "select",
+      "id": "slide_overlay_style",
+      "label": "Overlay style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient-bottom", "label": "Gradient (bottom)" },
+        { "value": "gradient-radial", "label": "Gradient (radial)" }
+      ],
+      "default": "gradient-bottom"
+    },
+
+    { "type": "header", "content": "Slide content typography" },
+    { "type": "range", "id": "slide_heading_size_mobile", "label": "Slide heading size (mobile)", "min": 16, "max": 80, "step": 1, "unit": "px", "default": 32 },
+    { "type": "range", "id": "slide_heading_size_desktop", "label": "Slide heading size (desktop)", "min": 16, "max": 80, "step": 1, "unit": "px", "default": 56 },
+    {
+      "type": "select",
+      "id": "slide_heading_weight",
+      "label": "Slide heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "slide_heading_transform",
+      "label": "Slide heading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "slide_heading_color", "label": "Slide heading color" },
+    { "type": "range", "id": "slide_heading_color_opacity", "label": "Slide heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "slide_heading_letter_spacing", "label": "Slide heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1, "info": "1/100em" },
+    { "type": "range", "id": "slide_heading_line_height", "label": "Slide heading line height", "min": 10, "max": 30, "step": 1, "default": 11, "info": "1/10 (11 = 1.1)" },
+    { "type": "range", "id": "slide_subheading_size_mobile", "label": "Slide subheading size (mobile)", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "slide_subheading_size_desktop", "label": "Slide subheading size (desktop)", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    {
+      "type": "select",
+      "id": "slide_subheading_weight",
+      "label": "Slide subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }
+      ],
+      "default": "400"
+    },
+    { "type": "color", "id": "slide_subheading_color", "label": "Slide subheading color" },
+    { "type": "range", "id": "slide_subheading_color_opacity", "label": "Slide subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    {
+      "type": "select",
+      "id": "slide_content_align",
+      "label": "Slide content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+
+    { "type": "header", "content": "Finder content" },
+    { "type": "checkbox", "id": "finder_show_heading", "label": "Show finder heading", "default": true },
+    { "type": "text", "id": "finder_heading", "label": "Finder heading", "default": "Find your match", "visible_if": "{{ section.settings.finder_show_heading }}" },
+    { "type": "checkbox", "id": "finder_show_subheading", "label": "Show finder subheading", "default": false },
+    { "type": "richtext", "id": "finder_subheading", "label": "Finder subheading", "default": "<p>Tell us what you're after.</p>", "visible_if": "{{ section.settings.finder_show_subheading }}" },
+    { "type": "url", "id": "finder_form_target", "label": "Collection URL", "info": "The collection page to filter. Filtering must be enabled in Online Store → Search & filtering." },
+    { "type": "text", "id": "finder_submit_label", "label": "Submit button label", "default": "Search" },
+
+    { "type": "header", "content": "Finder typography" },
+    { "type": "range", "id": "finder_heading_size_mobile", "label": "Finder heading size (mobile)", "min": 12, "max": 60, "step": 1, "unit": "px", "default": 22 },
+    { "type": "range", "id": "finder_heading_size_desktop", "label": "Finder heading size (desktop)", "min": 12, "max": 60, "step": 1, "unit": "px", "default": 26 },
+    {
+      "type": "select",
+      "id": "finder_heading_weight",
+      "label": "Finder heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "finder_heading_transform",
+      "label": "Finder heading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "finder_heading_text_align",
+      "label": "Finder heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "finder_heading_color", "label": "Finder heading color" },
+    { "type": "range", "id": "finder_heading_color_opacity", "label": "Finder heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "finder_heading_letter_spacing", "label": "Finder heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "finder_heading_line_height", "label": "Finder heading line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+    { "type": "range", "id": "finder_subheading_size_mobile", "label": "Finder subheading size (mobile)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "finder_subheading_size_desktop", "label": "Finder subheading size (desktop)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 15 },
+    {
+      "type": "select",
+      "id": "finder_subheading_weight",
+      "label": "Finder subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }
+      ],
+      "default": "400"
+    },
+    { "type": "color", "id": "finder_subheading_color", "label": "Finder subheading color" },
+    { "type": "range", "id": "finder_subheading_color_opacity", "label": "Finder subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "finder_label_size", "label": "Field label size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+    {
+      "type": "select",
+      "id": "finder_label_weight",
+      "label": "Field label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "finder_label_transform",
+      "label": "Field label transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "finder_label_color", "label": "Field label color" },
+    { "type": "range", "id": "finder_label_color_opacity", "label": "Field label color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "finder_position",
+      "label": "Finder position (desktop)",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" },
+        { "value": "center-overlay", "label": "Center overlay" }
+      ],
+      "default": "right"
+    },
+    { "type": "range", "id": "finder_max_width", "label": "Finder max width", "min": 320, "max": 600, "step": 10, "unit": "px", "default": 480 },
+    { "type": "range", "id": "finder_edge_offset", "label": "Finder edge offset", "min": 0, "max": 10, "step": 1, "unit": "%", "default": 5, "info": "Distance from the viewport edge — only applies for left/right positions.", "visible_if": "{{ section.settings.finder_position != 'center-overlay' }}" },
+    { "type": "range", "id": "slide_content_max_width", "label": "Slide content max width", "min": 400, "max": 800, "step": 20, "unit": "px", "default": 600 },
+    {
+      "type": "select",
+      "id": "fields_layout",
+      "label": "Finder fields layout",
+      "options": [
+        { "value": "vertical_stack", "label": "Vertical stack" },
+        { "value": "horizontal_row", "label": "Horizontal row (desktop)" }
+      ],
+      "default": "vertical_stack"
+    },
+    { "type": "range", "id": "fields_gap_mobile", "label": "Field gap (mobile)", "min": 8, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "fields_gap_desktop", "label": "Field gap (desktop)", "min": 8, "max": 48, "step": 2, "unit": "px", "default": 16 },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "full"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Section background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Section background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "finder_card_bg_color", "label": "Finder card background color" },
+    { "type": "range", "id": "finder_card_bg_color_opacity", "label": "Finder card background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 95 },
+    { "type": "color", "id": "finder_card_border_color", "label": "Finder card border color" },
+    { "type": "range", "id": "finder_card_border_color_opacity", "label": "Finder card border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "finder_card_border_width", "label": "Finder card border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "finder_card_border_radius", "label": "Finder card border radius", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "finder_card_shadow",
+      "label": "Finder card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "medium"
+    },
+    { "type": "range", "id": "finder_card_padding_mobile", "label": "Finder card padding (mobile)", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "finder_card_padding_desktop", "label": "Finder card padding (desktop)", "min": 16, "max": 64, "step": 2, "unit": "px", "default": 28 },
+
+    { "type": "color", "id": "finder_field_bg_color", "label": "Finder field background color" },
+    { "type": "range", "id": "finder_field_bg_color_opacity", "label": "Finder field background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_field_text_color", "label": "Finder field text color" },
+    { "type": "range", "id": "finder_field_text_color_opacity", "label": "Finder field text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_field_border_color", "label": "Finder field border color" },
+    { "type": "range", "id": "finder_field_border_color_opacity", "label": "Finder field border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "finder_field_border_width", "label": "Finder field border width", "min": 0, "max": 3, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "finder_field_border_radius", "label": "Finder field border radius", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "finder_field_padding_x", "label": "Finder field horizontal padding", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "finder_field_padding_y", "label": "Finder field vertical padding", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    { "type": "color", "id": "finder_field_focus_color", "label": "Finder field focus color" },
+    { "type": "range", "id": "finder_field_focus_color_opacity", "label": "Finder field focus color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "color", "id": "finder_cta_bg_color", "label": "Finder submit background color" },
+    { "type": "range", "id": "finder_cta_bg_color_opacity", "label": "Finder submit background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_cta_text_color", "label": "Finder submit text color" },
+    { "type": "range", "id": "finder_cta_text_color_opacity", "label": "Finder submit text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_cta_border_color", "label": "Finder submit border color" },
+    { "type": "range", "id": "finder_cta_border_color_opacity", "label": "Finder submit border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "finder_cta_border_width", "label": "Finder submit border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "finder_cta_border_radius", "label": "Finder submit border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "finder_cta_padding_x", "label": "Finder submit horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "finder_cta_padding_y", "label": "Finder submit vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Finder submit hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
+    },
+    { "type": "color", "id": "finder_cta_hover_bg_color", "label": "Finder submit hover background color" },
+    { "type": "range", "id": "finder_cta_hover_bg_color_opacity", "label": "Finder submit hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_cta_hover_text_color", "label": "Finder submit hover text color" },
+    { "type": "range", "id": "finder_cta_hover_text_color_opacity", "label": "Finder submit hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "finder_cta_hover_border_color", "label": "Finder submit hover border color" },
+    { "type": "range", "id": "finder_cta_hover_border_color_opacity", "label": "Finder submit hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "submit_full_width", "label": "Finder submit full width", "default": true },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "entrance_animation", "label": "Enable finder entrance animation", "default": false },
+    {
+      "type": "select",
+      "id": "entrance_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide-up", "label": "Slide up" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.entrance_animation }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 0 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "limit": 10,
+      "settings": [
+        { "type": "image_picker", "id": "slide_image", "label": "Background image (desktop)" },
+        { "type": "image_picker", "id": "slide_image_mobile", "label": "Background image (mobile)", "info": "Optional — uses desktop image if empty." },
+        { "type": "header", "content": "Content" },
+        { "type": "inline_richtext", "id": "slide_heading", "label": "Heading", "default": "Build something they remember" },
+        { "type": "textarea", "id": "slide_subheading", "label": "Subheading", "default": "A short supporting line for this slide." },
+        { "type": "header", "content": "Custom overlay" },
+        { "type": "checkbox", "id": "use_custom_overlay", "label": "Override section overlay for this slide", "default": false },
+        { "type": "color", "id": "slide_overlay_color", "label": "Overlay color", "default": "#000000", "visible_if": "{{ block.settings.use_custom_overlay }}" },
+        { "type": "range", "id": "slide_overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30, "visible_if": "{{ block.settings.use_custom_overlay }}" }
+      ]
+    },
+    {
+      "type": "filter",
+      "name": "Filter dropdown",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "filter_label", "label": "Field label", "default": "Filter", "info": "Shown above the dropdown" },
+        {
+          "type": "select",
+          "id": "filter_param_type",
+          "label": "Filter type",
+          "options": [
+            { "value": "tag", "label": "Product tag" },
+            { "value": "metafield", "label": "Product metafield" },
+            { "value": "vendor", "label": "Vendor" }
+          ],
+          "default": "tag"
+        },
+        { "type": "text", "id": "filter_param_key", "label": "Metafield key", "info": "Format: namespace.key (e.g. custom.flavor). Required for metafield type.", "visible_if": "{{ block.settings.filter_param_type == 'metafield' }}" },
+        { "type": "text", "id": "filter_default_label", "label": "Default option label", "default": "Any", "info": "Shown when no filter is selected" },
+        { "type": "textarea", "id": "filter_options_manual", "label": "Filter options", "default": "Option 1|option-1\nOption 2|option-2\nOption 3|option-3", "info": "One per line. Format: Label|value" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "🧪 Hero + Finder — Dark",
+      "category": "Liquid Lab",
+      "settings": {
+        "slider_autoplay": true,
+        "slider_speed": 6,
+        "slide_overlay_color": "#000000",
+        "slide_overlay_opacity": 50,
+        "slide_overlay_style": "gradient-bottom",
+        "slide_heading_color": "#ffffff",
+        "slide_heading_weight": "700",
+        "slide_heading_transform": "uppercase",
+        "slide_heading_letter_spacing": 2,
+        "slide_subheading_color": "#e8e9ff",
+        "slide_content_align": "left",
+        "finder_heading": "Find your match",
+        "finder_heading_color": "#e8e9ff",
+        "finder_heading_weight": "700",
+        "finder_heading_transform": "uppercase",
+        "finder_heading_letter_spacing": 2,
+        "finder_label_color": "#b8baef",
+        "finder_label_transform": "uppercase",
+        "finder_position": "right",
+        "finder_max_width": 460,
+        "finder_card_bg_color": "#111228",
+        "finder_card_bg_color_opacity": 95,
+        "finder_card_border_color": "#2a2d5a",
+        "finder_card_border_width": 1,
+        "finder_card_border_radius": 16,
+        "finder_card_shadow": "medium",
+        "finder_field_bg_color": "#1a1c3d",
+        "finder_field_text_color": "#e8e9ff",
+        "finder_field_border_color": "#2a2d5a",
+        "finder_field_border_radius": 10,
+        "finder_field_focus_color": "#5b5fff",
+        "finder_cta_bg_color": "#5b5fff",
+        "finder_cta_text_color": "#ffffff",
+        "finder_cta_border_radius": 10,
+        "cta_hover_effect": "lift",
+        "submit_full_width": true,
+        "bg_color": "#0a0b1a",
+        "entrance_animation": true,
+        "entrance_type": "fade"
+      },
+      "blocks": [
+        { "type": "slide", "settings": { "slide_heading": "DROP 04 IS LIVE", "slide_subheading": "Limited run. No restock." } },
+        { "type": "slide", "settings": { "slide_heading": "BUILT FOR THE NIGHT", "slide_subheading": "Reflective tech, midnight palette." } },
+        { "type": "slide", "settings": { "slide_heading": "ENGINEERED MINIMAL", "slide_subheading": "Clean lines, dark matter." } },
+        { "type": "filter", "settings": { "filter_label": "Category", "filter_param_type": "tag", "filter_default_label": "Any category", "filter_options_manual": "Tops|tops\nBottoms|bottoms\nAccessories|accessories" } },
+        { "type": "filter", "settings": { "filter_label": "Brand", "filter_param_type": "vendor", "filter_default_label": "Any brand", "filter_options_manual": "Nova|Nova\nOrbit|Orbit\nApex|Apex" } },
+        { "type": "filter", "settings": { "filter_label": "Price range", "filter_param_type": "tag", "filter_default_label": "Any price", "filter_options_manual": "Under $50|under-50\n$50–$150|50-150\n$150+|over-150" } }
+      ]
+    },
+    {
+      "name": "🧪 Hero + Finder — Warm",
+      "category": "Liquid Lab",
+      "settings": {
+        "slider_autoplay": true,
+        "slider_speed": 8,
+        "slide_overlay_color": "#3d2c1e",
+        "slide_overlay_opacity": 30,
+        "slide_overlay_style": "solid",
+        "slide_heading_color": "#fff8f2",
+        "slide_heading_weight": "300",
+        "slide_heading_letter_spacing": -1,
+        "slide_subheading_color": "#fff8f2",
+        "slide_content_align": "left",
+        "finder_heading": "What are you looking for?",
+        "finder_heading_color": "#3d2c1e",
+        "finder_heading_weight": "300",
+        "finder_heading_letter_spacing": -1,
+        "finder_label_color": "#6b4f3a",
+        "finder_position": "right",
+        "finder_max_width": 460,
+        "finder_card_bg_color": "#fff8f2",
+        "finder_card_bg_color_opacity": 95,
+        "finder_card_border_color": "#e8d5c0",
+        "finder_card_border_width": 1,
+        "finder_card_border_radius": 12,
+        "finder_card_shadow": "soft",
+        "finder_field_bg_color": "#fdf6ee",
+        "finder_field_text_color": "#3d2c1e",
+        "finder_field_border_color": "#e8d5c0",
+        "finder_field_border_radius": 50,
+        "finder_field_focus_color": "#c8956d",
+        "finder_cta_bg_color": "#c8956d",
+        "finder_cta_text_color": "#ffffff",
+        "finder_cta_border_radius": 50,
+        "cta_hover_effect": "glow",
+        "submit_full_width": true,
+        "bg_color": "#fdf6ee",
+        "entrance_animation": true,
+        "entrance_type": "fade"
+      },
+      "blocks": [
+        { "type": "slide", "settings": { "slide_heading": "Sunday rituals", "slide_subheading": "Slow morning skincare for everyone." } },
+        { "type": "slide", "settings": { "slide_heading": "Made by hand", "slide_subheading": "Small batch, big care." } },
+        { "type": "slide", "settings": { "slide_heading": "Routines that fit", "slide_subheading": "Personalize your three-step." } },
+        { "type": "filter", "settings": { "filter_label": "Skin type", "filter_param_type": "tag", "filter_default_label": "Any skin type", "filter_options_manual": "Dry|dry\nOily|oily\nCombination|combination\nSensitive|sensitive" } },
+        { "type": "filter", "settings": { "filter_label": "Concern", "filter_param_type": "tag", "filter_default_label": "Any concern", "filter_options_manual": "Hydration|hydration\nBrightening|brightening\nFirming|firming" } },
+        { "type": "filter", "settings": { "filter_label": "Routine step", "filter_param_type": "tag", "filter_default_label": "Any step", "filter_options_manual": "Cleanse|cleanse\nTreat|treat\nMoisturize|moisturize" } }
+      ]
+    },
+    {
+      "name": "🧪 Hero + Finder — Bold",
+      "category": "Liquid Lab",
+      "settings": {
+        "slider_autoplay": false,
+        "slide_overlay_color": "#1a1a1a",
+        "slide_overlay_opacity": 25,
+        "slide_overlay_style": "solid",
+        "slide_heading_color": "#ffffff",
+        "slide_heading_weight": "700",
+        "slide_heading_transform": "uppercase",
+        "slide_heading_letter_spacing": 5,
+        "slide_subheading_color": "#ffffff",
+        "slide_content_align": "left",
+        "finder_heading": "PICK YOUR FIT",
+        "finder_heading_color": "#1a1a1a",
+        "finder_heading_weight": "700",
+        "finder_heading_transform": "uppercase",
+        "finder_heading_letter_spacing": 5,
+        "finder_label_color": "#1a1a1a",
+        "finder_label_transform": "uppercase",
+        "finder_position": "left",
+        "finder_max_width": 440,
+        "finder_card_bg_color": "#ffffff",
+        "finder_card_bg_color_opacity": 100,
+        "finder_card_border_color": "#1a1a1a",
+        "finder_card_border_width": 2,
+        "finder_card_border_radius": 0,
+        "finder_card_shadow": "none",
+        "finder_field_bg_color": "#ffffff",
+        "finder_field_text_color": "#1a1a1a",
+        "finder_field_border_color": "#1a1a1a",
+        "finder_field_border_width": 2,
+        "finder_field_border_radius": 0,
+        "finder_field_focus_color": "#ff3b30",
+        "finder_cta_bg_color": "#1a1a1a",
+        "finder_cta_text_color": "#ffffff",
+        "finder_cta_border_color": "#1a1a1a",
+        "finder_cta_border_width": 2,
+        "finder_cta_border_radius": 0,
+        "cta_hover_effect": "lift",
+        "submit_full_width": true,
+        "bg_color": "#f2f0eb",
+        "entrance_animation": true,
+        "entrance_type": "slide-up"
+      },
+      "blocks": [
+        { "type": "slide", "settings": { "slide_heading": "FALL DROP 25", "slide_subheading": "BOLD CUTS. NO COMPROMISE." } },
+        { "type": "slide", "settings": { "slide_heading": "NEW SILHOUETTES", "slide_subheading": "STREET-READY. STUDIO-MADE." } },
+        { "type": "slide", "settings": { "slide_heading": "ARCHIVE EDIT", "slide_subheading": "FOUR PIECES. NO RESTOCK." } },
+        { "type": "filter", "settings": { "filter_label": "STYLE", "filter_param_type": "tag", "filter_default_label": "ANY STYLE", "filter_options_manual": "Streetwear|streetwear\nMinimal|minimal\nVintage|vintage" } },
+        { "type": "filter", "settings": { "filter_label": "SIZE", "filter_param_type": "tag", "filter_default_label": "ANY SIZE", "filter_options_manual": "Small|s\nMedium|m\nLarge|l\nExtra Large|xl" } },
+        { "type": "filter", "settings": { "filter_label": "COLOR", "filter_param_type": "tag", "filter_default_label": "ANY COLOR", "filter_options_manual": "Black|black\nWhite|white\nNavy|navy" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

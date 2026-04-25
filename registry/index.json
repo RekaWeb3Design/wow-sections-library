@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "last_updated": "2026-04-25",
-  "total_sections": 12,
+  "total_sections": 13,
   "sections": [
     {
       "name": "liquid-lab-announcement-bar-basic",
@@ -223,6 +223,62 @@
       "blocks_supported": false,
       "created_at": "2026-04-22",
       "source": "original"
+    },
+    {
+      "name": "liquid-lab-hero-with-finder",
+      "display_name": "🧪 Hero + Finder",
+      "category": "hero",
+      "tags": [
+        "hero",
+        "slider",
+        "product-finder",
+        "filter",
+        "composite",
+        "carousel",
+        "free"
+      ],
+      "tier": "free",
+      "version": "1.0.0",
+      "description": "Composite hero: full-bleed background slider with a positioned product-finder overlay. Reuses the snippet shipped with #12 liquid-lab-product-finder via {% render 'liquid-lab-product-finder' %} — zero code duplication for the finder UI. Two block types in one section: slide (max 10) and filter (max 6). The slider supports auto-rotate, prev/next arrows, dot indicators, swipe on mobile, keyboard nav (Left/Right when focused), and pause-on-hover/focus. Two transition modes (slide / fade). Per-slide overlay override on top of a section default (color + opacity + style: solid / gradient-bottom / gradient-radial). Finder positions: right (default), left, center-overlay; mobile always stacks below the slider. Full UI Element Settings Standard for the finder card/field/submit (mirrors #12 with finder_* prefix). Six finder-driver settings are unprefixed (cta_hover_effect, fields_layout, card_align, entrance_animation, entrance_type, submit_full_width) because the snippet auto-reads them from card_settings.settings. LCP optimization: first slide eager + fetchpriority high when section.index <= 2. Slider ARIA: region/slideshow roledescription, aria-current on active slide, aria-hidden + inert on inactive, role=tab on dots. Touch-target 44px min on arrows, dots, selects, submit. focus-visible rings on all interactive elements. Shopify.designMode integration: autoplay disabled, shopify:block:select jumps to that slide. prefers-reduced-motion respected (autoplay disabled, animations neutralized). Three Dark/Warm/Bold presets seeded with realistic 3 slides + 3 filter blocks each.",
+      "preview_url": "",
+      "screenshot": "",
+      "liquid_file": "sections/free/hero/liquid-lab-hero-with-finder.liquid",
+      "snippet_files": [
+        "snippets/liquid-lab-product-finder.liquid"
+      ],
+      "compatible_themes": [
+        "dawn",
+        "sense",
+        "craft",
+        "debut",
+        "horizon"
+      ],
+      "shopify_version": "2.0",
+      "settings_count": 111,
+      "blocks_supported": true,
+      "block_types": [
+        "slide",
+        "filter"
+      ],
+      "block_settings_count": {
+        "slide": 7,
+        "filter": 5
+      },
+      "max_blocks_per_type": {
+        "slide": 10,
+        "filter": 6
+      },
+      "presets": [
+        "Dark",
+        "Warm",
+        "Bold"
+      ],
+      "wcag_level": "AA",
+      "mobile_validated": true,
+      "shopify_data": false,
+      "created_at": "2026-04-25",
+      "source": "original",
+      "notes": "Reuses snippet from #12 liquid-lab-product-finder. Sprint 2 of hero+finder series."
     },
     {
       "name": "liquid-lab-image-with-text",
