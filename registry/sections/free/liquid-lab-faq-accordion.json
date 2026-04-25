@@ -1,6 +1,6 @@
 {
-  "name": "wow-faq-accordion",
-  "display_name": "WOW FAQ — Accordion",
+  "name": "liquid-lab-faq-accordion",
+  "display_name": "Liquid Lab FAQ — Accordion",
   "category": "content",
   "tags": ["faq", "accordion", "details", "questions", "answers", "css-only", "no-js", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Frequently-asked-questions accordion built on native <details>/<summary> elements — zero JavaScript. Each question is a merchant-editable block with question text, answer textarea, and an open-by-default toggle. Three icon styles (plus/minus, arrow, none) implemented in pure CSS via ::before/::after pseudo-elements that rotate on details[open]. Smooth height animation uses the grid-template-rows: 0fr → 1fr trick for transition without JS height measurement. Optional dividers between items. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/question/answer, §8.6 section background, §8.7 dividers, §8.8 layout (content position, content max width, accordion max width, items gap, items align, section width), §8.9 universal settings (hide on mobile/desktop, custom CSS). Standard 3-field animation respects prefers-reduced-motion. Keyboard navigation comes free from <summary>; focus-visible ring on each summary; section aria-label + role=list on the FAQ list.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/content/wow-faq-accordion.liquid",
+  "liquid_file": "sections/free/content/liquid-lab-faq-accordion.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 63,

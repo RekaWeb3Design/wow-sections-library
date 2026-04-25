@@ -1,6 +1,6 @@
 # Shopify Liquid — Dawn-compatible patterns
 
-Reference for Dawn-compatible Liquid patterns used across all WOW sections.
+Reference for Dawn-compatible Liquid patterns used across all Liquid Lab sections.
 Read this before generating any Liquid output that renders images, buttons, products, or uses color schemes.
 
 ---
@@ -15,13 +15,13 @@ Always use `image_url` + `image_tag` filters. Never hardcode `<img>` tags.
   | image_tag:
     alt: section.settings.image_alt | default: section.settings.heading,
     loading: 'lazy',
-    class: 'wow_hero__image'
+    class: 'lab_hero__image'
 }}
 ```
 
 - `width:` caps the output width (Shopify generates responsive srcset automatically)
 - `alt:` always falls back to a meaningful string — never empty unless decorative
-- `class:` follows `wow_` prefix convention
+- `class:` follows `lab_` prefix convention
 
 ---
 
@@ -44,7 +44,7 @@ First two sections on the page are likely above-the-fold. Load eagerly.
     alt: section.settings.image_alt,
     loading: image_loading,
     fetchpriority: image_fetchpriority,
-    class: 'wow_hero__image'
+    class: 'lab_hero__image'
 }}
 ```
 
@@ -58,7 +58,7 @@ Render the button only if the label is present. Link is optional — fall back t
 {% if section.settings.cta_label != blank %}
   <a
     href="{{ section.settings.cta_url | default: '#' }}"
-    class="wow_hero__cta"
+    class="lab_hero__cta"
     aria-label="{{ section.settings.cta_label }}"
   >
     {{ section.settings.cta_label }}
@@ -76,18 +76,18 @@ Loop over a selected collection, respect a merchant-defined limit.
 {% assign product_limit = section.settings.product_limit | default: 4 %}
 
 {% if section.settings.collection != blank %}
-  <div class="wow_products__grid">
+  <div class="lab_products__grid">
     {% for product in section.settings.collection.products limit: product_limit %}
-      <a href="{{ product.url }}" class="wow_products__card">
+      <a href="{{ product.url }}" class="lab_products__card">
         {{ product.featured_image
           | image_url: width: 600
           | image_tag:
             alt: product.featured_image.alt | default: product.title,
             loading: 'lazy',
-            class: 'wow_products__image'
+            class: 'lab_products__image'
         }}
-        <h3 class="wow_products__title">{{ product.title }}</h3>
-        <span class="wow_products__price">{{ product.price | money }}</span>
+        <h3 class="lab_products__title">{{ product.title }}</h3>
+        <span class="lab_products__price">{{ product.price | money }}</span>
       </a>
     {% endfor %}
   </div>
@@ -102,7 +102,7 @@ Dawn uses color scheme classes on a wrapping div to apply theme colors. Always w
 
 ```liquid
 <div class="color-{{ section.settings.color_scheme }} gradient">
-  <section id="wow-{{ section.id }}" class="wow_hero wow_section">
+  <section id="lab-{{ section.id }}" class="lab_hero lab_section">
     {% comment %} content {% endcomment %}
   </section>
 </div>
@@ -137,7 +137,7 @@ Spacing values come from the required `padding_top` / `padding_bottom` settings 
 
 ```liquid
 <style>
-  #shopify-section-{{ section.id }} .wow_hero {
+  #shopify-section-{{ section.id }} .lab_hero {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
   }

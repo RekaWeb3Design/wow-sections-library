@@ -12,65 +12,65 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_countdown_timer wow_countdown_timer--align-{{ section.settings.content_alignment }} wow_countdown_timer--pos-{{ section.settings.content_position }} wow_countdown_timer--width-{{ section.settings.section_width }} wow_countdown_timer--cta-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} wow_countdown_timer--animated wow_countdown_timer--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_countdown_timer lab_countdown_timer--align-{{ section.settings.content_alignment }} lab_countdown_timer--pos-{{ section.settings.content_position }} lab_countdown_timer--width-{{ section.settings.section_width }} lab_countdown_timer--cta-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} lab_countdown_timer--animated lab_countdown_timer--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Countdown timer' | escape }}"
-    data-wow-countdown-end="{{ section.settings.end_date | escape }}"
+    data-lab-countdown-end="{{ section.settings.end_date | escape }}"
   >
-    <div class="wow_countdown_timer__inner"
+    <div class="lab_countdown_timer__inner"
       {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
       {% if section.settings.heading != blank %}
-        <h2 class="wow_countdown_timer__heading">{{ section.settings.heading | escape }}</h2>
+        <h2 class="lab_countdown_timer__heading">{{ section.settings.heading | escape }}</h2>
       {% endif %}
 
       {% if section.settings.subheading != blank %}
-        <p class="wow_countdown_timer__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+        <p class="lab_countdown_timer__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
       {% endif %}
 
       <div
-        class="wow_countdown_timer__display"
-        data-wow-countdown-display
+        class="lab_countdown_timer__display"
+        data-lab-countdown-display
         aria-live="polite"
         aria-atomic="true"
       >
-        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="days">
-          <span class="wow_countdown_timer__digit" data-wow-countdown-value="days">00</span>
+        <div class="lab_countdown_timer__digit-block" data-lab-countdown-block="days">
+          <span class="lab_countdown_timer__digit" data-lab-countdown-value="days">00</span>
           {% if show_labels %}
-            <span class="wow_countdown_timer__label">{{ section.settings.label_days | default: 'Days' | escape }}</span>
+            <span class="lab_countdown_timer__label">{{ section.settings.label_days | default: 'Days' | escape }}</span>
           {% endif %}
         </div>
-        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
-        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="hours">
-          <span class="wow_countdown_timer__digit" data-wow-countdown-value="hours">00</span>
+        <span class="lab_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="lab_countdown_timer__digit-block" data-lab-countdown-block="hours">
+          <span class="lab_countdown_timer__digit" data-lab-countdown-value="hours">00</span>
           {% if show_labels %}
-            <span class="wow_countdown_timer__label">{{ section.settings.label_hours | default: 'Hours' | escape }}</span>
+            <span class="lab_countdown_timer__label">{{ section.settings.label_hours | default: 'Hours' | escape }}</span>
           {% endif %}
         </div>
-        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
-        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="minutes">
-          <span class="wow_countdown_timer__digit" data-wow-countdown-value="minutes">00</span>
+        <span class="lab_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="lab_countdown_timer__digit-block" data-lab-countdown-block="minutes">
+          <span class="lab_countdown_timer__digit" data-lab-countdown-value="minutes">00</span>
           {% if show_labels %}
-            <span class="wow_countdown_timer__label">{{ section.settings.label_minutes | default: 'Minutes' | escape }}</span>
+            <span class="lab_countdown_timer__label">{{ section.settings.label_minutes | default: 'Minutes' | escape }}</span>
           {% endif %}
         </div>
-        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
-        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="seconds">
-          <span class="wow_countdown_timer__digit" data-wow-countdown-value="seconds">00</span>
+        <span class="lab_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="lab_countdown_timer__digit-block" data-lab-countdown-block="seconds">
+          <span class="lab_countdown_timer__digit" data-lab-countdown-value="seconds">00</span>
           {% if show_labels %}
-            <span class="wow_countdown_timer__label">{{ section.settings.label_seconds | default: 'Seconds' | escape }}</span>
+            <span class="lab_countdown_timer__label">{{ section.settings.label_seconds | default: 'Seconds' | escape }}</span>
           {% endif %}
         </div>
       </div>
 
-      <p class="wow_countdown_timer__expired" data-wow-countdown-expired hidden>
+      <p class="lab_countdown_timer__expired" data-lab-countdown-expired hidden>
         {{ section.settings.expired_message | default: 'This offer has ended.' | escape }}
       </p>
 
       {% if section.settings.cta_label != blank %}
         <a
           href="{{ section.settings.cta_url | default: '#' }}"
-          class="wow_countdown_timer__cta"
-          data-wow-countdown-cta
+          class="lab_countdown_timer__cta"
+          data-lab-countdown-cta
         >
           {{ section.settings.cta_label | escape }}
         </a>
@@ -81,7 +81,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_countdown_timer {
+  #shopify-section-{{ section.id }} .lab_countdown_timer {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     padding-inline: clamp(1rem, 4vw, 2rem);
@@ -99,7 +99,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__inner {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__inner {
     width: 100%;
     max-width: {{ section.settings.content_max_width }}px;
     margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
@@ -110,7 +110,7 @@
     gap: clamp(1rem, 2.5vw, 1.75rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__heading {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__heading {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -125,7 +125,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__subheading {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -140,14 +140,14 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__display {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__display {
     display: flex;
     align-items: center;
     gap: clamp(0.25rem, 1vw, 0.75rem);
     flex-wrap: nowrap;
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__digit-block {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__digit-block {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -163,7 +163,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__digit {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__digit {
     font-size: {{ section.settings.timer_digits_size }}px;
     font-weight: {{ section.settings.timer_digits_weight }};
     text-transform: {{ section.settings.timer_digits_transform }};
@@ -178,7 +178,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__label {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__label {
     font-size: {{ section.settings.timer_labels_size }}px;
     font-weight: {{ section.settings.timer_labels_weight }};
     text-transform: {{ section.settings.timer_labels_transform }};
@@ -192,7 +192,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__separator {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__separator {
     font-size: clamp(1.25rem, 4vw, 2.25rem);
     font-weight: 700;
     line-height: 1;
@@ -205,14 +205,14 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__expired {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__expired {
     margin: 0;
     font-size: clamp(1rem, 2.5vw, 1.25rem);
     font-weight: 600;
     color: var(--color-foreground);
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__cta {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -236,10 +236,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-fill .wow_countdown_timer__cta:hover,
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-darken .wow_countdown_timer__cta:hover,
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-lift .wow_countdown_timer__cta:hover,
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-glow .wow_countdown_timer__cta:hover {
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-fill .lab_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-darken .lab_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-lift .lab_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-glow .lab_countdown_timer__cta:hover {
     {% if section.settings.cta_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -250,17 +250,17 @@
       border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-darken .wow_countdown_timer__cta:hover {
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-darken .lab_countdown_timer__cta:hover {
     filter: brightness(0.88);
   }
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-lift .wow_countdown_timer__cta:hover {
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-lift .lab_countdown_timer__cta:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
   }
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-glow .wow_countdown_timer__cta:hover {
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-glow .lab_countdown_timer__cta:hover {
     box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-outline .wow_countdown_timer__cta:hover {
+  #shopify-section-{{ section.id }} .lab_countdown_timer--cta-hover-outline .lab_countdown_timer__cta:hover {
     background-color: transparent;
     {% if section.settings.cta_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
@@ -270,42 +270,42 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_countdown_timer__cta:focus-visible {
+  #shopify-section-{{ section.id }} .lab_countdown_timer__cta:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
   }
 
   /* Animation */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_countdown_timer--animated .wow_countdown_timer__inner {
+    #shopify-section-{{ section.id }} .lab_countdown_timer--animated .lab_countdown_timer__inner {
       opacity: 0;
       animation-duration: 0.6s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-fade .wow_countdown_timer__inner {
-      animation-name: wow_countdown_timer_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_countdown_timer--anim-fade .lab_countdown_timer__inner {
+      animation-name: lab_countdown_timer_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-slide .wow_countdown_timer__inner {
-      animation-name: wow_countdown_timer_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_countdown_timer--anim-slide .lab_countdown_timer__inner {
+      animation-name: lab_countdown_timer_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-zoom .wow_countdown_timer__inner {
-      animation-name: wow_countdown_timer_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_countdown_timer--anim-zoom .lab_countdown_timer__inner {
+      animation-name: lab_countdown_timer_zoom_{{ section.id }};
     }
-    @keyframes wow_countdown_timer_fade_{{ section.id }} {
+    @keyframes lab_countdown_timer_fade_{{ section.id }} {
       from { opacity: 0; } to { opacity: 1; }
     }
-    @keyframes wow_countdown_timer_slide_{{ section.id }} {
+    @keyframes lab_countdown_timer_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_countdown_timer_zoom_{{ section.id }} {
+    @keyframes lab_countdown_timer_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); }
     }
   {% endif %}
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_countdown_timer__inner,
-    #shopify-section-{{ section.id }} .wow_countdown_timer__cta {
+    #shopify-section-{{ section.id }} .lab_countdown_timer__inner,
+    #shopify-section-{{ section.id }} .lab_countdown_timer__cta {
       transition: none;
       animation: none;
       transform: none;
@@ -333,21 +333,21 @@
 {% comment %} 4. JavaScript — countdown timer {% endcomment %}
 <script>
   (function () {
-    var section = document.getElementById('wow-{{ section.id }}');
+    var section = document.getElementById('lab-{{ section.id }}');
     if (!section) return;
 
     var endDateStr = section.dataset.wowCountdownEnd;
     var endDate = new Date(endDateStr);
     if (isNaN(endDate.getTime())) return;
 
-    var display = section.querySelector('[data-wow-countdown-display]');
-    var expiredEl = section.querySelector('[data-wow-countdown-expired]');
-    var ctaEl = section.querySelector('[data-wow-countdown-cta]');
+    var display = section.querySelector('[data-lab-countdown-display]');
+    var expiredEl = section.querySelector('[data-lab-countdown-expired]');
+    var ctaEl = section.querySelector('[data-lab-countdown-cta]');
     var valueEls = {
-      days: section.querySelector('[data-wow-countdown-value="days"]'),
-      hours: section.querySelector('[data-wow-countdown-value="hours"]'),
-      minutes: section.querySelector('[data-wow-countdown-value="minutes"]'),
-      seconds: section.querySelector('[data-wow-countdown-value="seconds"]')
+      days: section.querySelector('[data-lab-countdown-value="days"]'),
+      hours: section.querySelector('[data-lab-countdown-value="hours"]'),
+      minutes: section.querySelector('[data-lab-countdown-value="minutes"]'),
+      seconds: section.querySelector('[data-lab-countdown-value="seconds"]')
     };
 
     var intervalId = null;
@@ -399,9 +399,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Countdown Timer",
+  "name": "🧪 Countdown Timer",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -726,8 +726,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Countdown — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Countdown — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Drop closes in",
         "subheading": "Limited run. Once it's over, it's over.",
@@ -756,8 +756,8 @@
       }
     },
     {
-      "name": "⚡ Countdown — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Countdown — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Holiday gift cutoff",
         "subheading": "Order before the timer ends to arrive in time for the 25th.",
@@ -786,8 +786,8 @@
       }
     },
     {
-      "name": "⚡ Countdown — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Countdown — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "DROP 04 ENDS IN",
         "subheading": "FOUR PIECES. NO RESTOCK. ZERO MERCY.",

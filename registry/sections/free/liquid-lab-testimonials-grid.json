@@ -1,6 +1,6 @@
 {
-  "name": "wow-testimonials-grid",
-  "display_name": "WOW Testimonials — Grid",
+  "name": "liquid-lab-testimonials-grid",
+  "display_name": "Liquid Lab Testimonials — Grid",
   "category": "social-proof",
   "tags": ["testimonials", "reviews", "social-proof", "grid", "cards", "stars", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Customer testimonial cards in a 2 or 3 column grid. Each testimonial is a merchant-editable block with star rating (1–5), quote, customer name, role/company, optional avatar (with initials fallback), and an optional verified badge. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/quote/name/role, §8.4 card with hover effects, §8.5 image controls for the avatar, §8.6 section background, §8.8 layout (columns, gap, items align, content max width, header alignment), and §8.9 universal settings (hide on mobile/desktop, section width, custom CSS). Optional scroll-triggered animation respects prefers-reduced-motion.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/social-proof/wow-testimonials-grid.liquid",
+  "liquid_file": "sections/free/social-proof/liquid-lab-testimonials-grid.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 93,

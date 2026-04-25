@@ -1,4 +1,4 @@
-# WOW Section Library — Claude Code Master Skill
+# Liquid Lab — Claude Code Master Skill
 
 Ez a fájl automatikusan betöltődik minden Claude Code session elején.
 **Olvasd el teljes egészében mielőtt bármilyen szekciót generálsz vagy módosítasz.**
@@ -7,24 +7,24 @@ Ez a fájl automatikusan betöltődik minden Claude Code session elején.
 
 ## 1. Projekt áttekintés
 
-A WOW Section Library egy Shopify Liquid section könyvtár, amelyet:
+A Liquid Lab egy Shopify Liquid section könyvtár, amelyet:
 - **Fejlesztők** Claude Code MCP-n keresztül pull-olhatnak
 - **Kereskedők** copy-paste-szel telepíthetnek
 
-Minden generált szekció a **WOW konvenciók** szerint készül — ezek nem opcionálisak.
+Minden generált szekció a **Liquid Lab konvenciók** szerint készül — ezek nem opcionálisak.
 
 ---
 
 ## 2. Repo struktúra
 
 ```
-wow-sections-library/
+liquid-lab-sections/
 ├── sections/                  # Kész .liquid fájlok
-│   ├── wow-hero-basic.liquid
-│   ├── wow-features-icons.liquid
+│   ├── liquid-lab-hero-basic.liquid
+│   ├── liquid-lab-features-icons.liquid
 │   └── ...
 ├── registry/                  # Metadata JSON fájlok
-│   ├── wow-hero-basic.json
+│   ├── liquid-lab-hero-basic.json
 │   └── index.json             # Az összes szekció indexe
 ├── scripts/                   # Pipeline scriptek
 │   ├── extract.js             # Forrás scraping
@@ -38,25 +38,25 @@ wow-sections-library/
 
 ---
 
-## 3. WOW konvenciók — KÖTELEZŐ
+## 3. Liquid Lab konvenciók — KÖTELEZŐ
 
 ### 3.1 Fájlnév
 
 ```
-wow-[funkcio-neve].liquid
+liquid-lab-[funkcio-neve].liquid
 ```
 
-Példák: `wow-hero-basic.liquid`, `wow-testimonials-grid.liquid`
+Példák: `liquid-lab-hero-basic.liquid`, `liquid-lab-testimonials-grid.liquid`
 
 ### 3.2 CSS prefix
 
-**MINDEN** CSS class `wow_` prefixszel kezdődik. Kivétel nincs.
+**MINDEN** CSS class `lab_` prefixszel kezdődik. Kivétel nincs.
 
 ```css
 /* ✅ HELYES */
-.wow_hero { }
-.wow_hero__title { }
-.wow_hero__cta-button { }
+.lab_hero { }
+.lab_hero__title { }
+.lab_hero__cta-button { }
 
 /* ❌ TILOS */
 .hero { }
@@ -70,11 +70,11 @@ Példák: `wow-hero-basic.liquid`, `wow-testimonials-grid.liquid`
 
 ```css
 /* ✅ HELYES */
-#shopify-section-{{ section.id }} .wow_hero { }
-#shopify-section-{{ section.id }} .wow_hero__title { }
+#shopify-section-{{ section.id }} .lab_hero { }
+#shopify-section-{{ section.id }} .lab_hero__title { }
 
 /* ❌ TILOS — globálisan szennyezi a témát */
-.wow_hero { }
+.lab_hero { }
 ```
 
 ### 3.4 Responsive layout — vw és clamp()
@@ -83,18 +83,18 @@ Px-alapú breakpointok helyett `clamp()` és `vw` egységek.
 
 ```css
 /* ✅ HELYES */
-.wow_hero__title {
+.lab_hero__title {
   font-size: clamp(1.75rem, 4vw, 3.5rem);
   padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 3vw, 2rem);
   gap: clamp(1rem, 2vw, 2rem);
 }
 
 /* ❌ TILOS */
-.wow_hero__title {
+.lab_hero__title {
   font-size: 48px;
 }
 @media (max-width: 768px) {
-  .wow_hero__title { font-size: 28px; }
+  .lab_hero__title { font-size: 28px; }
 }
 ```
 
@@ -104,14 +104,14 @@ Hardcoded hex helyett CSS változók a theme-kompatibilitáshoz.
 
 ```css
 /* ✅ HELYES */
-.wow_hero {
+.lab_hero {
   background-color: var(--color-background);
   color: var(--color-foreground);
   border-color: var(--color-border);
 }
 
 /* ❌ TILOS */
-.wow_hero {
+.lab_hero {
   background-color: #ffffff;
   color: #1a1a1a;
 }
@@ -126,13 +126,13 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 {% assign section_id = section.id %}
 
 {% comment %} 2. HTML struktúra {% endcomment %}
-<section id="wow-{{ section_id }}" class="wow_[nev] wow_section">
+<section id="lab-{{ section_id }}" class="lab_[nev] lab_section">
   <!-- tartalom -->
 </section>
 
 {% comment %} 3. CSS — section scope-olva {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_[nev] {
+  #shopify-section-{{ section.id }} .lab_[nev] {
     /* stílusok */
   }
 </style>
@@ -163,9 +163,9 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 ```json
 {
-  "name": "⚡ [Short name]",
+  "name": "🧪 [Short name]",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -173,16 +173,16 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
   "blocks": [],
   "presets": [
     {
-      "name": "⚡ [Short name]",
-      "category": "WOW Sections"
+      "name": "🧪 [Short name]",
+      "category": "Liquid Lab"
     }
   ]
 }
 ```
 
-**Schema name: max 25 chars — use format `"⚡ [Short name]"` (the ⚡ emoji is the WOW brand marker).** Shopify hard-limits `schema.name` to 25 characters; sections exceeding this fail to load in the Theme Editor. The `presets[].name` must match the schema `name`.
+**Schema name: max 25 chars — use format `"🧪 [Short name]"` (the 🧪 emoji is the Liquid Lab brand marker).** Shopify hard-limits `schema.name` to 25 characters; sections exceeding this fail to load in the Theme Editor. The `presets[].name` must match the schema `name`.
 
-**Preset category: always `"category": "WOW Sections"`.** This groups WOW sections together in the Theme Editor's "Add section" picker so merchants can find them as a distinct set. The left-rail (already-added sections) uses Shopify's hard-coded Header/Template/Footer tree and cannot be customized — the `⚡` prefix in `name` is the only differentiator there.
+**Preset category: always `"category": "Liquid Lab"`.** This groups Liquid Lab sections together in the Theme Editor's "Add section" picker so merchants can find them as a distinct set. The left-rail (already-added sections) uses Shopify's hard-coded Header/Template/Footer tree and cannot be customized — the `🧪` prefix in `name` is the only differentiator there.
 
 ### 4.2 Settings sorrend — KÖTELEZŐ
 
@@ -228,7 +228,7 @@ A settings-eket mindig ebben a sorrendben add meg:
 ### 4.4 Spacing alkalmazása CSS-ben
 
 ```css
-#shopify-section-{{ section.id }} .wow_[nev] {
+#shopify-section-{{ section.id }} .lab_[nev] {
   padding-top: {{ section.settings.padding_top }}px;
   padding-bottom: {{ section.settings.padding_bottom }}px;
 }
@@ -243,16 +243,16 @@ A settings-eket mindig ebben a sorrendben add meg:
 {{ section.settings.image | image_url: width: 1200 | image_tag:
   alt: section.settings.image_alt | default: section.settings.heading,
   loading: 'lazy',
-  class: 'wow_hero__image'
+  class: 'lab_hero__image'
 }}
 
 <!-- Gombok: aria-label ha nincs látható szöveg -->
-<button class="wow_hero__cta" aria-label="{{ section.settings.cta_label }}">
+<button class="lab_hero__cta" aria-label="{{ section.settings.cta_label }}">
   {{ section.settings.cta_label }}
 </button>
 
 <!-- Szekciók: landmark role -->
-<section class="wow_hero" aria-label="{{ section.settings.heading }}">
+<section class="lab_hero" aria-label="{{ section.settings.heading }}">
 ```
 
 ### LCP optimalizálás
@@ -274,14 +274,14 @@ A settings-eket mindig ebben a sorrendben add meg:
 ```javascript
 // ✅ HELYES — IIFE, section-specifikus selector
 (function() {
-  const section = document.getElementById('wow-{{ section.id }}');
+  const section = document.getElementById('lab-{{ section.id }}');
   if (!section) return;
 
   // logika itt
 })();
 
 // ❌ TILOS — globális változók, document.querySelector class alapján
-const hero = document.querySelector('.wow_hero');
+const hero = document.querySelector('.lab_hero');
 window.myVar = 'something';
 ```
 
@@ -291,8 +291,8 @@ window.myVar = 'something';
 
 Mielőtt bármilyen szekciót generálsz, ellenőrizd:
 
-- [ ] Fájlnév: `wow-[nev].liquid` formátum
-- [ ] Minden CSS class: `wow_` prefix
+- [ ] Fájlnév: `liquid-lab-[nev].liquid` formátum
+- [ ] Minden CSS class: `lab_` prefix
 - [ ] Minden CSS szelektor: `#shopify-section-{{ section.id }}` scope
 - [ ] Responsive: `clamp()` és/vagy `vw` egységek — nincs px breakpoint
 - [ ] CSS változók: nincs hardcoded szín hex
@@ -310,8 +310,8 @@ A `registry/` mappában minden szekcióhoz létre kell hozni egy JSON fájlt:
 
 ```json
 {
-  "name": "wow-hero-basic",
-  "display_name": "WOW Hero — Basic",
+  "name": "liquid-lab-hero-basic",
+  "display_name": "Liquid Lab Hero — Basic",
   "category": "hero",
   "tags": ["hero", "cta", "image", "free"],
   "tier": "free",
@@ -319,7 +319,7 @@ A `registry/` mappában minden szekcióhoz létre kell hozni egy JSON fájlt:
   "description": "Egyszerű hero szekció: cím, alcím, CTA gomb, háttérkép",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/wow-hero-basic.liquid",
+  "liquid_file": "sections/liquid-lab-hero-basic.liquid",
   "compatible_themes": ["dawn", "sense", "debut"],
   "shopify_version": "2.0",
   "settings_count": 0,
@@ -338,7 +338,7 @@ A `registry/` mappában minden szekcióhoz létre kell hozni egy JSON fájlt:
 - Globális CSS osztályok scope nélkül
 - Inline style attribútumok HTML-ben (`style="..."`)
 - Hardcoded színek (`#fff`, `rgb(...)`)
-- `document.querySelector('.wow_...')` — mindig section ID alapján
+- `document.querySelector('.lab_...')` — mindig section ID alapján
 - Több mint egy `<style>` blokk per szekció
 - Schema-ban duplikált `id` értékek
 - `height="auto"` HTML attribútum (invalid)

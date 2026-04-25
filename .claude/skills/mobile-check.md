@@ -1,8 +1,8 @@
-# Mobile-first — WOW Section Library
+# Mobile-first — Liquid Lab
 
-Mobile-first rules for every WOW section. These are not suggestions — every section must comply, and `npm run mobile-check` runs them automatically against `sections/free/**` and `sections/pro/**`.
+Mobile-first rules for every Liquid Lab section. These are not suggestions — every section must comply, and `npm run mobile-check` runs them automatically against `sections/free/**` and `sections/pro/**`.
 
-The smallest viewport WOW supports is **375px wide** (iPhone SE). Every section must look correct and remain usable at that width before it's allowed on `main`.
+The smallest viewport Liquid Lab supports is **375px wide** (iPhone SE). Every section must look correct and remain usable at that width before it's allowed on `main`.
 
 ---
 
@@ -25,7 +25,7 @@ These are the rules `mobile-check.js` enforces. A `FAIL` blocks merge. A `WARN` 
 ## 2. Why these rules
 
 - **`clamp()` over breakpoints**: a single `clamp(min, fluid, max)` call replaces a stack of px breakpoints, scales smoothly between every viewport size, and avoids the abrupt jumps merchants notice on tablets. It's also fewer bytes.
-- **`min-width` only**: mobile-first CSS starts from the smallest viewport and adds rules as the viewport grows. `max-width` queries invert that — they ship desktop styles to phones, then override them. Every WOW section is read by phones first; build for them first.
+- **`min-width` only**: mobile-first CSS starts from the smallest viewport and adds rules as the viewport grows. `max-width` queries invert that — they ship desktop styles to phones, then override them. Every Liquid Lab section is read by phones first; build for them first.
 - **44px touch targets**: Apple HIG, Google Material, and WCAG 2.5.5 all converge on 44 px as the minimum. Anything smaller is a tap-error tax — especially for thumbs on the bottom half of the screen.
 - **Explicit image dimensions**: without `width` and `height` on `<img>`, the browser doesn't know the aspect ratio until the image starts decoding. On a 4G/3G connection, that's hundreds of milliseconds of layout shift after the section has already painted. Setting both attributes lets the browser reserve the box on the first paint, which fixes CLS at the source.
 - **No fixed container widths**: a wrapper with `width: 1200px` on a 375 px screen overflows the viewport, triggers horizontal scroll, and breaks the design. Use `max-width` paired with `width: 100%`, or use `var(--page-width, 1200px)` so the theme can override.
@@ -42,7 +42,7 @@ npm run validate-all        # shopify theme check + mobile-first
 `mobile-check.js` reports per file:
 
 ```
-📱 Mobile Check: sections/free/hero/wow-hero-basic.liquid
+📱 Mobile Check: sections/free/hero/liquid-lab-hero-basic.liquid
 ✅ clamp() usage: clamp() used
 ✅ No max-width media queries
 ✅ No hardcoded px font-sizes

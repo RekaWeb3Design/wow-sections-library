@@ -35,8 +35,8 @@ Required: commit messages must start with one of: feat:, fix:, docs:, refactor:,
 (See CLAUDE.md → Hard rules → Commits.)
 
 Rewrite the message and try again. Examples:
-  feat: wow-hero-basic — add hero section with image + CTA
-  fix: wow-hero-basic — correct CSS scoping on mobile
+  feat: liquid-lab-hero-basic — add hero section with image + CTA
+  fix: liquid-lab-hero-basic — correct CSS scoping on mobile
   docs: update SKILL.md with new schema convention
   refactor: restructure sections by tier and category
   chore: bump dev dependencies

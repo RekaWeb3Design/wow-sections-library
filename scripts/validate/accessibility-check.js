@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * accessibility-check.js — WCAG 2.1 AA validation for WOW sections.
+ * accessibility-check.js — WCAG 2.1 AA validation for Liquid Lab sections.
  *
  * Scans every .liquid file under sections/free/** and sections/pro/**, and
- * runs the WOW accessibility checklist (see .claude/skills/accessibility.md).
+ * runs the Liquid Lab accessibility checklist (see .claude/skills/accessibility.md).
  *
  * Per check, output is one of:
  *   ✅  PASS     — rule satisfied
@@ -182,13 +182,13 @@ function checkHeadingHierarchy(source) {
 }
 
 function checkStarRating(source) {
-  // Trigger only when the file references a star class (wow_*__star or similar).
-  const hasStarClass = /\bwow_[a-z0-9_-]*__star\b/i.test(source) || /\bclass\s*=\s*["'][^"']*\bstar\b[^"']*["']/i.test(source);
+  // Trigger only when the file references a star class (lab_*__star or similar).
+  const hasStarClass = /\blab_[a-z0-9_-]*__star\b/i.test(source) || /\bclass\s*=\s*["'][^"']*\bstar\b[^"']*["']/i.test(source);
   if (!hasStarClass) {
     return { status: 'pass', message: 'No star rating element' };
   }
   // Look for a star container with role="img" and aria-label.
-  const containerMatches = [...source.matchAll(/<[a-z]+\b([^>]*\bclass\s*=\s*["'][^"']*\b(?:stars|__stars|wow_[a-z0-9_-]*__stars)\b[^"']*["'][^>]*)>/gi)];
+  const containerMatches = [...source.matchAll(/<[a-z]+\b([^>]*\bclass\s*=\s*["'][^"']*\b(?:stars|__stars|lab_[a-z0-9_-]*__stars)\b[^"']*["'][^>]*)>/gi)];
   if (containerMatches.length === 0) {
     // Fall back to the first element whose class contains 'star' but not 'stars'
     return { status: 'warn', message: 'Star elements present — verify container has role="img" and aria-label="X out of 5 stars"' };

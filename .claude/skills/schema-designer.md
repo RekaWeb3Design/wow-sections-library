@@ -1,23 +1,23 @@
-# Schema Designer — WOW Section Library
+# Schema Designer — Liquid Lab
 
-Rules for designing Theme Editor settings (the `{% schema %}` block) on every WOW section.
+Rules for designing Theme Editor settings (the `{% schema %}` block) on every Liquid Lab section.
 
 ---
 
 ## 0. Preset category — MANDATORY
 
-Every preset must include `"category": "WOW Sections"`. Shopify groups sections in the Theme Editor's "Add section" picker by this category, so this is how merchants find WOW sections as a distinct group rather than scattered among the theme's native sections.
+Every preset must include `"category": "Liquid Lab"`. Shopify groups sections in the Theme Editor's "Add section" picker by this category, so this is how merchants find Liquid Lab sections as a distinct group rather than scattered among the theme's native sections.
 
 ```json
 "presets": [
   {
-    "name": "⚡ [Short name]",
-    "category": "WOW Sections"
+    "name": "🧪 [Short name]",
+    "category": "Liquid Lab"
   }
 ]
 ```
 
-The Theme Editor's left-rail (already-added sections) cannot have custom groups — that tree is hard-coded to Header/Template/Footer. The `⚡` in the `name` field is the only distinguishing marker there. But the "Add section" picker respects `category`, so that's where this rule applies.
+The Theme Editor's left-rail (already-added sections) cannot have custom groups — that tree is hard-coded to Header/Template/Footer. The `🧪` in the `name` field is the only distinguishing marker there. But the "Add section" picker respects `category`, so that's where this rule applies.
 
 ---
 
@@ -737,18 +737,18 @@ Applies to every section that has positionable content, a grid/flex container, o
 CSS pattern (one class per value, toggled on the section root):
 
 ```css
-#shopify-section-{{ section.id }} .wow_[name]__content {
+#shopify-section-{{ section.id }} .lab_[name]__content {
   position: absolute;
 }
-#shopify-section-{{ section.id }} .wow_[name]--pos-top-left .wow_[name]__content    { top: 0; left: 0; }
-#shopify-section-{{ section.id }} .wow_[name]--pos-top-center .wow_[name]__content  { top: 0; left: 50%; transform: translateX(-50%); }
-#shopify-section-{{ section.id }} .wow_[name]--pos-top-right .wow_[name]__content   { top: 0; right: 0; }
-#shopify-section-{{ section.id }} .wow_[name]--pos-center-left .wow_[name]__content { top: 50%; left: 0; transform: translateY(-50%); }
-#shopify-section-{{ section.id }} .wow_[name]--pos-center .wow_[name]__content      { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-#shopify-section-{{ section.id }} .wow_[name]--pos-center-right .wow_[name]__content{ top: 50%; right: 0; transform: translateY(-50%); }
-#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-left .wow_[name]__content { bottom: 0; left: 0; }
-#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-center .wow_[name]__content { bottom: 0; left: 50%; transform: translateX(-50%); }
-#shopify-section-{{ section.id }} .wow_[name]--pos-bottom-right .wow_[name]__content { bottom: 0; right: 0; }
+#shopify-section-{{ section.id }} .lab_[name]--pos-top-left .lab_[name]__content    { top: 0; left: 0; }
+#shopify-section-{{ section.id }} .lab_[name]--pos-top-center .lab_[name]__content  { top: 0; left: 50%; transform: translateX(-50%); }
+#shopify-section-{{ section.id }} .lab_[name]--pos-top-right .lab_[name]__content   { top: 0; right: 0; }
+#shopify-section-{{ section.id }} .lab_[name]--pos-center-left .lab_[name]__content { top: 50%; left: 0; transform: translateY(-50%); }
+#shopify-section-{{ section.id }} .lab_[name]--pos-center .lab_[name]__content      { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+#shopify-section-{{ section.id }} .lab_[name]--pos-center-right .lab_[name]__content{ top: 50%; right: 0; transform: translateY(-50%); }
+#shopify-section-{{ section.id }} .lab_[name]--pos-bottom-left .lab_[name]__content { bottom: 0; left: 0; }
+#shopify-section-{{ section.id }} .lab_[name]--pos-bottom-center .lab_[name]__content { bottom: 0; left: 50%; transform: translateX(-50%); }
+#shopify-section-{{ section.id }} .lab_[name]--pos-bottom-right .lab_[name]__content { bottom: 0; right: 0; }
 ```
 
 ---
@@ -788,7 +788,7 @@ CSS pattern (one class per value, toggled on the section root):
 CSS pattern:
 
 ```css
-#shopify-section-{{ section.id }} .wow_[name]__grid {
+#shopify-section-{{ section.id }} .lab_[name]__grid {
   display: grid;
   gap: {{ section.settings.items_gap }}px;
 }
@@ -816,7 +816,7 @@ CSS pattern:
 CSS pattern:
 
 ```css
-#shopify-section-{{ section.id }} .wow_[name]__grid {
+#shopify-section-{{ section.id }} .lab_[name]__grid {
   align-items: {{ section.settings.items_align }};
 }
 ```
@@ -825,7 +825,7 @@ CSS pattern:
 
 ### 8.9 Universal Section Settings — MANDATORY on every section
 
-These settings apply to **every WOW section without exception**. No exceptions.
+These settings apply to **every Liquid Lab section without exception**. No exceptions.
 
 **Rules**
 
@@ -888,10 +888,10 @@ CSS implementation:
 }
 ```
 
-CSS implementation (always on `.wow_[name]__inner`, never on the section root):
+CSS implementation (always on `.lab_[name]__inner`, never on the section root):
 
 ```liquid
-#shopify-section-{{ section.id }} .wow_[name]__inner {
+#shopify-section-{{ section.id }} .lab_[name]__inner {
   width: 100%;
   max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
   margin-inline: auto;
@@ -963,9 +963,9 @@ Liquid implementation — add this at the **end of every section's `<style>` blo
 ```json
 {% schema %}
 {
-  "name": "⚡ Hero — Basic",
+  "name": "🧪 Hero — Basic",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -1254,8 +1254,8 @@ Liquid implementation — add this at the **end of every section's `<style>` blo
   ],
   "presets": [
     {
-      "name": "⚡ Hero — Basic",
-      "category": "WOW Sections"
+      "name": "🧪 Hero — Basic",
+      "category": "Liquid Lab"
     }
   ]
 }
@@ -1266,7 +1266,7 @@ Liquid implementation — add this at the **end of every section's `<style>` blo
 
 ## 11. Multiple Presets Standard — MANDATORY
 
-Every WOW section must ship **exactly three presets** in its `presets` array. The three presets give merchants three distinct visual starting points that each correspond to a recognised design language. Merchants pick the one closest to their brand and tweak from there — this dramatically reduces the "blank section" friction.
+Every Liquid Lab section must ship **exactly three presets** in its `presets` array. The three presets give merchants three distinct visual starting points that each correspond to a recognised design language. Merchants pick the one closest to their brand and tweak from there — this dramatically reduces the "blank section" friction.
 
 ### 11.1 The three preset styles
 
@@ -1316,8 +1316,8 @@ For wellness, beauty, lifestyle, kids, and feminine-coded brands. Round everythi
 
 ### 11.2 Preset rules
 
-1. **Naming format**: `"⚡ [Section short name] — [Style]"` — e.g. `"⚡ Testimonials — Minimal"`, `"⚡ Hero — Bold"`, `"⚡ Features — Soft"`. The "short name" is the same one used in the schema `name` (everything after `⚡ ` and before any other em-dash). The `⚡` and the style suffix are mandatory.
-2. **Category**: every preset must include `"category": "WOW Sections"`. No exceptions.
+1. **Naming format**: `"🧪 [Section short name] — [Style]"` — e.g. `"🧪 Testimonials — Minimal"`, `"🧪 Hero — Bold"`, `"🧪 Features — Soft"`. The "short name" is the same one used in the schema `name` (everything after `🧪 ` and before any other em-dash). The `🧪` and the style suffix are mandatory.
+2. **Category**: every preset must include `"category": "Liquid Lab"`. No exceptions.
 3. **Order**: presets must appear in this exact order — Minimal first, then Bold, then Soft. Minimal is the primary preset shown first in the picker.
 4. **Settings: only override what differs from defaults.** Do not repeat every setting in every preset. If a preset's value matches the schema `default`, omit it. The presets exist to *deviate*, not to restate.
 5. **Blocks: when the section supports blocks, every preset must seed a representative `blocks` array** with realistic content. Do not ship an empty block list — merchants need to see what "good" looks like for each style. Tailor the seeded copy to the style where it makes sense (a Bold preset can have shorter, punchier copy than a Soft one).
@@ -1328,8 +1328,8 @@ For wellness, beauty, lifestyle, kids, and feminine-coded brands. Round everythi
 ```json
 "presets": [
   {
-    "name": "⚡ [Short name] — Minimal",
-    "category": "WOW Sections",
+    "name": "🧪 [Short name] — Minimal",
+    "category": "Liquid Lab",
     "settings": {
       "[card]_border_width": 1,
       "[card]_border_radius": 8,
@@ -1344,8 +1344,8 @@ For wellness, beauty, lifestyle, kids, and feminine-coded brands. Round everythi
     ]
   },
   {
-    "name": "⚡ [Short name] — Bold",
-    "category": "WOW Sections",
+    "name": "🧪 [Short name] — Bold",
+    "category": "Liquid Lab",
     "settings": {
       "[card]_border_width": 0,
       "[card]_border_radius": 20,
@@ -1362,8 +1362,8 @@ For wellness, beauty, lifestyle, kids, and feminine-coded brands. Round everythi
     ]
   },
   {
-    "name": "⚡ [Short name] — Soft",
-    "category": "WOW Sections",
+    "name": "🧪 [Short name] — Soft",
+    "category": "Liquid Lab",
     "settings": {
       "[card]_border_width": 0,
       "[card]_border_radius": 48,

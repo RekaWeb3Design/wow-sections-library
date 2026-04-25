@@ -17,24 +17,24 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_features_icons wow_features_icons--cols-{{ columns }} wow_features_icons--align-{{ alignment }} wow_features_icons--pos-{{ section.settings.content_position }} wow_features_icons--width-{{ section.settings.section_width }} wow_features_icons--shadow-{{ section.settings.feature_card_shadow }} wow_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} wow_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} wow_features_icons--mobile-stack{% endif %}{% if animation_enabled %} wow_features_icons--animated wow_features_icons--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_features_icons lab_features_icons--cols-{{ columns }} lab_features_icons--align-{{ alignment }} lab_features_icons--pos-{{ section.settings.content_position }} lab_features_icons--width-{{ section.settings.section_width }} lab_features_icons--shadow-{{ section.settings.feature_card_shadow }} lab_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} lab_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} lab_features_icons--mobile-stack{% endif %}{% if animation_enabled %} lab_features_icons--animated lab_features_icons--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Features' | escape }}"
   >
-    <div class="wow_features_icons__inner">
+    <div class="lab_features_icons__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
-        <header class="wow_features_icons__header">
+        <header class="lab_features_icons__header">
           {% if section.settings.heading != blank %}
-            <h2 class="wow_features_icons__title">{{ section.settings.heading | escape }}</h2>
+            <h2 class="lab_features_icons__title">{{ section.settings.heading | escape }}</h2>
           {% endif %}
           {% if section.settings.subheading != blank %}
-            <p class="wow_features_icons__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
+            <p class="lab_features_icons__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
           {% endif %}
         </header>
       {% endif %}
 
       {% if section.blocks.size > 0 %}
-        <ul class="wow_features_icons__grid" role="list">
+        <ul class="lab_features_icons__grid" role="list">
           {% for block in section.blocks %}
             {% if block.type == 'feature' %}
               {% liquid
@@ -51,18 +51,18 @@
                 assign anim_offset = forloop.index0 | times: animation_delay
               %}
               <li
-                class="wow_features_icons__card"
+                class="lab_features_icons__card"
                 {{ block.shopify_attributes }}
-                style="--wow-ct-size: {{ block.settings.card_title_size }}px; --wow-ct-weight: {{ block.settings.card_title_weight }}; --wow-ct-transform: {{ block.settings.card_title_transform }}; --wow-ct-color: {{ ct_color }}; --wow-ct-ls: calc({{ block.settings.card_title_letter_spacing }} / 100 * 1em); --wow-ct-lh: calc({{ block.settings.card_title_line_height }} / 10); --wow-cd-size: {{ block.settings.card_desc_size }}px; --wow-cd-weight: {{ block.settings.card_desc_weight }}; --wow-cd-transform: {{ block.settings.card_desc_transform }}; --wow-cd-color: {{ cd_color }}; --wow-cd-ls: calc({{ block.settings.card_desc_letter_spacing }} / 100 * 1em); --wow-cd-lh: calc({{ block.settings.card_desc_line_height }} / 10);{% if animation_enabled %} --wow-anim-offset: {{ anim_offset }}ms;{% endif %}"
+                style="--lab-ct-size: {{ block.settings.card_title_size }}px; --lab-ct-weight: {{ block.settings.card_title_weight }}; --lab-ct-transform: {{ block.settings.card_title_transform }}; --lab-ct-color: {{ ct_color }}; --lab-ct-ls: calc({{ block.settings.card_title_letter_spacing }} / 100 * 1em); --lab-ct-lh: calc({{ block.settings.card_title_line_height }} / 10); --lab-cd-size: {{ block.settings.card_desc_size }}px; --lab-cd-weight: {{ block.settings.card_desc_weight }}; --lab-cd-transform: {{ block.settings.card_desc_transform }}; --lab-cd-color: {{ cd_color }}; --lab-cd-ls: calc({{ block.settings.card_desc_letter_spacing }} / 100 * 1em); --lab-cd-lh: calc({{ block.settings.card_desc_line_height }} / 10);{% if animation_enabled %} --lab-anim-offset: {{ anim_offset }}ms;{% endif %}"
               >
                 {% if icon_type == 'emoji' and block.settings.icon != blank %}
-                  <span class="wow_features_icons__icon" aria-hidden="true">{{ block.settings.icon | escape }}</span>
+                  <span class="lab_features_icons__icon" aria-hidden="true">{{ block.settings.icon | escape }}</span>
                 {% endif %}
                 {% if block.settings.title != blank %}
-                  <h3 class="wow_features_icons__card-title">{{ block.settings.title | escape }}</h3>
+                  <h3 class="lab_features_icons__card-title">{{ block.settings.title | escape }}</h3>
                 {% endif %}
                 {% if block.settings.description != blank %}
-                  <p class="wow_features_icons__card-desc">{{ block.settings.description | escape | newline_to_br }}</p>
+                  <p class="lab_features_icons__card-desc">{{ block.settings.description | escape | newline_to_br }}</p>
                 {% endif %}
               </li>
             {% endif %}
@@ -75,7 +75,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_features_icons {
+  #shopify-section-{{ section.id }} .lab_features_icons {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     color: var(--color-foreground);
@@ -93,7 +93,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__inner {
+  #shopify-section-{{ section.id }} .lab_features_icons__inner {
     width: 100%;
     max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
     margin-inline: auto;
@@ -103,7 +103,7 @@
     gap: clamp(2rem, 4vw, 3.5rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons__header {
     display: flex;
     flex-direction: column;
     gap: clamp(0.75rem, 1.5vw, 1.25rem);
@@ -112,41 +112,41 @@
   }
 
   /* content_alignment controls text-align inside the header */
-  #shopify-section-{{ section.id }} .wow_features_icons--align-left .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-left .lab_features_icons__header {
     text-align: left;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--align-center .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-center .lab_features_icons__header {
     text-align: center;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--align-right .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-right .lab_features_icons__header {
     text-align: right;
   }
 
   /* content_position controls where the header block sits within the inner — horizontal axis maps to align-self */
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-left .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-center-left .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-left .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-top-left .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-center-left .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-left .lab_features_icons__header {
     align-self: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-center .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-center .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-center .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-top-center .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-center .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-center .lab_features_icons__header {
     align-self: center;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-right .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-center-right .wow_features_icons__header,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-right .wow_features_icons__header {
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-top-right .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-center-right .lab_features_icons__header,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-right .lab_features_icons__header {
     align-self: flex-end;
   }
 
   /* content_position vertical axis: bottom variants render header AFTER the grid in column flow */
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-left .wow_features_icons__inner,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-center .wow_features_icons__inner,
-  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-right .wow_features_icons__inner {
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-left .lab_features_icons__inner,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-center .lab_features_icons__inner,
+  #shopify-section-{{ section.id }} .lab_features_icons--pos-bottom-right .lab_features_icons__inner {
     flex-direction: column-reverse;
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__title {
+  #shopify-section-{{ section.id }} .lab_features_icons__title {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -160,7 +160,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__subtitle {
+  #shopify-section-{{ section.id }} .lab_features_icons__subtitle {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -174,7 +174,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__grid {
+  #shopify-section-{{ section.id }} .lab_features_icons__grid {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -184,21 +184,21 @@
   }
 
   @media (min-width: 640px) {
-    #shopify-section-{{ section.id }} .wow_features_icons__grid {
+    #shopify-section-{{ section.id }} .lab_features_icons__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 960px) {
-    #shopify-section-{{ section.id }} .wow_features_icons--cols-3 .wow_features_icons__grid {
+    #shopify-section-{{ section.id }} .lab_features_icons--cols-3 .lab_features_icons__grid {
       grid-template-columns: repeat(3, 1fr);
     }
-    #shopify-section-{{ section.id }} .wow_features_icons--cols-4 .wow_features_icons__grid {
+    #shopify-section-{{ section.id }} .lab_features_icons--cols-4 .lab_features_icons__grid {
       grid-template-columns: repeat(4, 1fr);
     }
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons__card {
     display: flex;
     flex-direction: column;
     gap: clamp(0.5rem, 1vw, 0.875rem);
@@ -213,12 +213,12 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--shadow-none .wow_features_icons__card { box-shadow: none; }
-  #shopify-section-{{ section.id }} .wow_features_icons--shadow-soft .wow_features_icons__card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
-  #shopify-section-{{ section.id }} .wow_features_icons--shadow-medium .wow_features_icons__card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
-  #shopify-section-{{ section.id }} .wow_features_icons--shadow-strong .wow_features_icons__card { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
+  #shopify-section-{{ section.id }} .lab_features_icons--shadow-none .lab_features_icons__card { box-shadow: none; }
+  #shopify-section-{{ section.id }} .lab_features_icons--shadow-soft .lab_features_icons__card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .lab_features_icons--shadow-medium .lab_features_icons__card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .lab_features_icons--shadow-strong .lab_features_icons__card { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__card:hover {
+  #shopify-section-{{ section.id }} .lab_features_icons__card:hover {
     {% if section.settings.feature_card_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.feature_card_hover_bg_color }} {{ section.settings.feature_card_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -227,37 +227,37 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-soft .wow_features_icons__card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-medium .wow_features_icons__card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-shadow-strong .wow_features_icons__card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-shadow-soft .lab_features_icons__card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-shadow-medium .lab_features_icons__card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-shadow-strong .lab_features_icons__card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-lift .wow_features_icons__card:hover {
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-lift .lab_features_icons__card:hover {
     transform: translateY(-4px);
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-scale .wow_features_icons__card:hover {
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-scale .lab_features_icons__card:hover {
     transform: scale(1.02);
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-border .wow_features_icons__card:hover {
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-border .lab_features_icons__card:hover {
     border-color: {% if section.settings.feature_card_hover_border_color != blank %}color-mix(in srgb, {{ section.settings.feature_card_hover_border_color }} {{ section.settings.feature_card_hover_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--hover-glow .wow_features_icons__card:hover {
+  #shopify-section-{{ section.id }} .lab_features_icons--hover-glow .lab_features_icons__card:hover {
     box-shadow: 0 0 28px {% if section.settings.feature_card_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.feature_card_hover_bg_color }} 45%, transparent){% else %}rgba(0, 0, 0, 0.16){% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--align-left .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-left .lab_features_icons__card {
     text-align: left;
     align-items: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--align-center .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-center .lab_features_icons__card {
     text-align: center;
     align-items: center;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--align-right .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--align-right .lab_features_icons__card {
     text-align: right;
     align-items: flex-end;
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__icon {
+  #shopify-section-{{ section.id }} .lab_features_icons__icon {
     font-size: clamp(1.75rem, 3.5vw, 2.5rem);
     line-height: 1;
     display: inline-flex;
@@ -269,49 +269,49 @@
     background-color: var(--color-background-contrast, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__card-title {
+  #shopify-section-{{ section.id }} .lab_features_icons__card-title {
     margin: 0;
-    font-size: var(--wow-ct-size, 20px);
-    font-weight: var(--wow-ct-weight, 600);
-    text-transform: var(--wow-ct-transform, none);
-    letter-spacing: var(--wow-ct-ls, 0);
-    line-height: var(--wow-ct-lh, 1.3);
-    color: var(--wow-ct-color, var(--color-foreground));
+    font-size: var(--lab-ct-size, 20px);
+    font-weight: var(--lab-ct-weight, 600);
+    text-transform: var(--lab-ct-transform, none);
+    letter-spacing: var(--lab-ct-ls, 0);
+    line-height: var(--lab-ct-lh, 1.3);
+    color: var(--lab-ct-color, var(--color-foreground));
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons__card-desc {
+  #shopify-section-{{ section.id }} .lab_features_icons__card-desc {
     margin: 0;
-    font-size: var(--wow-cd-size, 16px);
-    font-weight: var(--wow-cd-weight, 400);
-    text-transform: var(--wow-cd-transform, none);
-    letter-spacing: var(--wow-cd-ls, 0);
-    line-height: var(--wow-cd-lh, 1.55);
-    color: var(--wow-cd-color, var(--color-foreground-75));
+    font-size: var(--lab-cd-size, 16px);
+    font-weight: var(--lab-cd-weight, 400);
+    text-transform: var(--lab-cd-transform, none);
+    letter-spacing: var(--lab-cd-ls, 0);
+    line-height: var(--lab-cd-lh, 1.55);
+    color: var(--lab-cd-color, var(--color-foreground-75));
   }
 
-  #shopify-section-{{ section.id }} .wow_features_icons--animated .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--animated .lab_features_icons__card {
     opacity: 0;
     will-change: opacity, transform;
     transition: opacity 0.6s ease, transform 0.6s ease;
-    transition-delay: var(--wow-anim-offset, 0ms);
+    transition-delay: var(--lab-anim-offset, 0ms);
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--anim-fade .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--anim-fade .lab_features_icons__card {
     transform: none;
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--anim-slide .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--anim-slide .lab_features_icons__card {
     transform: translateY(1.25rem);
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--anim-zoom .wow_features_icons__card {
+  #shopify-section-{{ section.id }} .lab_features_icons--anim-zoom .lab_features_icons__card {
     transform: scale(0.96);
   }
-  #shopify-section-{{ section.id }} .wow_features_icons--animated .wow_features_icons__card.is-visible {
+  #shopify-section-{{ section.id }} .lab_features_icons--animated .lab_features_icons__card.is-visible {
     opacity: 1;
     transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_features_icons__card,
-    #shopify-section-{{ section.id }} .wow_features_icons--animated .wow_features_icons__card {
+    #shopify-section-{{ section.id }} .lab_features_icons__card,
+    #shopify-section-{{ section.id }} .lab_features_icons--animated .lab_features_icons__card {
       transition: none;
       transform: none;
       opacity: 1;
@@ -340,9 +340,9 @@
 {% if section.settings.animation_enabled %}
   <script>
     (function() {
-      var section = document.getElementById('wow-{{ section.id }}');
+      var section = document.getElementById('lab-{{ section.id }}');
       if (!section) return;
-      var cards = section.querySelectorAll('.wow_features_icons__card');
+      var cards = section.querySelectorAll('.lab_features_icons__card');
       if (!cards.length || !('IntersectionObserver' in window)) {
         cards.forEach(function(c) { c.classList.add('is-visible'); });
         return;
@@ -367,9 +367,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Features — Icons",
+  "name": "🧪 Features — Icons",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -617,7 +617,7 @@
       "name": "Feature card",
       "settings": [
         { "type": "header", "content": "Content" },
-        { "type": "text", "id": "icon", "label": "Icon (emoji or character)", "default": "⚡" },
+        { "type": "text", "id": "icon", "label": "Icon (emoji or character)", "default": "🧪" },
         { "type": "text", "id": "title", "label": "Title", "default": "Fast by default" },
         { "type": "textarea", "id": "description", "label": "Description", "default": "Short sentence that explains the value of this feature to the shopper." },
 
@@ -687,8 +687,8 @@
   "max_blocks": 12,
   "presets": [
     {
-      "name": "⚡ Features — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Features — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Why builders choose us",
         "subheading": "Pro-grade specs in every system we ship.",
@@ -716,7 +716,7 @@
         {
           "type": "feature",
           "settings": {
-            "icon": "⚡",
+            "icon": "🧪",
             "title": "Zero lag",
             "description": "Engineered for speed. Every millisecond counts.",
             "card_title_color": "#e8e9ff",
@@ -752,8 +752,8 @@
       ]
     },
     {
-      "name": "⚡ Features — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Features — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Designed for your skin",
         "subheading": "Every ingredient earns its place. Nothing extra.",
@@ -818,8 +818,8 @@
       ]
     },
     {
-      "name": "⚡ Features — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Features — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Built different",
         "subheading": "Considered design. Uncompromising quality. Every piece.",

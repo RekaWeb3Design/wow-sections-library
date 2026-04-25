@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * mobile-check.js — mobile-first validation for WOW sections.
+ * mobile-check.js — mobile-first validation for Liquid Lab sections.
  *
  * Scans every .liquid file under sections/free/** and sections/pro/**, and
- * runs the WOW mobile-first checklist (see .claude/skills/mobile-check.md).
+ * runs the Liquid Lab mobile-first checklist (see .claude/skills/mobile-check.md).
  *
  * Per check, output is one of:
  *   ✅  PASS     — rule satisfied
@@ -171,7 +171,7 @@ function checkNoFixedContainerWidths(styleSource) {
   // Look for `width: <N>px` / `min-width: <N>px` / `max-width: <N>px` on
   // selectors that look like wrappers. A "wrapper" selector is one whose last
   // class token contains __inner, __wrap, __container, __grid, __row, or
-  // __header (the typical WOW container slugs). Avoid matching on small
+  // __header (the typical Liquid Lab container slugs). Avoid matching on small
   // elements like __icon, __badge, __star, __avatar.
   const lines = styleSource.split('\n');
   const offenders = [];

@@ -14,41 +14,41 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_faq_accordion wow_faq_accordion--align-{{ section.settings.content_alignment }} wow_faq_accordion--pos-{{ section.settings.content_position }} wow_faq_accordion--icon-{{ icon_style }} wow_faq_accordion--width-{{ section.settings.section_width }}{% if show_divider %} wow_faq_accordion--has-divider{% endif %}{% if animation_enabled %} wow_faq_accordion--animated wow_faq_accordion--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_faq_accordion lab_faq_accordion--align-{{ section.settings.content_alignment }} lab_faq_accordion--pos-{{ section.settings.content_position }} lab_faq_accordion--icon-{{ icon_style }} lab_faq_accordion--width-{{ section.settings.section_width }}{% if show_divider %} lab_faq_accordion--has-divider{% endif %}{% if animation_enabled %} lab_faq_accordion--animated lab_faq_accordion--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'FAQ' | escape }}"
   >
-    <div class="wow_faq_accordion__inner">
+    <div class="lab_faq_accordion__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
-        <header class="wow_faq_accordion__header">
+        <header class="lab_faq_accordion__header">
           {% if section.settings.heading != blank %}
-            <h2 class="wow_faq_accordion__heading">{{ section.settings.heading | escape }}</h2>
+            <h2 class="lab_faq_accordion__heading">{{ section.settings.heading | escape }}</h2>
           {% endif %}
           {% if section.settings.subheading != blank %}
-            <p class="wow_faq_accordion__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+            <p class="lab_faq_accordion__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
           {% endif %}
         </header>
       {% endif %}
 
       {% if section.blocks.size > 0 %}
-        <ul class="wow_faq_accordion__list" role="list">
+        <ul class="lab_faq_accordion__list" role="list">
           {% for block in section.blocks %}
             {% if block.type == 'faq_item' %}
-              <li role="listitem" class="wow_faq_accordion__item" {{ block.shopify_attributes }}>
+              <li role="listitem" class="lab_faq_accordion__item" {{ block.shopify_attributes }}>
                 <details
-                  class="wow_faq_accordion__details"
+                  class="lab_faq_accordion__details"
                   {% if block.settings.open_by_default %}open{% endif %}
                   {% if animation_enabled %}style="animation-delay: {{ animation_delay | times: forloop.index0 }}ms;"{% endif %}
                 >
-                  <summary class="wow_faq_accordion__summary">
-                    <span class="wow_faq_accordion__question">{{ block.settings.question | escape }}</span>
+                  <summary class="lab_faq_accordion__summary">
+                    <span class="lab_faq_accordion__question">{{ block.settings.question | escape }}</span>
                     {% if icon_style != 'none' %}
-                      <span class="wow_faq_accordion__icon" aria-hidden="true"></span>
+                      <span class="lab_faq_accordion__icon" aria-hidden="true"></span>
                     {% endif %}
                   </summary>
-                  <div class="wow_faq_accordion__answer-wrap">
-                    <div class="wow_faq_accordion__answer-inner">
-                      <div class="wow_faq_accordion__answer">{{ block.settings.answer | escape | newline_to_br }}</div>
+                  <div class="lab_faq_accordion__answer-wrap">
+                    <div class="lab_faq_accordion__answer-inner">
+                      <div class="lab_faq_accordion__answer">{{ block.settings.answer | escape | newline_to_br }}</div>
                     </div>
                   </div>
                 </details>
@@ -63,7 +63,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_faq_accordion {
+  #shopify-section-{{ section.id }} .lab_faq_accordion {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     {% if section.settings.bg_color != blank %}
@@ -80,7 +80,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__inner {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__inner {
     width: 100%;
     max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
     margin-inline: auto;
@@ -90,14 +90,14 @@
     align-items: {% if section.settings.content_position == 'top-left' or section.settings.content_position == 'center-left' or section.settings.content_position == 'bottom-left' %}flex-start{% elsif section.settings.content_position == 'top-right' or section.settings.content_position == 'center-right' or section.settings.content_position == 'bottom-right' %}flex-end{% else %}center{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__header {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__header {
     width: 100%;
     max-width: {{ section.settings.content_max_width }}px;
     margin-bottom: clamp(1.5rem, 4vw, 3rem);
     text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__heading {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__heading {
     margin: 0 0 clamp(0.5rem, 1.5vw, 1rem);
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -112,7 +112,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__subheading {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -127,7 +127,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__list {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -138,25 +138,25 @@
     align-items: {{ section.settings.items_align }};
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__item {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__item {
     margin: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion--has-divider .wow_faq_accordion__item {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--has-divider .lab_faq_accordion__item {
     border-bottom: {{ section.settings.divider_width }}px {{ section.settings.divider_style }} {% if section.settings.divider_color != blank %}color-mix(in srgb, {{ section.settings.divider_color }} {{ section.settings.divider_color_opacity }}%, transparent){% else %}color-mix(in srgb, var(--color-foreground) {{ section.settings.divider_color_opacity }}%, transparent){% endif %};
     padding-bottom: {{ section.settings.items_gap }}px;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion--has-divider .wow_faq_accordion__item:last-child {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--has-divider .lab_faq_accordion__item:last-child {
     border-bottom: 0;
     padding-bottom: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__details {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__details {
     width: 100%;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__summary {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__summary {
     list-style: none;
     cursor: pointer;
     display: flex;
@@ -168,17 +168,17 @@
     user-select: none;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__summary::-webkit-details-marker {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__summary::-webkit-details-marker {
     display: none;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__summary:focus-visible {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__summary:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 4px;
     border-radius: 4px;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__question {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__question {
     flex: 1 1 auto;
     font-size: {{ section.settings.question_size }}px;
     font-weight: {{ section.settings.question_weight }};
@@ -193,7 +193,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__icon {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__icon {
     flex: 0 0 auto;
     position: relative;
     width: 1.25rem;
@@ -202,8 +202,8 @@
   }
 
   /* Plus / minus icon — two crossed bars */
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::before,
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::after {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-plus-minus .lab_faq_accordion__icon::before,
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-plus-minus .lab_faq_accordion__icon::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -211,23 +211,23 @@
     background-color: currentColor;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::before {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-plus-minus .lab_faq_accordion__icon::before {
     width: 1rem;
     height: 2px;
     transform: translate(-50%, -50%);
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::after {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-plus-minus .lab_faq_accordion__icon::after {
     width: 2px;
     height: 1rem;
     transform: translate(-50%, -50%);
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__details[open] .wow_faq_accordion__icon::after {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-plus-minus .lab_faq_accordion__details[open] .lab_faq_accordion__icon::after {
     transform: translate(-50%, -50%) rotate(90deg);
     opacity: 0;
   }
 
   /* Arrow icon — chevron right that rotates 90deg on open */
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-arrow .wow_faq_accordion__icon::before {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-arrow .lab_faq_accordion__icon::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -239,25 +239,25 @@
     transform: translate(-65%, -65%) rotate(-45deg);
     transition: transform 0.3s ease;
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-arrow .wow_faq_accordion__details[open] .wow_faq_accordion__icon::before {
+  #shopify-section-{{ section.id }} .lab_faq_accordion--icon-arrow .lab_faq_accordion__details[open] .lab_faq_accordion__icon::before {
     transform: translate(-50%, -50%) rotate(45deg);
   }
 
   /* Smooth height animation using the grid-rows trick */
-  #shopify-section-{{ section.id }} .wow_faq_accordion__answer-wrap {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__answer-wrap {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.3s ease;
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion__details[open] .wow_faq_accordion__answer-wrap {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__details[open] .lab_faq_accordion__answer-wrap {
     grid-template-rows: 1fr;
   }
-  #shopify-section-{{ section.id }} .wow_faq_accordion__answer-inner {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__answer-inner {
     overflow: hidden;
     min-height: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_faq_accordion__answer {
+  #shopify-section-{{ section.id }} .lab_faq_accordion__answer {
     padding: 0 0 clamp(0.75rem, 2vw, 1.25rem);
     font-size: {{ section.settings.answer_size }}px;
     font-weight: {{ section.settings.answer_weight }};
@@ -274,41 +274,41 @@
 
   /* Animation — fade / slide / zoom on the details element */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_faq_accordion--animated .wow_faq_accordion__details {
+    #shopify-section-{{ section.id }} .lab_faq_accordion--animated .lab_faq_accordion__details {
       opacity: 0;
       animation-duration: 0.5s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-fade .wow_faq_accordion__details {
-      animation-name: wow_faq_accordion_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_faq_accordion--anim-fade .lab_faq_accordion__details {
+      animation-name: lab_faq_accordion_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-slide .wow_faq_accordion__details {
-      animation-name: wow_faq_accordion_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_faq_accordion--anim-slide .lab_faq_accordion__details {
+      animation-name: lab_faq_accordion_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-zoom .wow_faq_accordion__details {
-      animation-name: wow_faq_accordion_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_faq_accordion--anim-zoom .lab_faq_accordion__details {
+      animation-name: lab_faq_accordion_zoom_{{ section.id }};
     }
-    @keyframes wow_faq_accordion_fade_{{ section.id }} {
+    @keyframes lab_faq_accordion_fade_{{ section.id }} {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    @keyframes wow_faq_accordion_slide_{{ section.id }} {
+    @keyframes lab_faq_accordion_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_faq_accordion_zoom_{{ section.id }} {
+    @keyframes lab_faq_accordion_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
   {% endif %}
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_faq_accordion__icon,
-    #shopify-section-{{ section.id }} .wow_faq_accordion__icon::before,
-    #shopify-section-{{ section.id }} .wow_faq_accordion__icon::after,
-    #shopify-section-{{ section.id }} .wow_faq_accordion__answer-wrap,
-    #shopify-section-{{ section.id }} .wow_faq_accordion__details {
+    #shopify-section-{{ section.id }} .lab_faq_accordion__icon,
+    #shopify-section-{{ section.id }} .lab_faq_accordion__icon::before,
+    #shopify-section-{{ section.id }} .lab_faq_accordion__icon::after,
+    #shopify-section-{{ section.id }} .lab_faq_accordion__answer-wrap,
+    #shopify-section-{{ section.id }} .lab_faq_accordion__details {
       transition: none;
       animation: none;
     }
@@ -334,9 +334,9 @@
 
 {% schema %}
 {
-  "name": "⚡ FAQ Accordion",
+  "name": "🧪 FAQ Accordion",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -665,8 +665,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ FAQ Accordion — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 FAQ Accordion — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Questions, answered",
         "subheading": "Specs, shipping, support — what most customers want to know before they buy.",
@@ -695,8 +695,8 @@
       ]
     },
     {
-      "name": "⚡ FAQ Accordion — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 FAQ Accordion — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "We've got you",
         "subheading": "A few of the things customers ask us most. Reach out if you need anything else — we read every message.",
@@ -726,8 +726,8 @@
       ]
     },
     {
-      "name": "⚡ FAQ Accordion — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 FAQ Accordion — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "FAQ",
         "subheading": "STRAIGHT ANSWERS TO THE STUFF THAT ACTUALLY MATTERS.",

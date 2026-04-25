@@ -1,6 +1,6 @@
 {
-  "name": "wow-newsletter-signup",
-  "display_name": "WOW Newsletter Signup",
+  "name": "liquid-lab-newsletter-signup",
+  "display_name": "Liquid Lab Newsletter Signup",
   "category": "conversion",
   "tags": ["newsletter", "email", "signup", "subscribe", "form", "shopify-customer", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Email-capture section wired to Shopify's native customer endpoint via the {% form 'customer' %} Liquid tag — automatic CSRF token, no manual hidden inputs needed. Captures email (required) plus optional first name. Two layout modes: stacked (input above button, full width) and inline (input + button side-by-side from 600px up via flexbox). On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error surfaces form.errors.messages.email. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/privacy_text, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 600, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block: bg, border color/width/radius, focus border. Visually-hidden labels for the input fields plus aria-describedby pointing at the privacy text. focus-visible 3px box-shadow ring on inputs and submit. Three Dark/Warm/Bold presets with brand-tailored copy and color tuning.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/conversion/wow-newsletter-signup.liquid",
+  "liquid_file": "sections/free/conversion/liquid-lab-newsletter-signup.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 79,

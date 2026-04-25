@@ -1,6 +1,6 @@
 {
-  "name": "wow-image-with-text",
-  "display_name": "WOW Image with Text",
+  "name": "liquid-lab-image-with-text",
+  "display_name": "Liquid Lab Image with Text",
   "category": "content",
   "tags": ["image", "text", "split", "feature", "about", "story", "dual-cta", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Split-screen section with image on one side and text content on the other — used for brand storytelling, product features, and about sections. Image position (left/right desktop), image width (40/50/60%), and mobile layout (image-first/text-first) are all merchant-controlled. Content stack supports an optional pill badge above the heading, heading + subheading + richtext body, plus two side-by-side CTAs. Includes the full UI Element Settings Standard: §8.2 typography for badge/heading/subheading/body_text, §8.3 button settings for both primary and secondary CTA (each with its own hover effect — fill/darken/lift/outline/glow), §8.5 image settings (border radius, dual-control overlay, object-fit, aspect ratio), §8.6 section background, §8.8 layout (content position, content max width, items gap, items align, vertical alignment, section width), §8.9 universal settings (hide on mobile/desktop, custom CSS). LCP-aware image loading (eager when section.index ≤ 2), explicit width/height + 4-step srcset to prevent CLS, image scale-on-hover. Standard 3-field animation respects prefers-reduced-motion; focus-visible ring on every CTA; section aria-label; placeholder SVG when no image is set.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/content/wow-image-with-text.liquid",
+  "liquid_file": "sections/free/content/liquid-lab-image-with-text.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 107,

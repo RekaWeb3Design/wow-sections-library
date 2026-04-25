@@ -1,6 +1,6 @@
 {
-  "name": "wow-contact-form",
-  "display_name": "WOW Contact Form",
+  "name": "liquid-lab-contact-form",
+  "display_name": "Liquid Lab Contact Form",
   "category": "contact",
   "tags": ["contact", "form", "message", "shopify-contact", "two-column", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Contact form wired to Shopify's native /contact endpoint via the {% form 'contact' %} Liquid tag — automatic CSRF token. Required fields: name, email, message. Optional toggleable fields: phone (with tel-pattern validation), subject. Two layout modes: single-column (every field stacked) and two-column (name + email side-by-side via CSS Grid from 600px up; phone + subject also paired when both are enabled; message always full-width). Pre-fills name + email from the logged-in customer when available. On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error renders an alert region (role='alert') listing every form.errors translated field. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 700, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block + form_max_width slider (400-900, default 700). Always-visible labels with required-indicator asterisk on name/email/message; focus-visible 3px box-shadow ring on every input + submit. Three Dark/Warm/Bold presets with brand-tailored copy.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/contact/wow-contact-form.liquid",
+  "liquid_file": "sections/free/contact/liquid-lab-contact-form.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 75,

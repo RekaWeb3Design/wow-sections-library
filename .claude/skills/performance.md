@@ -1,6 +1,6 @@
-# Performance — WOW Section Library
+# Performance — Liquid Lab
 
-Performance rules for every WOW section. These are not suggestions — every section must comply.
+Performance rules for every Liquid Lab section. These are not suggestions — every section must comply.
 
 ---
 
@@ -28,7 +28,7 @@ Performance rules for every WOW section. These are not suggestions — every sec
   height: 900,
   widths: '400, 800, 1200, 1600',
   sizes: '100vw',
-  class: 'wow_hero__image'
+  class: 'lab_hero__image'
 }}
 ```
 
@@ -44,11 +44,11 @@ Performance rules for every WOW section. These are not suggestions — every sec
 ```liquid
 {% comment %} ✅ HELYES — don't render at all {% endcomment %}
 {% if section.settings.show_subheading %}
-  <p class="wow_hero__subheading">{{ section.settings.subheading }}</p>
+  <p class="lab_hero__subheading">{{ section.settings.subheading }}</p>
 {% endif %}
 
 {% comment %} ❌ TILOS — DOM weight + CSS bytes for nothing {% endcomment %}
-<p class="wow_hero__subheading" style="display: none;">...</p>
+<p class="lab_hero__subheading" style="display: none;">...</p>
 ```
 
 ---
@@ -58,17 +58,17 @@ Performance rules for every WOW section. These are not suggestions — every sec
 - **Avoid JS if CSS solves the problem.** Hover effects, transitions, accordions (`<details>`), tabs (radio + `:checked`) — all CSS-only.
 - **If JS is required:**
   - Wrap in an **IIFE**.
-  - **Scope to `section.id`** (`document.getElementById('wow-{{ section.id }}')`) — never select by class.
+  - **Scope to `section.id`** (`document.getElementById('lab-{{ section.id }}')`) — never select by class.
   - **No external libraries.** Vanilla JS only.
   - Use **`IntersectionObserver`** for scroll-triggered animations (never `scroll` event listeners).
   - **Always clean up event listeners** — store references, remove on `disconnect` or section unload (Theme Editor re-renders sections).
 
 ```javascript
 (function() {
-  const section = document.getElementById('wow-{{ section.id }}');
+  const section = document.getElementById('lab-{{ section.id }}');
   if (!section) return;
 
-  const target = section.querySelector('.wow_hero__image');
+  const target = section.querySelector('.lab_hero__image');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {

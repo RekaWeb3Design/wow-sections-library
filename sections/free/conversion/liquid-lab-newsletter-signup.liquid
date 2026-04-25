@@ -13,74 +13,74 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_newsletter_signup wow_newsletter_signup--align-{{ section.settings.content_alignment }} wow_newsletter_signup--pos-{{ section.settings.content_position }} wow_newsletter_signup--layout-{{ form_layout }} wow_newsletter_signup--width-{{ section.settings.section_width }} wow_newsletter_signup--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} wow_newsletter_signup--animated wow_newsletter_signup--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_newsletter_signup lab_newsletter_signup--align-{{ section.settings.content_alignment }} lab_newsletter_signup--pos-{{ section.settings.content_position }} lab_newsletter_signup--layout-{{ form_layout }} lab_newsletter_signup--width-{{ section.settings.section_width }} lab_newsletter_signup--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} lab_newsletter_signup--animated lab_newsletter_signup--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Newsletter signup' | escape }}"
   >
-    <div class="wow_newsletter_signup__inner"
+    <div class="lab_newsletter_signup__inner"
       {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
       {% if section.settings.heading != blank %}
-        <h2 class="wow_newsletter_signup__heading">{{ section.settings.heading | escape }}</h2>
+        <h2 class="lab_newsletter_signup__heading">{{ section.settings.heading | escape }}</h2>
       {% endif %}
 
       {% if section.settings.subheading != blank %}
-        <p class="wow_newsletter_signup__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+        <p class="lab_newsletter_signup__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
       {% endif %}
 
-      {% form 'customer', id: 'wow-newsletter-form-' | append: section_id, class: 'wow_newsletter_signup__form' %}
+      {% form 'customer', id: 'lab-newsletter-form-' | append: section_id, class: 'lab_newsletter_signup__form' %}
         {% if form.posted_successfully? %}
-          <p class="wow_newsletter_signup__success" role="status">
+          <p class="lab_newsletter_signup__success" role="status">
             {{ section.settings.success_message | escape }}
           </p>
         {% else %}
           <input type="hidden" name="contact[tags]" value="newsletter">
 
-          <div class="wow_newsletter_signup__fields">
+          <div class="lab_newsletter_signup__fields">
             {% if show_name %}
-              <div class="wow_newsletter_signup__field wow_newsletter_signup__field--name">
-                <label for="wow-newsletter-name-{{ section_id }}" class="wow_newsletter_signup__label">
+              <div class="lab_newsletter_signup__field lab_newsletter_signup__field--name">
+                <label for="lab-newsletter-name-{{ section_id }}" class="lab_newsletter_signup__label">
                   {{ section.settings.name_placeholder | default: 'First name' | escape }}
                 </label>
                 <input
                   type="text"
-                  id="wow-newsletter-name-{{ section_id }}"
+                  id="lab-newsletter-name-{{ section_id }}"
                   name="contact[first_name]"
-                  class="wow_newsletter_signup__input"
+                  class="lab_newsletter_signup__input"
                   placeholder="{{ section.settings.name_placeholder | default: 'First name' | escape }}"
                   autocomplete="given-name"
                 >
               </div>
             {% endif %}
 
-            <div class="wow_newsletter_signup__field wow_newsletter_signup__field--email">
-              <label for="wow-newsletter-email-{{ section_id }}" class="wow_newsletter_signup__label">
+            <div class="lab_newsletter_signup__field lab_newsletter_signup__field--email">
+              <label for="lab-newsletter-email-{{ section_id }}" class="lab_newsletter_signup__label">
                 {{ section.settings.email_placeholder | default: 'Email address' | escape }}
               </label>
               <input
                 type="email"
-                id="wow-newsletter-email-{{ section_id }}"
+                id="lab-newsletter-email-{{ section_id }}"
                 name="contact[email]"
-                class="wow_newsletter_signup__input"
+                class="lab_newsletter_signup__input"
                 placeholder="{{ section.settings.email_placeholder | default: 'Email address' | escape }}"
                 autocomplete="email"
                 required
-                {% if section.settings.privacy_text != blank %}aria-describedby="wow-newsletter-privacy-{{ section_id }}"{% endif %}
+                {% if section.settings.privacy_text != blank %}aria-describedby="lab-newsletter-privacy-{{ section_id }}"{% endif %}
               >
             </div>
 
-            <button type="submit" class="wow_newsletter_signup__submit">
+            <button type="submit" class="lab_newsletter_signup__submit">
               {{ section.settings.button_label | default: 'Subscribe' | escape }}
             </button>
           </div>
 
           {% if form.errors %}
-            <p class="wow_newsletter_signup__error" role="alert">
+            <p class="lab_newsletter_signup__error" role="alert">
               {{ form.errors.messages.email | default: form.errors.translated_fields.email | escape }}
             </p>
           {% endif %}
 
           {% if section.settings.privacy_text != blank %}
-            <p id="wow-newsletter-privacy-{{ section_id }}" class="wow_newsletter_signup__privacy">
+            <p id="lab-newsletter-privacy-{{ section_id }}" class="lab_newsletter_signup__privacy">
               {{ section.settings.privacy_text | escape }}
             </p>
           {% endif %}
@@ -92,7 +92,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_newsletter_signup {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     padding-inline: {% if section.settings.section_width == 'full' %}clamp(1rem, 4vw, 2rem){% else %}clamp(1rem, 4vw, 2rem){% endif %};
@@ -110,7 +110,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__inner {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__inner {
     width: 100%;
     max-width: {{ section.settings.content_max_width }}px;
     margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
@@ -120,7 +120,7 @@
     gap: clamp(0.75rem, 2vw, 1.25rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__heading {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__heading {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -135,7 +135,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__subheading {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -150,23 +150,23 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__form {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__form {
     margin: clamp(0.5rem, 1.5vw, 1rem) 0 0;
     width: 100%;
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__fields {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__fields {
     display: flex;
     flex-direction: column;
     gap: clamp(0.5rem, 1vw, 0.75rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__field {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__field {
     display: flex;
     flex-direction: column;
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__label {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -178,7 +178,7 @@
     border: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__input {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__input {
     width: 100%;
     min-height: 48px;
     padding: 0.75rem 1rem;
@@ -199,18 +199,18 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__input::placeholder {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__input::placeholder {
     color: color-mix(in srgb, currentColor 50%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__input:focus,
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__input:focus-visible {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__input:focus,
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__input:focus-visible {
     outline: none;
     border-color: {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} {{ section.settings.focus_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
     box-shadow: 0 0 0 3px {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} 25%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 18%, transparent){% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__submit {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -235,10 +235,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-fill .wow_newsletter_signup__submit:hover,
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-darken .wow_newsletter_signup__submit:hover,
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-lift .wow_newsletter_signup__submit:hover,
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-glow .wow_newsletter_signup__submit:hover {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-fill .lab_newsletter_signup__submit:hover,
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-darken .lab_newsletter_signup__submit:hover,
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-lift .lab_newsletter_signup__submit:hover,
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-glow .lab_newsletter_signup__submit:hover {
     {% if section.settings.cta_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -249,17 +249,17 @@
       border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-darken .wow_newsletter_signup__submit:hover {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-darken .lab_newsletter_signup__submit:hover {
     filter: brightness(0.88);
   }
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-lift .wow_newsletter_signup__submit:hover {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-lift .lab_newsletter_signup__submit:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
   }
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-glow .wow_newsletter_signup__submit:hover {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-glow .lab_newsletter_signup__submit:hover {
     box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_newsletter_signup--btn-hover-outline .wow_newsletter_signup__submit:hover {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup--btn-hover-outline .lab_newsletter_signup__submit:hover {
     background-color: transparent;
     {% if section.settings.cta_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
@@ -269,26 +269,26 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__submit:focus-visible {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__submit:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
   }
 
   /* Inline layout — single row from 600px up */
   @media (min-width: 600px) {
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--layout-inline .wow_newsletter_signup__fields {
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--layout-inline .lab_newsletter_signup__fields {
       flex-direction: row;
       align-items: stretch;
     }
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--layout-inline .wow_newsletter_signup__field {
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--layout-inline .lab_newsletter_signup__field {
       flex: 1 1 0;
     }
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--layout-inline .wow_newsletter_signup__submit {
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--layout-inline .lab_newsletter_signup__submit {
       flex: 0 0 auto;
     }
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__privacy {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__privacy {
     margin: 0;
     font-size: {{ section.settings.privacy_text_size }}px;
     font-weight: {{ section.settings.privacy_text_weight }};
@@ -303,7 +303,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__success {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__success {
     margin: clamp(0.5rem, 1.5vw, 1rem) 0 0;
     padding: 0.75rem 1rem;
     border-radius: 8px;
@@ -312,7 +312,7 @@
     font-weight: 500;
   }
 
-  #shopify-section-{{ section.id }} .wow_newsletter_signup__error {
+  #shopify-section-{{ section.id }} .lab_newsletter_signup__error {
     margin: clamp(0.5rem, 1vw, 0.75rem) 0 0;
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
@@ -323,36 +323,36 @@
 
   /* Animation */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--animated .wow_newsletter_signup__inner {
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--animated .lab_newsletter_signup__inner {
       opacity: 0;
       animation-duration: 0.6s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--anim-fade .wow_newsletter_signup__inner {
-      animation-name: wow_newsletter_signup_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--anim-fade .lab_newsletter_signup__inner {
+      animation-name: lab_newsletter_signup_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--anim-slide .wow_newsletter_signup__inner {
-      animation-name: wow_newsletter_signup_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--anim-slide .lab_newsletter_signup__inner {
+      animation-name: lab_newsletter_signup_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_newsletter_signup--anim-zoom .wow_newsletter_signup__inner {
-      animation-name: wow_newsletter_signup_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_newsletter_signup--anim-zoom .lab_newsletter_signup__inner {
+      animation-name: lab_newsletter_signup_zoom_{{ section.id }};
     }
-    @keyframes wow_newsletter_signup_fade_{{ section.id }} {
+    @keyframes lab_newsletter_signup_fade_{{ section.id }} {
       from { opacity: 0; } to { opacity: 1; }
     }
-    @keyframes wow_newsletter_signup_slide_{{ section.id }} {
+    @keyframes lab_newsletter_signup_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_newsletter_signup_zoom_{{ section.id }} {
+    @keyframes lab_newsletter_signup_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); }
     }
   {% endif %}
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_newsletter_signup__inner,
-    #shopify-section-{{ section.id }} .wow_newsletter_signup__submit,
-    #shopify-section-{{ section.id }} .wow_newsletter_signup__input {
+    #shopify-section-{{ section.id }} .lab_newsletter_signup__inner,
+    #shopify-section-{{ section.id }} .lab_newsletter_signup__submit,
+    #shopify-section-{{ section.id }} .lab_newsletter_signup__input {
       transition: none;
       animation: none;
       transform: none;
@@ -379,9 +379,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Newsletter Signup",
+  "name": "🧪 Newsletter Signup",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -674,8 +674,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Newsletter — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Newsletter — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Get the inside drop",
         "subheading": "First access to limited runs. No filler — three emails a month, max.",
@@ -704,8 +704,8 @@
       }
     },
     {
-      "name": "⚡ Newsletter — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Newsletter — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Sunday letters from the studio",
         "subheading": "Slow ideas, behind-the-scenes notes, and the odd recipe — straight to your inbox.",
@@ -738,8 +738,8 @@
       }
     },
     {
-      "name": "⚡ Newsletter — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Newsletter — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "GET THE DROP ALERT",
         "subheading": "BE FIRST. EVERY TIME.",

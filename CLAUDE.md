@@ -1,8 +1,8 @@
-# CLAUDE.md — WOW Section Library
+# CLAUDE.md — Liquid Lab
 
 ## What the project is
 
-**WOW Section Library** — Shopify Liquid sections, developer-first, MCP-compatible.
+**Liquid Lab** — Shopify Liquid sections, developer-first, MCP-compatible.
 
 Shopify Liquid section library that:
 - Developers can pull via Claude Code MCP
@@ -12,10 +12,10 @@ Shopify Liquid section library that:
 
 Sections are organized by **tier** (free/pro), then by **category**:
 
-- `sections/free/[category]/wow-[name].liquid` — free-tier sections
-- `sections/pro/[category]/wow-[name].liquid` — pro-tier sections
+- `sections/free/[category]/liquid-lab-[name].liquid` — free-tier sections
+- `sections/pro/[category]/liquid-lab-[name].liquid` — pro-tier sections
 - `snippets/` — shared Liquid snippets reusable across sections
-- `scripts/wow/` — standalone vanilla JS modules (loaded only when a section needs them)
+- `scripts/lab/` — standalone vanilla JS modules (loaded only when a section needs them)
 - `effects/` — standalone CSS effect files (animations, transitions, visual flourishes)
 - `registry/sections/free/` and `registry/sections/pro/` — metadata JSON mirroring the tier split
 
@@ -25,7 +25,7 @@ Categories in use: `hero`, `features`, `social-proof`, `collections`, `conversio
 
 Always read these before generating or modifying any section:
 
-- [.claude/skills/SKILL.md](.claude/skills/SKILL.md) — WOW conventions (naming, CSS scoping, schema structure)
+- [.claude/skills/SKILL.md](.claude/skills/SKILL.md) — Liquid Lab conventions (naming, CSS scoping, schema structure)
 - [.claude/skills/shopify-liquid.md](.claude/skills/shopify-liquid.md) — Liquid patterns (image rendering, LCP, color schemes, padding)
 - [.claude/skills/shadcn-extraction.md](.claude/skills/shadcn-extraction.md) — shadcn → Liquid conversion (props mapping, Tailwind → CSS vars)
 
@@ -60,7 +60,7 @@ shopify theme push              # Push current theme to connected store
 ## Git branch strategy
 
 - `main` — finished, reviewed sections only
-- `feat/wow-[name]` — new section development (e.g. `feat/wow-hero-basic`)
+- `feat/liquid-lab-[name]` — new section development (e.g. `feat/liquid-lab-hero-basic`)
 
 Branch per section. Merge to `main` only after passing validation and manual review.
 
@@ -83,7 +83,7 @@ These are non-negotiable. Violating any of them means the section is broken.
 - Never hardcode colors — CSS variables only (no hex, no `rgb()`, no `hsl()`).
 - Never use `display: none` — use Liquid `{% if %}` to skip rendering instead.
 - Scope every CSS selector inside `#shopify-section-{{ section.id }}`.
-- Prefix every CSS class with `wow_`.
+- Prefix every CSS class with `lab_`.
 
 ### JavaScript
 - No external JavaScript libraries in sections — vanilla JS only.
@@ -96,5 +96,5 @@ These are non-negotiable. Violating any of them means the section is broken.
 - Every button label is paired with a button url setting.
 
 ### Commits
-- Format: `feat: wow-[name] — [one line description]` for new sections.
+- Format: `feat: liquid-lab-[name] — [one line description]` for new sections.
 - Prefix every commit with one of: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`.

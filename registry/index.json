@@ -4,8 +4,8 @@
   "total_sections": 10,
   "sections": [
     {
-      "name": "wow-announcement-bar-basic",
-      "display_name": "WOW Announcement Bar — Basic",
+      "name": "liquid-lab-announcement-bar-basic",
+      "display_name": "Liquid Lab Announcement Bar — Basic",
       "category": "navigation",
       "tags": [
         "announcement",
@@ -21,7 +21,7 @@
       "description": "Sticky top-of-page announcement bar with static centered or scrolling marquee mode. Supports optional link, dismissible close button with localStorage persistence, configurable bar height, and full color-scheme integration. Marquee animation is pure CSS with reduced-motion fallback.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/navigation/wow-announcement-bar-basic.liquid",
+      "liquid_file": "sections/free/navigation/liquid-lab-announcement-bar-basic.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -36,8 +36,8 @@
       "source": "original"
     },
     {
-      "name": "wow-collection-cards",
-      "display_name": "WOW Collection Cards",
+      "name": "liquid-lab-collection-cards",
+      "display_name": "Liquid Lab Collection Cards",
       "category": "collections",
       "tags": [
         "collection",
@@ -51,10 +51,10 @@
       ],
       "tier": "free",
       "version": "1.0.0",
-      "description": "Product grid that pulls from a merchant-selected Shopify collection — first WOW section to use live store data. Each card renders product image (LCP-optimized: eager + fetchpriority high for the first two cards on above-the-fold sections), title (linked to product.url), price (with strikethrough compare_at_price when on sale), optional vendor name, optional sale badge (only renders when compare_at_price > price AND show_sale_badge is enabled), and a 'View product' CTA. Responsive 2/3/4 column grid via §8.4 card pattern. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/product_title/product_price, §8.4 card with all 5 hover effects (none/lift/scale/border/glow) and 4 shadow tiers, §8.5 image (border radius, dual-control overlay, object-fit, aspect ratio), §8.6 background, §8.8 layout (content alignment, header max width, items gap/align, columns, section width), §8.9 universal (hide on mobile/desktop, custom CSS). Independent sale badge color + text-color tokens. Optional view-all button linked to collection.url. Falls back to Dawn placeholder SVGs when no collection is selected so the section is editable in Theme Editor before products are wired up. prefers-reduced-motion respected; focus-visible rings on every link/CTA; product cards are <article>; product titles are <h3>; aria-labels on every product link include the product name.",
+      "description": "Product grid that pulls from a merchant-selected Shopify collection — first Liquid Lab section to use live store data. Each card renders product image (LCP-optimized: eager + fetchpriority high for the first two cards on above-the-fold sections), title (linked to product.url), price (with strikethrough compare_at_price when on sale), optional vendor name, optional sale badge (only renders when compare_at_price > price AND show_sale_badge is enabled), and a 'View product' CTA. Responsive 2/3/4 column grid via §8.4 card pattern. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/product_title/product_price, §8.4 card with all 5 hover effects (none/lift/scale/border/glow) and 4 shadow tiers, §8.5 image (border radius, dual-control overlay, object-fit, aspect ratio), §8.6 background, §8.8 layout (content alignment, header max width, items gap/align, columns, section width), §8.9 universal (hide on mobile/desktop, custom CSS). Independent sale badge color + text-color tokens. Optional view-all button linked to collection.url. Falls back to Dawn placeholder SVGs when no collection is selected so the section is editable in Theme Editor before products are wired up. prefers-reduced-motion respected; focus-visible rings on every link/CTA; product cards are <article>; product titles are <h3>; aria-labels on every product link include the product name.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/collections/wow-collection-cards.liquid",
+      "liquid_file": "sections/free/collections/liquid-lab-collection-cards.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -70,8 +70,8 @@
       "source": "original"
     },
     {
-      "name": "wow-contact-form",
-      "display_name": "WOW Contact Form",
+      "name": "liquid-lab-contact-form",
+      "display_name": "Liquid Lab Contact Form",
       "category": "contact",
       "tags": [
         "contact",
@@ -86,7 +86,7 @@
       "description": "Contact form wired to Shopify's native /contact endpoint via the {% form 'contact' %} Liquid tag — automatic CSRF token. Required fields: name, email, message. Optional toggleable fields: phone (with tel-pattern validation), subject. Two layout modes: single-column (every field stacked) and two-column (name + email side-by-side via CSS Grid from 600px up; phone + subject also paired when both are enabled; message always full-width). Pre-fills name + email from the logged-in customer when available. On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error renders an alert region (role='alert') listing every form.errors translated field. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 700, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block + form_max_width slider (400-900, default 700). Always-visible labels with required-indicator asterisk on name/email/message; focus-visible 3px box-shadow ring on every input + submit. Three Dark/Warm/Bold presets with brand-tailored copy.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/contact/wow-contact-form.liquid",
+      "liquid_file": "sections/free/contact/liquid-lab-contact-form.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -102,8 +102,8 @@
       "source": "original"
     },
     {
-      "name": "wow-countdown-timer",
-      "display_name": "WOW Countdown Timer",
+      "name": "liquid-lab-countdown-timer",
+      "display_name": "Liquid Lab Countdown Timer",
       "category": "conversion",
       "tags": [
         "countdown",
@@ -119,7 +119,7 @@
       "description": "Live countdown to a merchant-set end date (YYYY-MM-DDTHH:MM:SS) showing days, hours, minutes, and seconds. Vanilla-JS IIFE scoped to the section ID via document.getElementById, updates every second with setInterval, pads each value to two digits with String.padStart, and replaces the timer with a merchant-set expired message when the countdown reaches zero (also clearing the interval and hiding the CTA). Listens for shopify:section:unload to clear the interval and detach handlers — Theme Editor safe. Each digit block is a separate styled container (bg color, border, radius — all merchant-controlled) with the digit + optional label below; colon separators between blocks. aria-live='polite' + aria-atomic='true' on the timer wrapper so screen readers get the time-remaining announcement without spamming the user every second. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/timer_digits/timer_labels, §8.3 button settings, §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width, section_width), §8.9 universal. Independent separator color and digit-block styling tokens. Three Dark/Warm/Bold presets.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/conversion/wow-countdown-timer.liquid",
+      "liquid_file": "sections/free/conversion/liquid-lab-countdown-timer.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -134,8 +134,8 @@
       "source": "original"
     },
     {
-      "name": "wow-faq-accordion",
-      "display_name": "WOW FAQ — Accordion",
+      "name": "liquid-lab-faq-accordion",
+      "display_name": "Liquid Lab FAQ — Accordion",
       "category": "content",
       "tags": [
         "faq",
@@ -152,7 +152,7 @@
       "description": "Frequently-asked-questions accordion built on native <details>/<summary> elements — zero JavaScript. Each question is a merchant-editable block with question text, answer textarea, and an open-by-default toggle. Three icon styles (plus/minus, arrow, none) implemented in pure CSS via ::before/::after pseudo-elements that rotate on details[open]. Smooth height animation uses the grid-template-rows: 0fr → 1fr trick for transition without JS height measurement. Optional dividers between items. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/question/answer, §8.6 section background, §8.7 dividers, §8.8 layout (content position, content max width, accordion max width, items gap, items align, section width), §8.9 universal settings (hide on mobile/desktop, custom CSS). Standard 3-field animation respects prefers-reduced-motion. Keyboard navigation comes free from <summary>; focus-visible ring on each summary; section aria-label + role=list on the FAQ list.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/content/wow-faq-accordion.liquid",
+      "liquid_file": "sections/free/content/liquid-lab-faq-accordion.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -167,8 +167,8 @@
       "source": "original"
     },
     {
-      "name": "wow-features-icons",
-      "display_name": "WOW Features — Icons",
+      "name": "liquid-lab-features-icons",
+      "display_name": "Liquid Lab Features — Icons",
       "category": "features",
       "tags": [
         "features",
@@ -183,7 +183,7 @@
       "description": "Features/benefits grid with 3 or 4 icon cards. Each card (icon, title, description) is a merchant-editable block, reorderable in the Theme Editor. Supports emoji icons, outlined/filled/plain card styles, optional scroll-triggered animations, and full color-scheme integration.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/features/wow-features-icons.liquid",
+      "liquid_file": "sections/free/features/liquid-lab-features-icons.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -198,8 +198,8 @@
       "source": "original"
     },
     {
-      "name": "wow-hero-basic",
-      "display_name": "WOW Hero — Basic",
+      "name": "liquid-lab-hero-basic",
+      "display_name": "Liquid Lab Hero — Basic",
       "category": "hero",
       "tags": [
         "hero",
@@ -212,7 +212,7 @@
       "description": "Hero section with heading, subheading, CTA button, and background image with adjustable overlay. Supports left/center/right content alignment and optional full-viewport height.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/hero/wow-hero-basic.liquid",
+      "liquid_file": "sections/free/hero/liquid-lab-hero-basic.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -225,8 +225,8 @@
       "source": "original"
     },
     {
-      "name": "wow-image-with-text",
-      "display_name": "WOW Image with Text",
+      "name": "liquid-lab-image-with-text",
+      "display_name": "Liquid Lab Image with Text",
       "category": "content",
       "tags": [
         "image",
@@ -243,7 +243,7 @@
       "description": "Split-screen section with image on one side and text content on the other — used for brand storytelling, product features, and about sections. Image position (left/right desktop), image width (40/50/60%), and mobile layout (image-first/text-first) are all merchant-controlled. Content stack supports an optional pill badge above the heading, heading + subheading + richtext body, plus two side-by-side CTAs. Includes the full UI Element Settings Standard: §8.2 typography for badge/heading/subheading/body_text, §8.3 button settings for both primary and secondary CTA (each with its own hover effect — fill/darken/lift/outline/glow), §8.5 image settings (border radius, dual-control overlay, object-fit, aspect ratio), §8.6 section background, §8.8 layout (content position, content max width, items gap, items align, vertical alignment, section width), §8.9 universal settings (hide on mobile/desktop, custom CSS). LCP-aware image loading (eager when section.index ≤ 2), explicit width/height + 4-step srcset to prevent CLS, image scale-on-hover. Standard 3-field animation respects prefers-reduced-motion; focus-visible ring on every CTA; section aria-label; placeholder SVG when no image is set.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/content/wow-image-with-text.liquid",
+      "liquid_file": "sections/free/content/liquid-lab-image-with-text.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -258,8 +258,8 @@
       "source": "original"
     },
     {
-      "name": "wow-newsletter-signup",
-      "display_name": "WOW Newsletter Signup",
+      "name": "liquid-lab-newsletter-signup",
+      "display_name": "Liquid Lab Newsletter Signup",
       "category": "conversion",
       "tags": [
         "newsletter",
@@ -275,7 +275,7 @@
       "description": "Email-capture section wired to Shopify's native customer endpoint via the {% form 'customer' %} Liquid tag — automatic CSRF token, no manual hidden inputs needed. Captures email (required) plus optional first name. Two layout modes: stacked (input above button, full width) and inline (input + button side-by-side from 600px up via flexbox). On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error surfaces form.errors.messages.email. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/privacy_text, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 600, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block: bg, border color/width/radius, focus border. Visually-hidden labels for the input fields plus aria-describedby pointing at the privacy text. focus-visible 3px box-shadow ring on inputs and submit. Three Dark/Warm/Bold presets with brand-tailored copy and color tuning.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/conversion/wow-newsletter-signup.liquid",
+      "liquid_file": "sections/free/conversion/liquid-lab-newsletter-signup.liquid",
       "compatible_themes": [
         "dawn",
         "sense",
@@ -291,8 +291,8 @@
       "source": "original"
     },
     {
-      "name": "wow-testimonials-grid",
-      "display_name": "WOW Testimonials — Grid",
+      "name": "liquid-lab-testimonials-grid",
+      "display_name": "Liquid Lab Testimonials — Grid",
       "category": "social-proof",
       "tags": [
         "testimonials",
@@ -308,7 +308,7 @@
       "description": "Customer testimonial cards in a 2 or 3 column grid. Each testimonial is a merchant-editable block with star rating (1–5), quote, customer name, role/company, optional avatar (with initials fallback), and an optional verified badge. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/quote/name/role, §8.4 card with hover effects, §8.5 image controls for the avatar, §8.6 section background, §8.8 layout (columns, gap, items align, content max width, header alignment), and §8.9 universal settings (hide on mobile/desktop, section width, custom CSS). Optional scroll-triggered animation respects prefers-reduced-motion.",
       "preview_url": "",
       "screenshot": "",
-      "liquid_file": "sections/free/social-proof/wow-testimonials-grid.liquid",
+      "liquid_file": "sections/free/social-proof/liquid-lab-testimonials-grid.liquid",
       "compatible_themes": [
         "dawn",
         "sense",

@@ -14,30 +14,30 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_contact_form wow_contact_form--align-{{ section.settings.content_alignment }} wow_contact_form--pos-{{ section.settings.content_position }} wow_contact_form--layout-{{ layout_style }} wow_contact_form--width-{{ section.settings.section_width }} wow_contact_form--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} wow_contact_form--animated wow_contact_form--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_contact_form lab_contact_form--align-{{ section.settings.content_alignment }} lab_contact_form--pos-{{ section.settings.content_position }} lab_contact_form--layout-{{ layout_style }} lab_contact_form--width-{{ section.settings.section_width }} lab_contact_form--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} lab_contact_form--animated lab_contact_form--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Contact form' | escape }}"
   >
-    <div class="wow_contact_form__inner"
+    <div class="lab_contact_form__inner"
       {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
       {% if section.settings.heading != blank %}
-        <h2 class="wow_contact_form__heading">{{ section.settings.heading | escape }}</h2>
+        <h2 class="lab_contact_form__heading">{{ section.settings.heading | escape }}</h2>
       {% endif %}
 
       {% if section.settings.subheading != blank %}
-        <p class="wow_contact_form__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+        <p class="lab_contact_form__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
       {% endif %}
 
-      {% form 'contact', id: 'wow-contact-form-' | append: section_id, class: 'wow_contact_form__form' %}
+      {% form 'contact', id: 'lab-contact-form-' | append: section_id, class: 'lab_contact_form__form' %}
         {% if form.posted_successfully? %}
-          <p class="wow_contact_form__success" role="status">
+          <p class="lab_contact_form__success" role="status">
             {{ section.settings.success_message | escape }}
           </p>
         {% else %}
           {% if form.errors %}
-            <div class="wow_contact_form__errors" role="alert">
-              <p class="wow_contact_form__errors-title">{{ 'There was a problem with your submission' | escape }}</p>
-              <ul class="wow_contact_form__errors-list" role="list">
+            <div class="lab_contact_form__errors" role="alert">
+              <p class="lab_contact_form__errors-title">{{ 'There was a problem with your submission' | escape }}</p>
+              <ul class="lab_contact_form__errors-list" role="list">
                 {% for field in form.errors %}
                   <li role="listitem">{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}</li>
                 {% endfor %}
@@ -45,33 +45,33 @@
             </div>
           {% endif %}
 
-          <div class="wow_contact_form__grid">
-            <div class="wow_contact_form__field wow_contact_form__field--name">
-              <label for="wow-contact-name-{{ section_id }}" class="wow_contact_form__label">
+          <div class="lab_contact_form__grid">
+            <div class="lab_contact_form__field lab_contact_form__field--name">
+              <label for="lab-contact-name-{{ section_id }}" class="lab_contact_form__label">
                 {{ section.settings.name_label | default: 'Name' | escape }}
-                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+                <span class="lab_contact_form__required" aria-hidden="true">*</span>
               </label>
               <input
                 type="text"
-                id="wow-contact-name-{{ section_id }}"
+                id="lab-contact-name-{{ section_id }}"
                 name="contact[name]"
-                class="wow_contact_form__input"
+                class="lab_contact_form__input"
                 autocomplete="name"
                 value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
                 required
               >
             </div>
 
-            <div class="wow_contact_form__field wow_contact_form__field--email">
-              <label for="wow-contact-email-{{ section_id }}" class="wow_contact_form__label">
+            <div class="lab_contact_form__field lab_contact_form__field--email">
+              <label for="lab-contact-email-{{ section_id }}" class="lab_contact_form__label">
                 {{ section.settings.email_label | default: 'Email' | escape }}
-                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+                <span class="lab_contact_form__required" aria-hidden="true">*</span>
               </label>
               <input
                 type="email"
-                id="wow-contact-email-{{ section_id }}"
+                id="lab-contact-email-{{ section_id }}"
                 name="contact[email]"
-                class="wow_contact_form__input"
+                class="lab_contact_form__input"
                 autocomplete="email"
                 value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
                 required
@@ -79,15 +79,15 @@
             </div>
 
             {% if show_phone %}
-              <div class="wow_contact_form__field wow_contact_form__field--phone">
-                <label for="wow-contact-phone-{{ section_id }}" class="wow_contact_form__label">
+              <div class="lab_contact_form__field lab_contact_form__field--phone">
+                <label for="lab-contact-phone-{{ section_id }}" class="lab_contact_form__label">
                   {{ section.settings.phone_label | default: 'Phone' | escape }}
                 </label>
                 <input
                   type="tel"
-                  id="wow-contact-phone-{{ section_id }}"
+                  id="lab-contact-phone-{{ section_id }}"
                   name="contact[phone]"
-                  class="wow_contact_form__input"
+                  class="lab_contact_form__input"
                   autocomplete="tel"
                   pattern="[0-9\-+\s\(\)]+"
                   value="{% if form.phone %}{{ form.phone }}{% endif %}"
@@ -96,35 +96,35 @@
             {% endif %}
 
             {% if show_subject %}
-              <div class="wow_contact_form__field wow_contact_form__field--subject">
-                <label for="wow-contact-subject-{{ section_id }}" class="wow_contact_form__label">
+              <div class="lab_contact_form__field lab_contact_form__field--subject">
+                <label for="lab-contact-subject-{{ section_id }}" class="lab_contact_form__label">
                   {{ section.settings.subject_label | default: 'Subject' | escape }}
                 </label>
                 <input
                   type="text"
-                  id="wow-contact-subject-{{ section_id }}"
+                  id="lab-contact-subject-{{ section_id }}"
                   name="contact[subject]"
-                  class="wow_contact_form__input"
+                  class="lab_contact_form__input"
                 >
               </div>
             {% endif %}
 
-            <div class="wow_contact_form__field wow_contact_form__field--message">
-              <label for="wow-contact-message-{{ section_id }}" class="wow_contact_form__label">
+            <div class="lab_contact_form__field lab_contact_form__field--message">
+              <label for="lab-contact-message-{{ section_id }}" class="lab_contact_form__label">
                 {{ section.settings.message_label | default: 'Message' | escape }}
-                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+                <span class="lab_contact_form__required" aria-hidden="true">*</span>
               </label>
               <textarea
-                id="wow-contact-message-{{ section_id }}"
+                id="lab-contact-message-{{ section_id }}"
                 name="contact[body]"
                 rows="6"
-                class="wow_contact_form__input wow_contact_form__textarea"
+                class="lab_contact_form__input lab_contact_form__textarea"
                 required
               >{% if form.body %}{{ form.body }}{% endif %}</textarea>
             </div>
           </div>
 
-          <button type="submit" class="wow_contact_form__submit">
+          <button type="submit" class="lab_contact_form__submit">
             {{ section.settings.button_label | default: 'Send message' | escape }}
           </button>
         {% endif %}
@@ -135,7 +135,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_contact_form {
+  #shopify-section-{{ section.id }} .lab_contact_form {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     padding-inline: clamp(1rem, 4vw, 2rem);
@@ -153,7 +153,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__inner {
+  #shopify-section-{{ section.id }} .lab_contact_form__inner {
     width: 100%;
     max-width: {{ section.settings.content_max_width }}px;
     margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
@@ -163,7 +163,7 @@
     gap: clamp(1rem, 2.5vw, 1.75rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__heading {
+  #shopify-section-{{ section.id }} .lab_contact_form__heading {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -178,7 +178,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__subheading {
+  #shopify-section-{{ section.id }} .lab_contact_form__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -193,7 +193,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__form {
+  #shopify-section-{{ section.id }} .lab_contact_form__form {
     width: 100%;
     max-width: {{ section.settings.form_max_width }}px;
     margin: 0 {% if section.settings.content_alignment == 'left' %}auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 auto{% else %}auto{% endif %};
@@ -203,39 +203,39 @@
     gap: clamp(0.75rem, 2vw, 1.25rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__grid {
+  #shopify-section-{{ section.id }} .lab_contact_form__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(0.75rem, 1.5vw, 1rem);
   }
 
   @media (min-width: 600px) {
-    #shopify-section-{{ section.id }} .wow_contact_form--layout-two-column .wow_contact_form__grid {
+    #shopify-section-{{ section.id }} .lab_contact_form--layout-two-column .lab_contact_form__grid {
       grid-template-columns: 1fr 1fr;
     }
-    #shopify-section-{{ section.id }} .wow_contact_form--layout-two-column .wow_contact_form__field--message {
+    #shopify-section-{{ section.id }} .lab_contact_form--layout-two-column .lab_contact_form__field--message {
       grid-column: 1 / -1;
     }
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__field {
+  #shopify-section-{{ section.id }} .lab_contact_form__field {
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__label {
+  #shopify-section-{{ section.id }} .lab_contact_form__label {
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--color-foreground);
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__required {
+  #shopify-section-{{ section.id }} .lab_contact_form__required {
     color: color-mix(in srgb, var(--color-foreground) 60%, transparent);
     margin-left: 0.125rem;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__input {
+  #shopify-section-{{ section.id }} .lab_contact_form__input {
     width: 100%;
     min-height: 48px;
     padding: 0.75rem 1rem;
@@ -257,23 +257,23 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__textarea {
+  #shopify-section-{{ section.id }} .lab_contact_form__textarea {
     min-height: 144px;
     resize: vertical;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__input::placeholder {
+  #shopify-section-{{ section.id }} .lab_contact_form__input::placeholder {
     color: color-mix(in srgb, currentColor 50%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__input:focus,
-  #shopify-section-{{ section.id }} .wow_contact_form__input:focus-visible {
+  #shopify-section-{{ section.id }} .lab_contact_form__input:focus,
+  #shopify-section-{{ section.id }} .lab_contact_form__input:focus-visible {
     outline: none;
     border-color: {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} {{ section.settings.focus_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
     box-shadow: 0 0 0 3px {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} 25%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 18%, transparent){% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__submit {
+  #shopify-section-{{ section.id }} .lab_contact_form__submit {
     align-self: {% if section.settings.content_alignment == 'right' %}flex-end{% elsif section.settings.content_alignment == 'left' %}flex-start{% else %}center{% endif %};
     display: inline-flex;
     align-items: center;
@@ -299,10 +299,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-fill .wow_contact_form__submit:hover,
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-darken .wow_contact_form__submit:hover,
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-lift .wow_contact_form__submit:hover,
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-glow .wow_contact_form__submit:hover {
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-fill .lab_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-darken .lab_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-lift .lab_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-glow .lab_contact_form__submit:hover {
     {% if section.settings.cta_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -313,17 +313,17 @@
       border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-darken .wow_contact_form__submit:hover {
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-darken .lab_contact_form__submit:hover {
     filter: brightness(0.88);
   }
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-lift .wow_contact_form__submit:hover {
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-lift .lab_contact_form__submit:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
   }
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-glow .wow_contact_form__submit:hover {
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-glow .lab_contact_form__submit:hover {
     box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-outline .wow_contact_form__submit:hover {
+  #shopify-section-{{ section.id }} .lab_contact_form--btn-hover-outline .lab_contact_form__submit:hover {
     background-color: transparent;
     {% if section.settings.cta_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
@@ -333,12 +333,12 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__submit:focus-visible {
+  #shopify-section-{{ section.id }} .lab_contact_form__submit:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__success {
+  #shopify-section-{{ section.id }} .lab_contact_form__success {
     margin: 0;
     padding: 1rem 1.25rem;
     border-radius: 8px;
@@ -347,7 +347,7 @@
     font-weight: 500;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__errors {
+  #shopify-section-{{ section.id }} .lab_contact_form__errors {
     margin: 0;
     padding: 1rem 1.25rem;
     border-radius: 8px;
@@ -355,13 +355,13 @@
     color: var(--color-foreground);
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__errors-title {
+  #shopify-section-{{ section.id }} .lab_contact_form__errors-title {
     margin: 0 0 0.5rem;
     font-weight: 600;
     font-size: 0.95rem;
   }
 
-  #shopify-section-{{ section.id }} .wow_contact_form__errors-list {
+  #shopify-section-{{ section.id }} .lab_contact_form__errors-list {
     margin: 0;
     padding-left: 1.25rem;
     font-size: 0.875rem;
@@ -370,36 +370,36 @@
 
   /* Animation */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_contact_form--animated .wow_contact_form__inner {
+    #shopify-section-{{ section.id }} .lab_contact_form--animated .lab_contact_form__inner {
       opacity: 0;
       animation-duration: 0.6s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_contact_form--anim-fade .wow_contact_form__inner {
-      animation-name: wow_contact_form_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_contact_form--anim-fade .lab_contact_form__inner {
+      animation-name: lab_contact_form_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_contact_form--anim-slide .wow_contact_form__inner {
-      animation-name: wow_contact_form_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_contact_form--anim-slide .lab_contact_form__inner {
+      animation-name: lab_contact_form_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_contact_form--anim-zoom .wow_contact_form__inner {
-      animation-name: wow_contact_form_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_contact_form--anim-zoom .lab_contact_form__inner {
+      animation-name: lab_contact_form_zoom_{{ section.id }};
     }
-    @keyframes wow_contact_form_fade_{{ section.id }} {
+    @keyframes lab_contact_form_fade_{{ section.id }} {
       from { opacity: 0; } to { opacity: 1; }
     }
-    @keyframes wow_contact_form_slide_{{ section.id }} {
+    @keyframes lab_contact_form_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_contact_form_zoom_{{ section.id }} {
+    @keyframes lab_contact_form_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); }
     }
   {% endif %}
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_contact_form__inner,
-    #shopify-section-{{ section.id }} .wow_contact_form__submit,
-    #shopify-section-{{ section.id }} .wow_contact_form__input {
+    #shopify-section-{{ section.id }} .lab_contact_form__inner,
+    #shopify-section-{{ section.id }} .lab_contact_form__submit,
+    #shopify-section-{{ section.id }} .lab_contact_form__input {
       transition: none;
       animation: none;
       transform: none;
@@ -426,9 +426,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Contact Form",
+  "name": "🧪 Contact Form",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -684,8 +684,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Contact Form — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Contact Form — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Talk to a human",
         "subheading": "Real people, fast replies — usually within an hour during business days.",
@@ -714,8 +714,8 @@
       }
     },
     {
-      "name": "⚡ Contact Form — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Contact Form — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Drop us a note",
         "subheading": "We read every message — and we mean every. Tell us what's on your mind.",
@@ -746,8 +746,8 @@
       }
     },
     {
-      "name": "⚡ Contact Form — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Contact Form — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "GET AT US",
         "subheading": "BULK ORDERS. CUSTOMS. WHOLESALE. PRESS. WHATEVER.",

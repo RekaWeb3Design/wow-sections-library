@@ -25,23 +25,23 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_collection_cards wow_collection_cards--cols-{{ columns }} wow_collection_cards--align-{{ section.settings.content_alignment }} wow_collection_cards--shadow-{{ section.settings.product_card_shadow }} wow_collection_cards--hover-shadow-{{ section.settings.product_card_hover_shadow }} wow_collection_cards--hover-{{ card_hover }} wow_collection_cards--width-{{ section.settings.section_width }}{% if animation_enabled %} wow_collection_cards--animated wow_collection_cards--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_collection_cards lab_collection_cards--cols-{{ columns }} lab_collection_cards--align-{{ section.settings.content_alignment }} lab_collection_cards--shadow-{{ section.settings.product_card_shadow }} lab_collection_cards--hover-shadow-{{ section.settings.product_card_hover_shadow }} lab_collection_cards--hover-{{ card_hover }} lab_collection_cards--width-{{ section.settings.section_width }}{% if animation_enabled %} lab_collection_cards--animated lab_collection_cards--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Featured collection' | escape }}"
   >
-    <div class="wow_collection_cards__inner">
+    <div class="lab_collection_cards__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
-        <header class="wow_collection_cards__header">
+        <header class="lab_collection_cards__header">
           {% if section.settings.heading != blank %}
-            <h2 class="wow_collection_cards__heading">{{ section.settings.heading | escape }}</h2>
+            <h2 class="lab_collection_cards__heading">{{ section.settings.heading | escape }}</h2>
           {% endif %}
           {% if section.settings.subheading != blank %}
-            <p class="wow_collection_cards__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+            <p class="lab_collection_cards__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
           {% endif %}
         </header>
       {% endif %}
 
-      <ul class="wow_collection_cards__grid" role="list">
+      <ul class="lab_collection_cards__grid" role="list">
         {% if collection != blank and collection.products.size > 0 %}
           {% for product in collection.products limit: products_count %}
             {% liquid
@@ -59,11 +59,11 @@
               endif
             %}
 
-            <li role="listitem" class="wow_collection_cards__item"
+            <li role="listitem" class="lab_collection_cards__item"
               {% if animation_enabled %}style="animation-delay: {{ animation_delay | times: forloop.index0 }}ms;"{% endif %}>
-              <article class="wow_collection_cards__card">
-                <a href="{{ product.url }}" class="wow_collection_cards__media-link" aria-label="{{ 'View product: ' | append: product.title | escape }}" tabindex="-1">
-                  <div class="wow_collection_cards__media">
+              <article class="lab_collection_cards__card">
+                <a href="{{ product.url }}" class="lab_collection_cards__media-link" aria-label="{{ 'View product: ' | append: product.title | escape }}" tabindex="-1">
+                  <div class="lab_collection_cards__media">
                     {% if product.featured_image != blank %}
                       {{ product.featured_image
                         | image_url: width: 800
@@ -75,41 +75,41 @@
                           height: product.featured_image.height,
                           widths: '400, 600, 800',
                           sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw',
-                          class: 'wow_collection_cards__image'
+                          class: 'lab_collection_cards__image'
                       }}
                     {% else %}
-                      <div class="wow_collection_cards__image wow_collection_cards__image--placeholder" aria-hidden="true">
-                        {{ 'product-1' | placeholder_svg_tag: 'wow_collection_cards__placeholder-svg' }}
+                      <div class="lab_collection_cards__image lab_collection_cards__image--placeholder" aria-hidden="true">
+                        {{ 'product-1' | placeholder_svg_tag: 'lab_collection_cards__placeholder-svg' }}
                       </div>
                     {% endif %}
 
                     {% if show_sale_badge and on_sale %}
-                      <span class="wow_collection_cards__badge">{{ section.settings.sale_badge_text | escape }}</span>
+                      <span class="lab_collection_cards__badge">{{ section.settings.sale_badge_text | escape }}</span>
                     {% endif %}
                   </div>
                 </a>
 
-                <div class="wow_collection_cards__body">
+                <div class="lab_collection_cards__body">
                   {% if show_vendor and product.vendor != blank %}
-                    <p class="wow_collection_cards__vendor">{{ product.vendor | escape }}</p>
+                    <p class="lab_collection_cards__vendor">{{ product.vendor | escape }}</p>
                   {% endif %}
 
-                  <h3 class="wow_collection_cards__title">
-                    <a href="{{ product.url }}" class="wow_collection_cards__title-link">{{ product.title | escape }}</a>
+                  <h3 class="lab_collection_cards__title">
+                    <a href="{{ product.url }}" class="lab_collection_cards__title-link">{{ product.title | escape }}</a>
                   </h3>
 
-                  <p class="wow_collection_cards__price">
+                  <p class="lab_collection_cards__price">
                     {% if on_sale %}
-                      <span class="wow_collection_cards__price-sale">{{ product.price | money }}</span>
-                      <s class="wow_collection_cards__price-was">{{ product.compare_at_price | money }}</s>
+                      <span class="lab_collection_cards__price-sale">{{ product.price | money }}</span>
+                      <s class="lab_collection_cards__price-was">{{ product.compare_at_price | money }}</s>
                     {% else %}
-                      <span class="wow_collection_cards__price-regular">{{ product.price | money }}</span>
+                      <span class="lab_collection_cards__price-regular">{{ product.price | money }}</span>
                     {% endif %}
                   </p>
 
                   <a
                     href="{{ product.url }}"
-                    class="wow_collection_cards__cta"
+                    class="lab_collection_cards__cta"
                     aria-label="{{ 'View product: ' | append: product.title | escape }}"
                   >
                     {{ section.settings.product_button_label | default: 'View product' | escape }}
@@ -121,24 +121,24 @@
         {% else %}
           {% comment %} Placeholder cards when no collection is selected (Theme Editor preview) {% endcomment %}
           {% for i in (1..products_count) %}
-            <li role="listitem" class="wow_collection_cards__item">
-              <article class="wow_collection_cards__card">
-                <div class="wow_collection_cards__media">
-                  <div class="wow_collection_cards__image wow_collection_cards__image--placeholder" aria-hidden="true">
-                    {{ 'product-1' | placeholder_svg_tag: 'wow_collection_cards__placeholder-svg' }}
+            <li role="listitem" class="lab_collection_cards__item">
+              <article class="lab_collection_cards__card">
+                <div class="lab_collection_cards__media">
+                  <div class="lab_collection_cards__image lab_collection_cards__image--placeholder" aria-hidden="true">
+                    {{ 'product-1' | placeholder_svg_tag: 'lab_collection_cards__placeholder-svg' }}
                   </div>
                 </div>
-                <div class="wow_collection_cards__body">
+                <div class="lab_collection_cards__body">
                   {% if show_vendor %}
-                    <p class="wow_collection_cards__vendor">Vendor name</p>
+                    <p class="lab_collection_cards__vendor">Vendor name</p>
                   {% endif %}
-                  <h3 class="wow_collection_cards__title">
-                    <span class="wow_collection_cards__title-link">Sample product {{ forloop.index }}</span>
+                  <h3 class="lab_collection_cards__title">
+                    <span class="lab_collection_cards__title-link">Sample product {{ forloop.index }}</span>
                   </h3>
-                  <p class="wow_collection_cards__price">
-                    <span class="wow_collection_cards__price-regular">$49.00</span>
+                  <p class="lab_collection_cards__price">
+                    <span class="lab_collection_cards__price-regular">$49.00</span>
                   </p>
-                  <span class="wow_collection_cards__cta wow_collection_cards__cta--placeholder" aria-hidden="true">{{ section.settings.product_button_label | default: 'View product' | escape }}</span>
+                  <span class="lab_collection_cards__cta lab_collection_cards__cta--placeholder" aria-hidden="true">{{ section.settings.product_button_label | default: 'View product' | escape }}</span>
                 </div>
               </article>
             </li>
@@ -147,10 +147,10 @@
       </ul>
 
       {% if show_view_all_button and section.settings.button_label != blank and collection != blank %}
-        <div class="wow_collection_cards__footer">
+        <div class="lab_collection_cards__footer">
           <a
             href="{{ collection.url }}"
-            class="wow_collection_cards__view-all"
+            class="lab_collection_cards__view-all"
             aria-label="{{ 'View all in ' | append: collection.title | escape }}"
           >
             {{ section.settings.button_label | escape }}
@@ -163,7 +163,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_collection_cards {
+  #shopify-section-{{ section.id }} .lab_collection_cards {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     {% if section.settings.bg_color != blank %}
@@ -180,21 +180,21 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__inner {
+  #shopify-section-{{ section.id }} .lab_collection_cards__inner {
     width: 100%;
     max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}960px{% else %}var(--page-width, 1200px){% endif %};
     margin-inline: auto;
     padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__header {
+  #shopify-section-{{ section.id }} .lab_collection_cards__header {
     width: 100%;
     max-width: {{ section.settings.content_max_width }}px;
     margin: 0 auto clamp(1.5rem, 4vw, 3rem);
     text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__heading {
+  #shopify-section-{{ section.id }} .lab_collection_cards__heading {
     margin: 0 0 clamp(0.5rem, 1.5vw, 1rem);
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -209,7 +209,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__subheading {
+  #shopify-section-{{ section.id }} .lab_collection_cards__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -224,7 +224,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__grid {
+  #shopify-section-{{ section.id }} .lab_collection_cards__grid {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -235,17 +235,17 @@
   }
 
   @media (min-width: 750px) {
-    #shopify-section-{{ section.id }} .wow_collection_cards--cols-2 .wow_collection_cards__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #shopify-section-{{ section.id }} .wow_collection_cards--cols-3 .wow_collection_cards__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    #shopify-section-{{ section.id }} .wow_collection_cards--cols-4 .wow_collection_cards__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #shopify-section-{{ section.id }} .lab_collection_cards--cols-2 .lab_collection_cards__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #shopify-section-{{ section.id }} .lab_collection_cards--cols-3 .lab_collection_cards__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #shopify-section-{{ section.id }} .lab_collection_cards--cols-4 .lab_collection_cards__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__item {
+  #shopify-section-{{ section.id }} .lab_collection_cards__item {
     margin: 0;
     display: flex;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__card {
+  #shopify-section-{{ section.id }} .lab_collection_cards__card {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -260,11 +260,11 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-soft .wow_collection_cards__card { box-shadow: 0 1px 3px color-mix(in srgb, var(--color-foreground) 8%, transparent); }
-  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-medium .wow_collection_cards__card { box-shadow: 0 4px 12px color-mix(in srgb, var(--color-foreground) 12%, transparent); }
-  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-strong .wow_collection_cards__card { box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 18%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--shadow-soft .lab_collection_cards__card { box-shadow: 0 1px 3px color-mix(in srgb, var(--color-foreground) 8%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--shadow-medium .lab_collection_cards__card { box-shadow: 0 4px 12px color-mix(in srgb, var(--color-foreground) 12%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--shadow-strong .lab_collection_cards__card { box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 18%, transparent); }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__card:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards__card:hover {
     {% if section.settings.product_card_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.product_card_hover_bg_color }} {{ section.settings.product_card_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -273,30 +273,30 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-soft .wow_collection_cards__card:hover { box-shadow: 0 2px 8px color-mix(in srgb, var(--color-foreground) 10%, transparent); }
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-medium .wow_collection_cards__card:hover { box-shadow: 0 6px 20px color-mix(in srgb, var(--color-foreground) 14%, transparent); }
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-strong .wow_collection_cards__card:hover { box-shadow: 0 16px 40px color-mix(in srgb, var(--color-foreground) 22%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-shadow-soft .lab_collection_cards__card:hover { box-shadow: 0 2px 8px color-mix(in srgb, var(--color-foreground) 10%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-shadow-medium .lab_collection_cards__card:hover { box-shadow: 0 6px 20px color-mix(in srgb, var(--color-foreground) 14%, transparent); }
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-shadow-strong .lab_collection_cards__card:hover { box-shadow: 0 16px 40px color-mix(in srgb, var(--color-foreground) 22%, transparent); }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-lift .wow_collection_cards__card:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-lift .lab_collection_cards__card:hover {
     transform: translateY(-4px);
   }
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-scale .wow_collection_cards__card:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-scale .lab_collection_cards__card:hover {
     transform: scale(1.02);
   }
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-border .wow_collection_cards__card:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-border .lab_collection_cards__card:hover {
     border-color: var(--color-foreground);
   }
-  #shopify-section-{{ section.id }} .wow_collection_cards--hover-glow .wow_collection_cards__card:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards--hover-glow .lab_collection_cards__card:hover {
     box-shadow: 0 0 28px color-mix(in srgb, var(--color-foreground) 22%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__media-link {
+  #shopify-section-{{ section.id }} .lab_collection_cards__media-link {
     display: block;
     text-decoration: none;
     color: inherit;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__media {
+  #shopify-section-{{ section.id }} .lab_collection_cards__media {
     position: relative;
     overflow: hidden;
     border-radius: {{ section.settings.product_image_border_radius }}px;
@@ -311,7 +311,7 @@
     background-color: color-mix(in srgb, var(--color-foreground) 4%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__image {
+  #shopify-section-{{ section.id }} .lab_collection_cards__image {
     display: block;
     width: 100%;
     height: 100%;
@@ -319,25 +319,25 @@
     transition: transform 0.5s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__card:hover .wow_collection_cards__image {
+  #shopify-section-{{ section.id }} .lab_collection_cards__card:hover .lab_collection_cards__image {
     transform: scale(1.05);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__image--placeholder {
+  #shopify-section-{{ section.id }} .lab_collection_cards__image--placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
     color: color-mix(in srgb, var(--color-foreground) 25%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__placeholder-svg {
+  #shopify-section-{{ section.id }} .lab_collection_cards__placeholder-svg {
     width: 60%;
     height: 60%;
     object-fit: contain;
   }
 
   {% if section.settings.product_image_overlay_opacity > 0 %}
-    #shopify-section-{{ section.id }} .wow_collection_cards__media::after {
+    #shopify-section-{{ section.id }} .lab_collection_cards__media::after {
       content: '';
       position: absolute;
       inset: 0;
@@ -347,7 +347,7 @@
     }
   {% endif %}
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__badge {
+  #shopify-section-{{ section.id }} .lab_collection_cards__badge {
     position: absolute;
     top: clamp(0.5rem, 1vw, 0.75rem);
     left: clamp(0.5rem, 1vw, 0.75rem);
@@ -371,14 +371,14 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__body {
+  #shopify-section-{{ section.id }} .lab_collection_cards__body {
     display: flex;
     flex-direction: column;
     gap: clamp(0.25rem, 0.75vw, 0.5rem);
     text-align: {% if section.settings.content_alignment == 'right' %}right{% elsif section.settings.content_alignment == 'center' %}center{% else %}left{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__vendor {
+  #shopify-section-{{ section.id }} .lab_collection_cards__vendor {
     margin: 0;
     font-size: 0.75rem;
     font-weight: 500;
@@ -387,7 +387,7 @@
     color: color-mix(in srgb, var(--color-foreground) 60%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__title {
+  #shopify-section-{{ section.id }} .lab_collection_cards__title {
     margin: 0;
     font-size: {{ section.settings.product_title_size }}px;
     font-weight: {{ section.settings.product_title_weight }};
@@ -402,16 +402,16 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__title-link {
+  #shopify-section-{{ section.id }} .lab_collection_cards__title-link {
     color: inherit;
     text-decoration: none;
   }
-  #shopify-section-{{ section.id }} .wow_collection_cards__title-link:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards__title-link:hover {
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__price {
+  #shopify-section-{{ section.id }} .lab_collection_cards__price {
     margin: 0;
     display: flex;
     flex-wrap: wrap;
@@ -430,18 +430,18 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__price-sale {
+  #shopify-section-{{ section.id }} .lab_collection_cards__price-sale {
     {% if section.settings.sale_badge_color != blank %}
       color: color-mix(in srgb, {{ section.settings.sale_badge_color }} {{ section.settings.sale_badge_color_opacity }}%, transparent);
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__price-was {
+  #shopify-section-{{ section.id }} .lab_collection_cards__price-was {
     font-weight: 400;
     opacity: 0.6;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__cta {
+  #shopify-section-{{ section.id }} .lab_collection_cards__cta {
     display: inline-flex;
     align-self: {% if section.settings.content_alignment == 'right' %}flex-end{% elsif section.settings.content_alignment == 'center' %}center{% else %}flex-start{% endif %};
     align-items: center;
@@ -460,32 +460,32 @@
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__cta:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards__cta:hover {
     background-color: var(--color-foreground);
     color: var(--color-background);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__cta--placeholder {
+  #shopify-section-{{ section.id }} .lab_collection_cards__cta--placeholder {
     opacity: 0.6;
     pointer-events: none;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__cta:focus-visible,
-  #shopify-section-{{ section.id }} .wow_collection_cards__title-link:focus-visible,
-  #shopify-section-{{ section.id }} .wow_collection_cards__media-link:focus-visible,
-  #shopify-section-{{ section.id }} .wow_collection_cards__view-all:focus-visible {
+  #shopify-section-{{ section.id }} .lab_collection_cards__cta:focus-visible,
+  #shopify-section-{{ section.id }} .lab_collection_cards__title-link:focus-visible,
+  #shopify-section-{{ section.id }} .lab_collection_cards__media-link:focus-visible,
+  #shopify-section-{{ section.id }} .lab_collection_cards__view-all:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
     border-radius: 4px;
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__footer {
+  #shopify-section-{{ section.id }} .lab_collection_cards__footer {
     display: flex;
     justify-content: center;
     margin-top: clamp(1.5rem, 3vw, 2.5rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_collection_cards__view-all {
+  #shopify-section-{{ section.id }} .lab_collection_cards__view-all {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -499,48 +499,48 @@
     text-decoration: none;
     transition: filter 0.2s ease, transform 0.2s ease;
   }
-  #shopify-section-{{ section.id }} .wow_collection_cards__view-all:hover {
+  #shopify-section-{{ section.id }} .lab_collection_cards__view-all:hover {
     filter: brightness(0.9);
     transform: translateY(-2px);
   }
 
   /* Animation */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_collection_cards--animated .wow_collection_cards__item {
+    #shopify-section-{{ section.id }} .lab_collection_cards--animated .lab_collection_cards__item {
       opacity: 0;
       animation-duration: 0.6s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_collection_cards--anim-fade .wow_collection_cards__item {
-      animation-name: wow_collection_cards_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_collection_cards--anim-fade .lab_collection_cards__item {
+      animation-name: lab_collection_cards_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_collection_cards--anim-slide .wow_collection_cards__item {
-      animation-name: wow_collection_cards_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_collection_cards--anim-slide .lab_collection_cards__item {
+      animation-name: lab_collection_cards_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_collection_cards--anim-zoom .wow_collection_cards__item {
-      animation-name: wow_collection_cards_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_collection_cards--anim-zoom .lab_collection_cards__item {
+      animation-name: lab_collection_cards_zoom_{{ section.id }};
     }
-    @keyframes wow_collection_cards_fade_{{ section.id }} {
+    @keyframes lab_collection_cards_fade_{{ section.id }} {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    @keyframes wow_collection_cards_slide_{{ section.id }} {
+    @keyframes lab_collection_cards_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_collection_cards_zoom_{{ section.id }} {
+    @keyframes lab_collection_cards_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
   {% endif %}
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_collection_cards__card,
-    #shopify-section-{{ section.id }} .wow_collection_cards__image,
-    #shopify-section-{{ section.id }} .wow_collection_cards__item,
-    #shopify-section-{{ section.id }} .wow_collection_cards__view-all,
-    #shopify-section-{{ section.id }} .wow_collection_cards__cta {
+    #shopify-section-{{ section.id }} .lab_collection_cards__card,
+    #shopify-section-{{ section.id }} .lab_collection_cards__image,
+    #shopify-section-{{ section.id }} .lab_collection_cards__item,
+    #shopify-section-{{ section.id }} .lab_collection_cards__view-all,
+    #shopify-section-{{ section.id }} .lab_collection_cards__cta {
       transition: none;
       animation: none;
       transform: none;
@@ -567,9 +567,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Collection Cards",
+  "name": "🧪 Collection Cards",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -946,8 +946,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Collection — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Collection — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Latest gear",
         "subheading": "Engineered to outlast every season — explore the new drop.",
@@ -988,8 +988,8 @@
       }
     },
     {
-      "name": "⚡ Collection — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Collection — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Loved by everyone",
         "subheading": "Best-sellers, picked by our customers — gentle on skin, hard to put down.",
@@ -1028,8 +1028,8 @@
       }
     },
     {
-      "name": "⚡ Collection — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Collection — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "SHOP THE DROP",
         "subheading": "FOUR PIECES. NO RESTOCKS. ACT FAST.",

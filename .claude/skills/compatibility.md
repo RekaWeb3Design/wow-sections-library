@@ -1,6 +1,6 @@
-# Compatibility — WOW Section Library
+# Compatibility — Liquid Lab
 
-Rules to ensure every WOW section drops cleanly into any modern Shopify Online Store 2.0 theme.
+Rules to ensure every Liquid Lab section drops cleanly into any modern Shopify Online Store 2.0 theme.
 
 ---
 
@@ -30,7 +30,7 @@ html { ... }
 :root { --color-primary: red; }
 
 /* ✅ HELYES */
-#shopify-section-{{ section.id }} .wow_hero { ... }
+#shopify-section-{{ section.id }} .lab_hero { ... }
 ```
 
 ---
@@ -41,8 +41,8 @@ Apply the merchant's chosen color scheme to the section root using Dawn's class 
 
 ```liquid
 <section
-  id="wow-{{ section.id }}"
-  class="wow_hero wow_section color-{{ section.settings.color_scheme }} gradient"
+  id="lab-{{ section.id }}"
+  class="lab_hero lab_section color-{{ section.settings.color_scheme }} gradient"
 >
   ...
 </section>
@@ -58,21 +58,21 @@ Every section's `{% schema %}` block must include:
 
 ```json
 {
-  "name": "WOW [Name]",
+  "name": "Liquid Lab [Name]",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "settings": [ ... ],
   "presets": [
-    { "name": "WOW [Name]" }
+    { "name": "Liquid Lab [Name]" }
   ]
 }
 ```
 
 - `"tag": "section"` — semantic HTML wrapper.
-- `"class": "wow_section"` — namespacing hook so themes can target WOW sections in bulk if needed.
+- `"class": "lab_section"` — namespacing hook so themes can target Liquid Lab sections in bulk if needed.
 - `"disabled_on": { "groups": ["header","footer"] }` — sections were never designed to live in those groups.
 - A `presets` block — without it, merchants cannot add the section from the editor.
 
@@ -106,10 +106,10 @@ Test the section by adding it to a product page, collection page, and a custom p
 
 ```liquid
 {% comment %} ❌ TILOS — merchant can't change "Shop now" {% endcomment %}
-<a href="{{ section.settings.cta_url }}" class="wow_hero__cta">Shop now</a>
+<a href="{{ section.settings.cta_url }}" class="lab_hero__cta">Shop now</a>
 
 {% comment %} ✅ HELYES — comes from schema, merchant editable, locale-safe {% endcomment %}
-<a href="{{ section.settings.cta_url }}" class="wow_hero__cta">
+<a href="{{ section.settings.cta_url }}" class="lab_hero__cta">
   {{ section.settings.cta_label }}
 </a>
 ```

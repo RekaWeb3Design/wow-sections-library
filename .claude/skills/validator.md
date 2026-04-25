@@ -1,6 +1,6 @@
-# Validator — WOW Section Library
+# Validator — Liquid Lab
 
-Final QA pass before a section is marked validated and merged to `main`. Two stages: (1) `shopify theme check`, then (2) the WOW custom checklist.
+Final QA pass before a section is marked validated and merged to `main`. Two stages: (1) `shopify theme check`, then (2) the Liquid Lab custom checklist.
 
 ---
 
@@ -20,11 +20,11 @@ shopify theme check --path .
 
 ---
 
-## 2. WOW custom validation checklist
+## 2. Liquid Lab custom validation checklist
 
 After `shopify theme check` passes, walk through this checklist for the section. **Every box must be ticked** before the section is marked validated.
 
-- [ ] All CSS classes use the `wow_` prefix
+- [ ] All CSS classes use the `lab_` prefix
 - [ ] Every CSS selector is scoped under `#shopify-section-{{ section.id }}`
 - [ ] No hardcoded hex colors (`#fff`, `rgb(...)`, `hsl(...)`) — CSS variables only
 - [ ] No `!important` declarations anywhere
@@ -43,7 +43,7 @@ After `shopify theme check` passes, walk through this checklist for the section.
 
 ```liquid
 {% if section.settings.cta_url != blank and section.settings.cta_label != blank %}
-  <a href="{{ section.settings.cta_url }}" class="wow_hero__cta">
+  <a href="{{ section.settings.cta_url }}" class="lab_hero__cta">
     {{ section.settings.cta_label }}
   </a>
 {% endif %}
@@ -56,6 +56,6 @@ After `shopify theme check` passes, walk through this checklist for the section.
 A section is **validated** only when:
 
 1. `shopify theme check --path .` returns 0 errors, 0 warnings (locales/ ENOENT excepted), AND
-2. Every item on the WOW checklist above is confirmed.
+2. Every item on the Liquid Lab checklist above is confirmed.
 
 If any item fails, fix the section and re-run both stages from the top. Do not mark validated until the full checklist passes in a single pass.

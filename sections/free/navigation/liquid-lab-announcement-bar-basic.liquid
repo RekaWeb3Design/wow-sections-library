@@ -13,35 +13,35 @@
 %}
 
 {% comment %} 2. HTML structure {% endcomment %}
-<div class="color-{{ section.settings.color_scheme }} gradient wow_announcement_bar__wrap">
+<div class="color-{{ section.settings.color_scheme }} gradient lab_announcement_bar__wrap">
   <aside
-    id="wow-{{ section_id }}"
-    class="wow_announcement_bar wow_announcement_bar--{{ display_mode }} wow_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_announcement_bar lab_announcement_bar--{{ display_mode }} lab_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} lab_section"
     role="complementary"
     aria-label="{{ bar_text | default: 'Announcement' | escape }}"
-    data-wow-announcement-id="{{ section_id }}"
+    data-lab-announcement-id="{{ section_id }}"
   >
-    <div class="wow_announcement_bar__inner">
+    <div class="lab_announcement_bar__inner">
       {% if display_mode == 'marquee' %}
-        <div class="wow_announcement_bar__viewport" aria-hidden="false">
-          <div class="wow_announcement_bar__track">
+        <div class="lab_announcement_bar__viewport" aria-hidden="false">
+          <div class="lab_announcement_bar__track">
             {% for i in (1..2) %}
-              <div class="wow_announcement_bar__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
+              <div class="lab_announcement_bar__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
                 {% for j in (1..4) %}
-                  <span class="wow_announcement_bar__item">
+                  <span class="lab_announcement_bar__item">
                     {% if bar_text != blank %}
-                      <span class="wow_announcement_bar__text">{{ bar_text | escape }}</span>
+                      <span class="lab_announcement_bar__text">{{ bar_text | escape }}</span>
                     {% endif %}
                     {% if link_label != blank and link_url != blank %}
                       <a
                         href="{{ link_url }}"
-                        class="wow_announcement_bar__link"
+                        class="lab_announcement_bar__link"
                         aria-label="{{ link_label | escape }}"
                       >
                         {{ link_label | escape }}
                       </a>
                     {% endif %}
-                    <span class="wow_announcement_bar__sep" aria-hidden="true">•</span>
+                    <span class="lab_announcement_bar__sep" aria-hidden="true">•</span>
                   </span>
                 {% endfor %}
               </div>
@@ -49,14 +49,14 @@
           </div>
         </div>
       {% else %}
-        <div class="wow_announcement_bar__static">
+        <div class="lab_announcement_bar__static">
           {% if bar_text != blank %}
-            <span class="wow_announcement_bar__text">{{ bar_text | escape }}</span>
+            <span class="lab_announcement_bar__text">{{ bar_text | escape }}</span>
           {% endif %}
           {% if link_label != blank and link_url != blank %}
             <a
               href="{{ link_url }}"
-              class="wow_announcement_bar__link"
+              class="lab_announcement_bar__link"
               aria-label="{{ link_label | escape }}"
             >
               {{ link_label | escape }}
@@ -68,12 +68,12 @@
       {% if show_close %}
         <button
           type="button"
-          class="wow_announcement_bar__close"
+          class="lab_announcement_bar__close"
           aria-label="Dismiss announcement"
-          data-wow-announcement-close
+          data-lab-announcement-close
         >
           <svg
-            class="wow_announcement_bar__close-icon"
+            class="lab_announcement_bar__close-icon"
             viewBox="0 0 16 16"
             fill="none"
             stroke="currentColor"
@@ -92,13 +92,13 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_announcement_bar__wrap {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__wrap {
     position: sticky;
     top: 0;
     z-index: 100;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar {
+  #shopify-section-{{ section.id }} .lab_announcement_bar {
     width: 100%;
     min-height: {{ bar_height }}px;
     padding-top: {{ section.settings.padding_top }}px;
@@ -120,7 +120,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__inner {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__inner {
     position: relative;
     display: flex;
     align-items: center;
@@ -132,7 +132,7 @@
     gap: clamp(0.5rem, 2vw, 1.5rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__static {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__static {
     flex: 1 1 auto;
     display: flex;
     align-items: center;
@@ -141,7 +141,7 @@
     flex-wrap: wrap;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__text {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__text {
     font-size: {{ section.settings.bar_text_size }}px;
     font-weight: {{ section.settings.bar_text_weight }};
     text-transform: {{ section.settings.bar_text_transform }};
@@ -154,7 +154,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__viewport {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__viewport {
     flex: 1 1 auto;
     overflow: hidden;
     mask-image: linear-gradient(
@@ -173,14 +173,14 @@
     );
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__track {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__track {
     display: flex;
     width: max-content;
     will-change: transform;
-    animation: wow_announcement_marquee_{{ section.id }} {{ marquee_speed }}s linear infinite;
+    animation: lab_announcement_marquee_{{ section.id }} {{ marquee_speed }}s linear infinite;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__group {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__group {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -188,19 +188,19 @@
     padding-inline-end: clamp(1rem, 3vw, 2.5rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__item {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__item {
     display: inline-flex;
     align-items: center;
     gap: clamp(0.5rem, 1.25vw, 1rem);
     white-space: nowrap;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__sep {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__sep {
     opacity: 0.5;
     font-size: 0.75em;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__link {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -223,10 +223,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-fill .wow_announcement_bar__link:hover,
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-darken .wow_announcement_bar__link:hover,
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-lift .wow_announcement_bar__link:hover,
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-glow .wow_announcement_bar__link:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-fill .lab_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-darken .lab_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-lift .lab_announcement_bar__link:hover,
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-glow .lab_announcement_bar__link:hover {
     {% if section.settings.link_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.link_hover_bg_color }} {{ section.settings.link_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -237,16 +237,16 @@
       border-color: color-mix(in srgb, {{ section.settings.link_hover_border_color }} {{ section.settings.link_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-darken .wow_announcement_bar__link:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-darken .lab_announcement_bar__link:hover {
     filter: brightness(0.85);
   }
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-lift .wow_announcement_bar__link:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-lift .lab_announcement_bar__link:hover {
     transform: translateY(-1px);
   }
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-glow .wow_announcement_bar__link:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-glow .lab_announcement_bar__link:hover {
     box-shadow: 0 0 18px {% if section.settings.link_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.link_hover_bg_color }} 55%, transparent){% else %}rgba(0, 0, 0, 0.15){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_announcement_bar--link-hover-outline .wow_announcement_bar__link:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar--link-hover-outline .lab_announcement_bar__link:hover {
     background-color: transparent;
     {% if section.settings.link_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.link_hover_text_color }} {{ section.settings.link_hover_text_color_opacity }}%, transparent);
@@ -256,7 +256,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__close {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__close {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
@@ -273,45 +273,45 @@
     transition: opacity 0.2s ease, background-color 0.2s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__close:hover {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__close:hover {
     opacity: 1;
     background-color: var(--color-border);
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__close:focus-visible {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__close:focus-visible {
     opacity: 1;
     background-color: var(--color-border);
     outline: 2px solid var(--color-foreground);
     outline-offset: 2px;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__link:focus-visible {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__link:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 2px;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__close-icon {
+  #shopify-section-{{ section.id }} .lab_announcement_bar__close-icon {
     width: 0.875rem;
     height: 0.875rem;
   }
 
-  @keyframes wow_announcement_marquee_{{ section.id }} {
+  @keyframes lab_announcement_marquee_{{ section.id }} {
     from { transform: translate3d(0, 0, 0); }
     to { transform: translate3d(-50%, 0, 0); }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_announcement_bar__track {
+    #shopify-section-{{ section.id }} .lab_announcement_bar__track {
       animation: none;
       transform: none;
     }
-    #shopify-section-{{ section.id }} .wow_announcement_bar__link {
+    #shopify-section-{{ section.id }} .lab_announcement_bar__link {
       transition: none;
     }
   }
 
   @media (min-width: 750px) {
-    #shopify-section-{{ section.id }} .wow_announcement_bar__inner {
+    #shopify-section-{{ section.id }} .lab_announcement_bar__inner {
       padding-inline: clamp(1.5rem, 4vw, 3rem);
     }
   }
@@ -338,12 +338,12 @@
 {% if show_close %}
   <script>
     (function () {
-      var section = document.getElementById('wow-{{ section.id }}');
+      var section = document.getElementById('lab-{{ section.id }}');
       if (!section) return;
 
       var wrap = section.parentElement;
-      var storageKey = 'wow_announcement_bar_dismissed_{{ section.id }}';
-      var closeBtn = section.querySelector('[data-wow-announcement-close]');
+      var storageKey = 'lab_announcement_bar_dismissed_{{ section.id }}';
+      var closeBtn = section.querySelector('[data-lab-announcement-close]');
 
       try {
         if (window.localStorage && localStorage.getItem(storageKey) === '1' && !window.Shopify) {
@@ -377,9 +377,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Announcement Bar",
+  "name": "🧪 Announcement Bar",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -525,8 +525,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Announcement — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Announcement — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "bar_text": "Free expedited shipping on orders over $200",
         "link_label": "Shop tech",
@@ -547,8 +547,8 @@
       }
     },
     {
-      "name": "⚡ Announcement — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Announcement — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "bar_text": "Complimentary samples with every order",
         "link_label": "Start your ritual",
@@ -569,8 +569,8 @@
       }
     },
     {
-      "name": "⚡ Announcement — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Announcement — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "bar_text": "Free returns within 30 days",
         "link_label": "Shop now",

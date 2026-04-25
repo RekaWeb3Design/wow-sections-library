@@ -25,14 +25,14 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_image_with_text wow_image_with_text--image-{{ image_position }} wow_image_with_text--width-{{ image_width }} wow_image_with_text--align-{{ section.settings.content_alignment }} wow_image_with_text--pos-{{ section.settings.content_position }} wow_image_with_text--valign-{{ vertical_alignment }} wow_image_with_text--mobile-{{ mobile_layout }} wow_image_with_text--section-{{ section.settings.section_width }} wow_image_with_text--cta-hover-{{ section.settings.cta_hover_effect }} wow_image_with_text--cta2-hover-{{ section.settings.secondary_cta_hover_effect }}{% if animation_enabled %} wow_image_with_text--animated wow_image_with_text--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_image_with_text lab_image_with_text--image-{{ image_position }} lab_image_with_text--width-{{ image_width }} lab_image_with_text--align-{{ section.settings.content_alignment }} lab_image_with_text--pos-{{ section.settings.content_position }} lab_image_with_text--valign-{{ vertical_alignment }} lab_image_with_text--mobile-{{ mobile_layout }} lab_image_with_text--section-{{ section.settings.section_width }} lab_image_with_text--cta-hover-{{ section.settings.cta_hover_effect }} lab_image_with_text--cta2-hover-{{ section.settings.secondary_cta_hover_effect }}{% if animation_enabled %} lab_image_with_text--animated lab_image_with_text--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Image with text' | escape }}"
   >
-    <div class="wow_image_with_text__inner">
-      <div class="wow_image_with_text__media">
+    <div class="lab_image_with_text__inner">
+      <div class="lab_image_with_text__media">
         {% if image != blank %}
-          <div class="wow_image_with_text__image-wrap">
+          <div class="lab_image_with_text__image-wrap">
             {{ image | image_url: width: 1600 | image_tag:
               alt: section.settings.image_alt | default: section.settings.heading,
               loading: image_loading,
@@ -41,43 +41,43 @@
               height: image.height,
               widths: '400, 800, 1200, 1600',
               sizes: '(min-width: 750px) 50vw, 100vw',
-              class: 'wow_image_with_text__image'
+              class: 'lab_image_with_text__image'
             }}
             {% if section.settings.image_overlay_opacity > 0 %}
-              <span class="wow_image_with_text__image-overlay" aria-hidden="true"></span>
+              <span class="lab_image_with_text__image-overlay" aria-hidden="true"></span>
             {% endif %}
           </div>
         {% else %}
-          <div class="wow_image_with_text__image-wrap wow_image_with_text__image-wrap--placeholder" aria-hidden="true">
-            {{ 'lifestyle-1' | placeholder_svg_tag: 'wow_image_with_text__image wow_image_with_text__image--placeholder' }}
+          <div class="lab_image_with_text__image-wrap lab_image_with_text__image-wrap--placeholder" aria-hidden="true">
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'lab_image_with_text__image lab_image_with_text__image--placeholder' }}
           </div>
         {% endif %}
       </div>
 
-      <div class="wow_image_with_text__content"
+      <div class="lab_image_with_text__content"
         {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
         {% if section.settings.badge_text != blank %}
-          <span class="wow_image_with_text__badge">{{ section.settings.badge_text | escape }}</span>
+          <span class="lab_image_with_text__badge">{{ section.settings.badge_text | escape }}</span>
         {% endif %}
 
         {% if section.settings.heading != blank %}
-          <h2 class="wow_image_with_text__heading">{{ section.settings.heading | escape }}</h2>
+          <h2 class="lab_image_with_text__heading">{{ section.settings.heading | escape }}</h2>
         {% endif %}
 
         {% if section.settings.subheading != blank %}
-          <p class="wow_image_with_text__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+          <p class="lab_image_with_text__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
         {% endif %}
 
         {% if section.settings.body_text != blank %}
-          <div class="wow_image_with_text__body">{{ section.settings.body_text }}</div>
+          <div class="lab_image_with_text__body">{{ section.settings.body_text }}</div>
         {% endif %}
 
         {% if section.settings.cta_label != blank or section.settings.secondary_cta_label != blank %}
-          <div class="wow_image_with_text__actions">
+          <div class="lab_image_with_text__actions">
             {% if section.settings.cta_label != blank %}
               <a
                 href="{{ section.settings.cta_url | default: '#' }}"
-                class="wow_image_with_text__cta wow_image_with_text__cta--primary"
+                class="lab_image_with_text__cta lab_image_with_text__cta--primary"
               >
                 {{ section.settings.cta_label | escape }}
               </a>
@@ -85,7 +85,7 @@
             {% if section.settings.secondary_cta_label != blank %}
               <a
                 href="{{ section.settings.secondary_cta_url | default: '#' }}"
-                class="wow_image_with_text__cta wow_image_with_text__cta--secondary"
+                class="lab_image_with_text__cta lab_image_with_text__cta--secondary"
               >
                 {{ section.settings.secondary_cta_label | escape }}
               </a>
@@ -99,7 +99,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_image_with_text {
+  #shopify-section-{{ section.id }} .lab_image_with_text {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     {% if section.settings.bg_color != blank %}
@@ -116,7 +116,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__inner {
+  #shopify-section-{{ section.id }} .lab_image_with_text__inner {
     width: 100%;
     max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}960px{% else %}var(--page-width, 1200px){% endif %};
     margin-inline: auto;
@@ -127,11 +127,11 @@
     align-items: {{ section.settings.items_align }};
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__media {
+  #shopify-section-{{ section.id }} .lab_image_with_text__media {
     order: {% if mobile_layout == 'image-first' %}1{% else %}2{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__content {
+  #shopify-section-{{ section.id }} .lab_image_with_text__content {
     order: {% if mobile_layout == 'image-first' %}2{% else %}1{% endif %};
     display: flex;
     flex-direction: column;
@@ -142,7 +142,7 @@
     text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image-wrap {
     position: relative;
     overflow: hidden;
     border-radius: {{ section.settings.image_border_radius }}px;
@@ -155,7 +155,7 @@
     {% endcase %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image {
     display: block;
     width: 100%;
     height: 100%;
@@ -163,23 +163,23 @@
     transition: transform 0.6s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap:hover .wow_image_with_text__image {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image-wrap:hover .lab_image_with_text__image {
     transform: scale(1.03);
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap--placeholder {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image-wrap--placeholder {
     aspect-ratio: 4 / 3;
     background-color: color-mix(in srgb, var(--color-foreground) 6%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image--placeholder {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image--placeholder {
     width: 100%;
     height: 100%;
     object-fit: contain;
     color: color-mix(in srgb, var(--color-foreground) 25%, transparent);
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__image-overlay {
+  #shopify-section-{{ section.id }} .lab_image_with_text__image-overlay {
     position: absolute;
     inset: 0;
     background-color: color-mix(in srgb, {% if section.settings.image_overlay_color != blank %}{{ section.settings.image_overlay_color }}{% else %}var(--color-foreground){% endif %} {{ section.settings.image_overlay_color_opacity }}%, transparent);
@@ -187,7 +187,7 @@
     pointer-events: none;
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__badge {
+  #shopify-section-{{ section.id }} .lab_image_with_text__badge {
     align-self: {% if section.settings.content_alignment == 'left' %}flex-start{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}center{% endif %};
     display: inline-flex;
     align-items: center;
@@ -207,7 +207,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__heading {
+  #shopify-section-{{ section.id }} .lab_image_with_text__heading {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -222,7 +222,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__subheading {
+  #shopify-section-{{ section.id }} .lab_image_with_text__subheading {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -237,7 +237,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__body {
+  #shopify-section-{{ section.id }} .lab_image_with_text__body {
     margin: 0;
     font-size: {{ section.settings.body_text_size }}px;
     font-weight: {{ section.settings.body_text_weight }};
@@ -252,14 +252,14 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__body p {
+  #shopify-section-{{ section.id }} .lab_image_with_text__body p {
     margin: 0 0 0.75em;
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text__body p:last-child {
+  #shopify-section-{{ section.id }} .lab_image_with_text__body p:last-child {
     margin-bottom: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__actions {
+  #shopify-section-{{ section.id }} .lab_image_with_text__actions {
     display: flex;
     flex-wrap: wrap;
     gap: clamp(0.5rem, 1.5vw, 1rem);
@@ -267,7 +267,7 @@
     justify-content: {% if section.settings.content_alignment == 'left' %}flex-start{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}center{% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__cta {
+  #shopify-section-{{ section.id }} .lab_image_with_text__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -277,7 +277,7 @@
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__cta--primary {
+  #shopify-section-{{ section.id }} .lab_image_with_text__cta--primary {
     padding: {{ section.settings.cta_padding_y }}px {{ section.settings.cta_padding_x }}px;
     border-radius: {{ section.settings.cta_border_radius }}px;
     border: {{ section.settings.cta_border_width }}px solid {% if section.settings.cta_border_color != blank %}color-mix(in srgb, {{ section.settings.cta_border_color }} {{ section.settings.cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
@@ -294,10 +294,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-fill .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-darken .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-lift .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-glow .wow_image_with_text__cta--primary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-fill .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-darken .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-lift .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-glow .lab_image_with_text__cta--primary:hover {
     {% if section.settings.cta_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -308,26 +308,26 @@
       border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-darken .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-darken .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-darken .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-darken .lab_image_with_text__cta--secondary:hover {
     filter: brightness(0.88);
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-lift .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-lift .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-lift .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-lift .lab_image_with_text__cta--secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-glow .wow_image_with_text__cta--primary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-glow .lab_image_with_text__cta--primary:hover {
     box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-glow .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-glow .lab_image_with_text__cta--secondary:hover {
     box-shadow: 0 0 24px {% if section.settings.secondary_cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.secondary_cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-outline .wow_image_with_text__cta--primary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-outline .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-outline .lab_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-outline .lab_image_with_text__cta--secondary:hover {
     background-color: transparent;
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-outline .wow_image_with_text__cta--primary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta-hover-outline .lab_image_with_text__cta--primary:hover {
     {% if section.settings.cta_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
     {% endif %}
@@ -336,7 +336,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__cta--secondary {
+  #shopify-section-{{ section.id }} .lab_image_with_text__cta--secondary {
     padding: {{ section.settings.secondary_cta_padding_y }}px {{ section.settings.secondary_cta_padding_x }}px;
     border-radius: {{ section.settings.secondary_cta_border_radius }}px;
     border: {{ section.settings.secondary_cta_border_width }}px solid {% if section.settings.secondary_cta_border_color != blank %}color-mix(in srgb, {{ section.settings.secondary_cta_border_color }} {{ section.settings.secondary_cta_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
@@ -353,10 +353,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-fill .wow_image_with_text__cta--secondary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-darken .wow_image_with_text__cta--secondary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-lift .wow_image_with_text__cta--secondary:hover,
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-glow .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-fill .lab_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-darken .lab_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-lift .lab_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-glow .lab_image_with_text__cta--secondary:hover {
     {% if section.settings.secondary_cta_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_bg_color }} {{ section.settings.secondary_cta_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -367,7 +367,7 @@
       border-color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_border_color }} {{ section.settings.secondary_cta_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-outline .wow_image_with_text__cta--secondary:hover {
+  #shopify-section-{{ section.id }} .lab_image_with_text--cta2-hover-outline .lab_image_with_text__cta--secondary:hover {
     {% if section.settings.secondary_cta_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_text_color }} {{ section.settings.secondary_cta_hover_text_color_opacity }}%, transparent);
     {% endif %}
@@ -376,41 +376,41 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_image_with_text__cta:focus-visible {
+  #shopify-section-{{ section.id }} .lab_image_with_text__cta:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
   }
 
   /* Animation */
   {% if animation_enabled %}
-    #shopify-section-{{ section.id }} .wow_image_with_text--animated .wow_image_with_text__content,
-    #shopify-section-{{ section.id }} .wow_image_with_text--animated .wow_image_with_text__media {
+    #shopify-section-{{ section.id }} .lab_image_with_text--animated .lab_image_with_text__content,
+    #shopify-section-{{ section.id }} .lab_image_with_text--animated .lab_image_with_text__media {
       opacity: 0;
       animation-duration: 0.6s;
       animation-fill-mode: forwards;
       animation-timing-function: ease-out;
     }
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-fade .wow_image_with_text__content,
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-fade .wow_image_with_text__media {
-      animation-name: wow_image_with_text_fade_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-fade .lab_image_with_text__content,
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-fade .lab_image_with_text__media {
+      animation-name: lab_image_with_text_fade_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-slide .wow_image_with_text__content,
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-slide .wow_image_with_text__media {
-      animation-name: wow_image_with_text_slide_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-slide .lab_image_with_text__content,
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-slide .lab_image_with_text__media {
+      animation-name: lab_image_with_text_slide_{{ section.id }};
     }
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-zoom .wow_image_with_text__content,
-    #shopify-section-{{ section.id }} .wow_image_with_text--anim-zoom .wow_image_with_text__media {
-      animation-name: wow_image_with_text_zoom_{{ section.id }};
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-zoom .lab_image_with_text__content,
+    #shopify-section-{{ section.id }} .lab_image_with_text--anim-zoom .lab_image_with_text__media {
+      animation-name: lab_image_with_text_zoom_{{ section.id }};
     }
-    @keyframes wow_image_with_text_fade_{{ section.id }} {
+    @keyframes lab_image_with_text_fade_{{ section.id }} {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    @keyframes wow_image_with_text_slide_{{ section.id }} {
+    @keyframes lab_image_with_text_slide_{{ section.id }} {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes wow_image_with_text_zoom_{{ section.id }} {
+    @keyframes lab_image_with_text_zoom_{{ section.id }} {
       from { opacity: 0; transform: scale(0.97); }
       to { opacity: 1; transform: scale(1); }
     }
@@ -418,7 +418,7 @@
 
   /* Desktop split layout — image position via order, image_width via grid columns */
   @media (min-width: 750px) {
-    #shopify-section-{{ section.id }} .wow_image_with_text__inner {
+    #shopify-section-{{ section.id }} .lab_image_with_text__inner {
       grid-template-columns:
         {% case image_width %}
           {% when '40' %}{% if image_position == 'right' %}1fr 40%{% else %}40% 1fr{% endif %};
@@ -427,19 +427,19 @@
         {% endcase %}
       align-items: {% if vertical_alignment == 'top' %}start{% elsif vertical_alignment == 'bottom' %}end{% else %}center{% endif %};
     }
-    #shopify-section-{{ section.id }} .wow_image_with_text__media {
+    #shopify-section-{{ section.id }} .lab_image_with_text__media {
       order: {% if image_position == 'right' %}2{% else %}1{% endif %};
     }
-    #shopify-section-{{ section.id }} .wow_image_with_text__content {
+    #shopify-section-{{ section.id }} .lab_image_with_text__content {
       order: {% if image_position == 'right' %}1{% else %}2{% endif %};
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_image_with_text__image,
-    #shopify-section-{{ section.id }} .wow_image_with_text__cta,
-    #shopify-section-{{ section.id }} .wow_image_with_text__content,
-    #shopify-section-{{ section.id }} .wow_image_with_text__media {
+    #shopify-section-{{ section.id }} .lab_image_with_text__image,
+    #shopify-section-{{ section.id }} .lab_image_with_text__cta,
+    #shopify-section-{{ section.id }} .lab_image_with_text__content,
+    #shopify-section-{{ section.id }} .lab_image_with_text__media {
       transition: none;
       animation: none;
       transform: none;
@@ -466,9 +466,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Image with Text",
+  "name": "🧪 Image with Text",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -900,8 +900,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Image+Text — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Image+Text — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "badge_text": "New drop",
         "heading": "Built in titanium, made to outlast",
@@ -938,8 +938,8 @@
       }
     },
     {
-      "name": "⚡ Image+Text — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Image+Text — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "badge_text": "Slow-made",
         "heading": "Small batches, real ingredients, no compromise",
@@ -979,8 +979,8 @@
       }
     },
     {
-      "name": "⚡ Image+Text — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Image+Text — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "badge_text": "Drop 04",
         "heading": "BUILT FOR THE STREETS",

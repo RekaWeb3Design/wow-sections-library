@@ -1,6 +1,6 @@
 {
-  "name": "wow-announcement-bar-basic",
-  "display_name": "WOW Announcement Bar — Basic",
+  "name": "liquid-lab-announcement-bar-basic",
+  "display_name": "Liquid Lab Announcement Bar — Basic",
   "category": "navigation",
   "tags": ["announcement", "bar", "marquee", "banner", "sticky", "navigation", "free"],
   "tier": "free",
@@ -8,7 +8,7 @@
   "description": "Sticky top-of-page announcement bar with static centered or scrolling marquee mode. Supports optional link, dismissible close button with localStorage persistence, configurable bar height, and full color-scheme integration. Marquee animation is pure CSS with reduced-motion fallback.",
   "preview_url": "",
   "screenshot": "",
-  "liquid_file": "sections/free/navigation/wow-announcement-bar-basic.liquid",
+  "liquid_file": "sections/free/navigation/liquid-lab-announcement-bar-basic.liquid",
   "compatible_themes": ["dawn", "sense", "craft", "debut", "horizon"],
   "shopify_version": "2.0",
   "settings_count": 45,

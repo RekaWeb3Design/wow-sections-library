@@ -16,24 +16,24 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_testimonials_grid wow_testimonials_grid--cols-{{ columns }} wow_testimonials_grid--align-{{ alignment }} wow_testimonials_grid--items-{{ section.settings.items_align }} wow_testimonials_grid--width-{{ section.settings.section_width }} wow_testimonials_grid--shadow-{{ section.settings.testimonial_card_shadow }} wow_testimonials_grid--hover-shadow-{{ section.settings.testimonial_card_hover_shadow }} wow_testimonials_grid--hover-{{ card_hover }}{% if animation_enabled %} wow_testimonials_grid--animated wow_testimonials_grid--anim-{{ animation_type }}{% endif %} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_testimonials_grid lab_testimonials_grid--cols-{{ columns }} lab_testimonials_grid--align-{{ alignment }} lab_testimonials_grid--items-{{ section.settings.items_align }} lab_testimonials_grid--width-{{ section.settings.section_width }} lab_testimonials_grid--shadow-{{ section.settings.testimonial_card_shadow }} lab_testimonials_grid--hover-shadow-{{ section.settings.testimonial_card_hover_shadow }} lab_testimonials_grid--hover-{{ card_hover }}{% if animation_enabled %} lab_testimonials_grid--animated lab_testimonials_grid--anim-{{ animation_type }}{% endif %} lab_section"
     aria-label="{{ section.settings.heading | default: 'Customer testimonials' | escape }}"
   >
-    <div class="wow_testimonials_grid__inner">
+    <div class="lab_testimonials_grid__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
-        <header class="wow_testimonials_grid__header">
+        <header class="lab_testimonials_grid__header">
           {% if section.settings.heading != blank %}
-            <h2 class="wow_testimonials_grid__title">{{ section.settings.heading | escape }}</h2>
+            <h2 class="lab_testimonials_grid__title">{{ section.settings.heading | escape }}</h2>
           {% endif %}
           {% if section.settings.subheading != blank %}
-            <p class="wow_testimonials_grid__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
+            <p class="lab_testimonials_grid__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
           {% endif %}
         </header>
       {% endif %}
 
       {% if section.blocks.size > 0 %}
-        <ul class="wow_testimonials_grid__grid" role="list">
+        <ul class="lab_testimonials_grid__grid" role="list">
           {% for block in section.blocks %}
             {% if block.type == 'testimonial' %}
               {% liquid
@@ -78,18 +78,18 @@
                 assign initials = initials_source | slice: 0, 1 | upcase
               %}
               <li
-                class="wow_testimonials_grid__card"
+                class="lab_testimonials_grid__card"
                 {{ block.shopify_attributes }}
-                style="--wow-q-size: {{ block.settings.quote_size }}px; --wow-q-weight: {{ block.settings.quote_weight }}; --wow-q-transform: {{ block.settings.quote_transform }}; --wow-q-align: {{ block.settings.quote_text_align }}; --wow-q-color: {{ q_color }}; --wow-q-ls: calc({{ block.settings.quote_letter_spacing }} / 100 * 1em); --wow-q-lh: calc({{ block.settings.quote_line_height }} / 10); --wow-cn-size: {{ block.settings.customer_name_size }}px; --wow-cn-weight: {{ block.settings.customer_name_weight }}; --wow-cn-transform: {{ block.settings.customer_name_transform }}; --wow-cn-align: {{ block.settings.customer_name_text_align }}; --wow-cn-color: {{ cn_color }}; --wow-cn-ls: calc({{ block.settings.customer_name_letter_spacing }} / 100 * 1em); --wow-cn-lh: calc({{ block.settings.customer_name_line_height }} / 10); --wow-cr-size: {{ block.settings.customer_role_size }}px; --wow-cr-weight: {{ block.settings.customer_role_weight }}; --wow-cr-transform: {{ block.settings.customer_role_transform }}; --wow-cr-align: {{ block.settings.customer_role_text_align }}; --wow-cr-color: {{ cr_color }}; --wow-cr-ls: calc({{ block.settings.customer_role_letter_spacing }} / 100 * 1em); --wow-cr-lh: calc({{ block.settings.customer_role_line_height }} / 10); --wow-avatar-radius: {{ block.settings.avatar_border_radius }}px; --wow-avatar-ratio: {{ avatar_ratio_css }}; --wow-avatar-fit: {{ block.settings.avatar_object_fit }}; --wow-avatar-overlay-color: color-mix(in srgb, {{ block.settings.avatar_overlay_color }} {{ avatar_overlay_pct }}%, transparent); --wow-avatar-overlay-alpha: {{ avatar_overlay_alpha }};{% if animation_enabled %} --wow-anim-offset: {{ anim_offset }}ms;{% endif %}"
+                style="--lab-q-size: {{ block.settings.quote_size }}px; --lab-q-weight: {{ block.settings.quote_weight }}; --lab-q-transform: {{ block.settings.quote_transform }}; --lab-q-align: {{ block.settings.quote_text_align }}; --lab-q-color: {{ q_color }}; --lab-q-ls: calc({{ block.settings.quote_letter_spacing }} / 100 * 1em); --lab-q-lh: calc({{ block.settings.quote_line_height }} / 10); --lab-cn-size: {{ block.settings.customer_name_size }}px; --lab-cn-weight: {{ block.settings.customer_name_weight }}; --lab-cn-transform: {{ block.settings.customer_name_transform }}; --lab-cn-align: {{ block.settings.customer_name_text_align }}; --lab-cn-color: {{ cn_color }}; --lab-cn-ls: calc({{ block.settings.customer_name_letter_spacing }} / 100 * 1em); --lab-cn-lh: calc({{ block.settings.customer_name_line_height }} / 10); --lab-cr-size: {{ block.settings.customer_role_size }}px; --lab-cr-weight: {{ block.settings.customer_role_weight }}; --lab-cr-transform: {{ block.settings.customer_role_transform }}; --lab-cr-align: {{ block.settings.customer_role_text_align }}; --lab-cr-color: {{ cr_color }}; --lab-cr-ls: calc({{ block.settings.customer_role_letter_spacing }} / 100 * 1em); --lab-cr-lh: calc({{ block.settings.customer_role_line_height }} / 10); --lab-avatar-radius: {{ block.settings.avatar_border_radius }}px; --lab-avatar-ratio: {{ avatar_ratio_css }}; --lab-avatar-fit: {{ block.settings.avatar_object_fit }}; --lab-avatar-overlay-color: color-mix(in srgb, {{ block.settings.avatar_overlay_color }} {{ avatar_overlay_pct }}%, transparent); --lab-avatar-overlay-alpha: {{ avatar_overlay_alpha }};{% if animation_enabled %} --lab-anim-offset: {{ anim_offset }}ms;{% endif %}"
               >
-                <div class="wow_testimonials_grid__stars" role="img" aria-label="{{ rating }} out of 5 stars">
+                <div class="lab_testimonials_grid__stars" role="img" aria-label="{{ rating }} out of 5 stars">
                   {% for i in (1..5) %}
                     {% if i <= rating %}
-                      <svg class="wow_testimonials_grid__star wow_testimonials_grid__star--filled" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <svg class="lab_testimonials_grid__star lab_testimonials_grid__star--filled" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.07 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z" fill="currentColor"/>
                       </svg>
                     {% else %}
-                      <svg class="wow_testimonials_grid__star wow_testimonials_grid__star--empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <svg class="lab_testimonials_grid__star lab_testimonials_grid__star--empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.07 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                       </svg>
                     {% endif %}
@@ -97,15 +97,15 @@
                 </div>
 
                 {% if block.settings.quote != blank %}
-                  <blockquote class="wow_testimonials_grid__quote">
+                  <blockquote class="lab_testimonials_grid__quote">
                     {{ block.settings.quote | escape | newline_to_br }}
                   </blockquote>
                 {% endif %}
 
-                <footer class="wow_testimonials_grid__footer">
-                  <div class="wow_testimonials_grid__avatar-wrap">
+                <footer class="lab_testimonials_grid__footer">
+                  <div class="lab_testimonials_grid__avatar-wrap">
                     {% if block.settings.avatar != blank %}
-                      <div class="wow_testimonials_grid__avatar">
+                      <div class="lab_testimonials_grid__avatar">
                         {{ block.settings.avatar
                           | image_url: width: 200
                           | image_tag:
@@ -116,23 +116,23 @@
                             height: 96,
                             widths: '48, 96, 144, 192',
                             sizes: '96px',
-                            class: 'wow_testimonials_grid__avatar-img'
+                            class: 'lab_testimonials_grid__avatar-img'
                         }}
-                        <span class="wow_testimonials_grid__avatar-overlay" aria-hidden="true"></span>
+                        <span class="lab_testimonials_grid__avatar-overlay" aria-hidden="true"></span>
                       </div>
                     {% else %}
-                      <div class="wow_testimonials_grid__avatar wow_testimonials_grid__avatar--initials" aria-hidden="true">
-                        <span class="wow_testimonials_grid__initials">{{ initials | escape }}</span>
+                      <div class="lab_testimonials_grid__avatar lab_testimonials_grid__avatar--initials" aria-hidden="true">
+                        <span class="lab_testimonials_grid__initials">{{ initials | escape }}</span>
                       </div>
                     {% endif %}
                   </div>
 
-                  <div class="wow_testimonials_grid__person">
+                  <div class="lab_testimonials_grid__person">
                     {% if block.settings.customer_name != blank %}
-                      <p class="wow_testimonials_grid__name">
+                      <p class="lab_testimonials_grid__name">
                         <span>{{ block.settings.customer_name | escape }}</span>
                         {% if show_verified_global and block.settings.show_badge %}
-                          <span class="wow_testimonials_grid__badge" title="Verified" aria-label="Verified buyer">
+                          <span class="lab_testimonials_grid__badge" title="Verified" aria-label="Verified buyer">
                             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                               <circle cx="12" cy="12" r="10" fill="currentColor"/>
                               <path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="var(--color-background)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -142,7 +142,7 @@
                       </p>
                     {% endif %}
                     {% if block.settings.customer_role != blank %}
-                      <p class="wow_testimonials_grid__role">{{ block.settings.customer_role | escape }}</p>
+                      <p class="lab_testimonials_grid__role">{{ block.settings.customer_role | escape }}</p>
                     {% endif %}
                   </div>
                 </footer>
@@ -157,7 +157,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_testimonials_grid {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     color: var(--color-foreground);
@@ -175,7 +175,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__inner {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__inner {
     width: 100%;
     max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
     margin-inline: auto;
@@ -185,24 +185,24 @@
     gap: clamp(2rem, 4vw, 3.5rem);
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__header {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__header {
     display: flex;
     flex-direction: column;
     gap: clamp(0.75rem, 1.5vw, 1.25rem);
     max-width: {{ section.settings.content_max_width }}px;
     width: 100%;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--align-left .wow_testimonials_grid__header {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--align-left .lab_testimonials_grid__header {
     align-self: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--align-center .wow_testimonials_grid__header {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--align-center .lab_testimonials_grid__header {
     align-self: center;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--align-right .wow_testimonials_grid__header {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--align-right .lab_testimonials_grid__header {
     align-self: flex-end;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__title {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__title {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -217,7 +217,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__subtitle {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__subtitle {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -232,7 +232,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__grid {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__grid {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -243,21 +243,21 @@
   }
 
   @media (min-width: 640px) {
-    #shopify-section-{{ section.id }} .wow_testimonials_grid__grid {
+    #shopify-section-{{ section.id }} .lab_testimonials_grid__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 960px) {
-    #shopify-section-{{ section.id }} .wow_testimonials_grid--cols-2 .wow_testimonials_grid__grid {
+    #shopify-section-{{ section.id }} .lab_testimonials_grid--cols-2 .lab_testimonials_grid__grid {
       grid-template-columns: repeat(2, 1fr);
     }
-    #shopify-section-{{ section.id }} .wow_testimonials_grid--cols-3 .wow_testimonials_grid__grid {
+    #shopify-section-{{ section.id }} .lab_testimonials_grid--cols-3 .lab_testimonials_grid__grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__card {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__card {
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 1.6vw, 1.4rem);
@@ -272,12 +272,12 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--shadow-none .wow_testimonials_grid__card { box-shadow: none; }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--shadow-soft .wow_testimonials_grid__card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--shadow-medium .wow_testimonials_grid__card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--shadow-strong .wow_testimonials_grid__card { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--shadow-none .lab_testimonials_grid__card { box-shadow: none; }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--shadow-soft .lab_testimonials_grid__card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--shadow-medium .lab_testimonials_grid__card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--shadow-strong .lab_testimonials_grid__card { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__card:hover {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__card:hover {
     {% if section.settings.testimonial_card_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.testimonial_card_hover_bg_color }} {{ section.settings.testimonial_card_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -286,24 +286,24 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-shadow-soft .wow_testimonials_grid__card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-shadow-medium .wow_testimonials_grid__card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-shadow-strong .wow_testimonials_grid__card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-shadow-soft .lab_testimonials_grid__card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-shadow-medium .lab_testimonials_grid__card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-shadow-strong .lab_testimonials_grid__card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14); }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-lift .wow_testimonials_grid__card:hover {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-lift .lab_testimonials_grid__card:hover {
     transform: translateY(-4px);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-scale .wow_testimonials_grid__card:hover {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-scale .lab_testimonials_grid__card:hover {
     transform: scale(1.02);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-border .wow_testimonials_grid__card:hover {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-border .lab_testimonials_grid__card:hover {
     border-color: {% if section.settings.testimonial_card_hover_border_color != blank %}color-mix(in srgb, {{ section.settings.testimonial_card_hover_border_color }} {{ section.settings.testimonial_card_hover_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--hover-glow .wow_testimonials_grid__card:hover {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--hover-glow .lab_testimonials_grid__card:hover {
     box-shadow: 0 0 28px {% if section.settings.testimonial_card_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.testimonial_card_hover_bg_color }} 45%, transparent){% else %}rgba(0, 0, 0, 0.16){% endif %};
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__stars {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__stars {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
@@ -313,42 +313,42 @@
       color: var(--color-foreground);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__star {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__star {
     width: clamp(1rem, 2vw, 1.25rem);
     height: clamp(1rem, 2vw, 1.25rem);
     flex: 0 0 auto;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__star--empty {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__star--empty {
     opacity: 0.45;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__quote {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__quote {
     margin: 0;
-    font-size: var(--wow-q-size, 18px);
-    font-weight: var(--wow-q-weight, 400);
-    text-transform: var(--wow-q-transform, none);
-    text-align: var(--wow-q-align, left);
-    letter-spacing: var(--wow-q-ls, 0);
-    line-height: var(--wow-q-lh, 1.6);
-    color: var(--wow-q-color, var(--color-foreground));
+    font-size: var(--lab-q-size, 18px);
+    font-weight: var(--lab-q-weight, 400);
+    text-transform: var(--lab-q-transform, none);
+    text-align: var(--lab-q-align, left);
+    letter-spacing: var(--lab-q-ls, 0);
+    line-height: var(--lab-q-lh, 1.6);
+    color: var(--lab-q-color, var(--color-foreground));
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__footer {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__footer {
     display: flex;
     align-items: center;
     gap: clamp(0.75rem, 1.5vw, 1rem);
     margin-top: auto;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__avatar-wrap {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__avatar-wrap {
     flex: 0 0 auto;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__avatar {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__avatar {
     position: relative;
     width: clamp(2.5rem, 4.5vw, 3.25rem);
-    aspect-ratio: var(--wow-avatar-ratio, 1 / 1);
-    border-radius: var(--wow-avatar-radius, 999px);
+    aspect-ratio: var(--lab-avatar-ratio, 1 / 1);
+    border-radius: var(--lab-avatar-radius, 999px);
     overflow: hidden;
     background-color: var(--color-background-contrast, var(--color-foreground));
     display: inline-flex;
@@ -356,64 +356,64 @@
     justify-content: center;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__avatar-img {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__avatar-img {
     width: 100%;
     height: 100%;
-    object-fit: var(--wow-avatar-fit, cover);
+    object-fit: var(--lab-avatar-fit, cover);
     display: block;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__avatar-overlay {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__avatar-overlay {
     position: absolute;
     inset: 0;
-    background-color: var(--wow-avatar-overlay-color, transparent);
-    opacity: var(--wow-avatar-overlay-alpha, 0);
+    background-color: var(--lab-avatar-overlay-color, transparent);
+    opacity: var(--lab-avatar-overlay-alpha, 0);
     pointer-events: none;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__avatar--initials {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__avatar--initials {
     background-color: color-mix(in srgb, var(--color-foreground) 12%, transparent);
     color: var(--color-foreground);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__initials {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__initials {
     font-size: clamp(0.95rem, 1.6vw, 1.15rem);
     font-weight: 600;
     letter-spacing: calc(1 / 100 * 1em);
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__person {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__person {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
     min-width: 0;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__name {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__name {
     margin: 0;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: var(--wow-cn-size, 16px);
-    font-weight: var(--wow-cn-weight, 600);
-    text-transform: var(--wow-cn-transform, none);
-    text-align: var(--wow-cn-align, left);
-    letter-spacing: var(--wow-cn-ls, 0);
-    line-height: var(--wow-cn-lh, 1.4);
-    color: var(--wow-cn-color, var(--color-foreground));
+    font-size: var(--lab-cn-size, 16px);
+    font-weight: var(--lab-cn-weight, 600);
+    text-transform: var(--lab-cn-transform, none);
+    text-align: var(--lab-cn-align, left);
+    letter-spacing: var(--lab-cn-ls, 0);
+    line-height: var(--lab-cn-lh, 1.4);
+    color: var(--lab-cn-color, var(--color-foreground));
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__role {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__role {
     margin: 0;
-    font-size: var(--wow-cr-size, 14px);
-    font-weight: var(--wow-cr-weight, 400);
-    text-transform: var(--wow-cr-transform, none);
-    text-align: var(--wow-cr-align, left);
-    letter-spacing: var(--wow-cr-ls, 0);
-    line-height: var(--wow-cr-lh, 1.4);
-    color: var(--wow-cr-color, var(--color-foreground-75));
+    font-size: var(--lab-cr-size, 14px);
+    font-weight: var(--lab-cr-weight, 400);
+    text-transform: var(--lab-cr-transform, none);
+    text-align: var(--lab-cr-align, left);
+    letter-spacing: var(--lab-cr-ls, 0);
+    line-height: var(--lab-cr-lh, 1.4);
+    color: var(--lab-cr-color, var(--color-foreground-75));
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__badge {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -422,35 +422,35 @@
     color: var(--color-foreground);
     flex: 0 0 auto;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid__badge svg {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid__badge svg {
     width: 100%;
     height: 100%;
     display: block;
   }
 
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--animated .wow_testimonials_grid__card {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--animated .lab_testimonials_grid__card {
     opacity: 0;
     will-change: opacity, transform;
     transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
-    transition-delay: var(--wow-anim-offset, 0ms);
+    transition-delay: var(--lab-anim-offset, 0ms);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--anim-fade .wow_testimonials_grid__card {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--anim-fade .lab_testimonials_grid__card {
     transform: none;
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--anim-slide .wow_testimonials_grid__card {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--anim-slide .lab_testimonials_grid__card {
     transform: translateY(1.25rem);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--anim-zoom .wow_testimonials_grid__card {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--anim-zoom .lab_testimonials_grid__card {
     transform: scale(0.96);
   }
-  #shopify-section-{{ section.id }} .wow_testimonials_grid--animated .wow_testimonials_grid__card.is-visible {
+  #shopify-section-{{ section.id }} .lab_testimonials_grid--animated .lab_testimonials_grid__card.is-visible {
     opacity: 1;
     transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_testimonials_grid__card,
-    #shopify-section-{{ section.id }} .wow_testimonials_grid--animated .wow_testimonials_grid__card {
+    #shopify-section-{{ section.id }} .lab_testimonials_grid__card,
+    #shopify-section-{{ section.id }} .lab_testimonials_grid--animated .lab_testimonials_grid__card {
       transition: none;
       transform: none;
       opacity: 1;
@@ -480,9 +480,9 @@
 {% if section.settings.animation_enabled %}
   <script>
     (function () {
-      var section = document.getElementById('wow-{{ section.id }}');
+      var section = document.getElementById('lab-{{ section.id }}');
       if (!section) return;
-      var cards = section.querySelectorAll('.wow_testimonials_grid__card');
+      var cards = section.querySelectorAll('.lab_testimonials_grid__card');
       if (!cards.length) return;
       if (!('IntersectionObserver' in window)) {
         cards.forEach(function (c) { c.classList.add('is-visible'); });
@@ -508,9 +508,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Testimonials — Grid",
+  "name": "🧪 Testimonials — Grid",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -934,8 +934,8 @@
   "max_blocks": 12,
   "presets": [
     {
-      "name": "⚡ Testimonials — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Testimonials — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "What pros are saying",
         "subheading": "Real reviews from real builders.",
@@ -998,8 +998,8 @@
       ]
     },
     {
-      "name": "⚡ Testimonials — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Testimonials — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Loved by people like you",
         "subheading": "Honest stories from our community.",
@@ -1063,8 +1063,8 @@
       ]
     },
     {
-      "name": "⚡ Testimonials — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Testimonials — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Words from our customers",
         "subheading": "Quality speaks. So do they.",

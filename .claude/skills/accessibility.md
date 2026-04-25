@@ -1,6 +1,6 @@
-# Accessibility — WOW Section Library
+# Accessibility — Liquid Lab
 
-WCAG 2.1 AA standards for every WOW section. These are not suggestions — every section must comply, and `npm run a11y-check` runs them automatically against `sections/free/**` and `sections/pro/**`.
+WCAG 2.1 AA standards for every Liquid Lab section. These are not suggestions — every section must comply, and `npm run a11y-check` runs them automatically against `sections/free/**` and `sections/pro/**`.
 
 A section that fails any of these rules is broken and cannot ship to `main`.
 
@@ -14,8 +14,8 @@ Every `<section>` must declare an accessible name with `aria-label`. The merchan
 
 ```liquid
 <section
-  id="wow-{{ section.id }}"
-  class="wow_hero"
+  id="lab-{{ section.id }}"
+  class="lab_hero"
   aria-label="{{ section.settings.heading | default: 'Hero' | escape }}"
 >
   ...
@@ -29,9 +29,9 @@ Pattern: `aria-label="{{ section.settings.heading | default: '[Section name]' | 
 Safari + VoiceOver strips the implicit `list` role from `<ul>` elements styled with `list-style: none`. The result: screen reader users hear an unordered group of items rather than "list, 4 items". The fix is explicit roles.
 
 ```html
-<ul role="list" class="wow_features__list">
-  <li role="listitem" class="wow_features__item">...</li>
-  <li role="listitem" class="wow_features__item">...</li>
+<ul role="list" class="lab_features__list">
+  <li role="listitem" class="lab_features__item">...</li>
+  <li role="listitem" class="lab_features__item">...</li>
 </ul>
 ```
 
@@ -42,7 +42,7 @@ Every `<ul>` must carry `role="list"`. Every `<li>` inside it must carry `role="
 Anything that exists purely for visual flourish (dividers, decorative shapes, ornamental SVGs) must be hidden from assistive tech:
 
 ```html
-<div class="wow_hero__divider" aria-hidden="true"></div>
+<div class="lab_hero__divider" aria-hidden="true"></div>
 <svg aria-hidden="true" focusable="false">...</svg>
 ```
 
@@ -61,7 +61,7 @@ Every SVG must declare `aria-hidden="true"` and `focusable="false"`. The `focusa
 When an SVG is itself the interactive element (a logo link, a play button), promote it to an image with a name:
 
 ```html
-<a href="/" class="wow_logo">
+<a href="/" class="lab_logo">
   <svg role="img" aria-label="Acme home" viewBox="0 0 100 24">
     <title>Acme home</title>
     <path d="..."/>
@@ -83,7 +83,7 @@ Every `image_tag` filter call must include the `alt:` parameter. The Shopify ima
   | image_tag:
     alt: section.settings.image_alt | default: section.settings.heading,
     loading: 'lazy',
-    class: 'wow_hero__image'
+    class: 'lab_hero__image'
 }}
 ```
 
@@ -101,7 +101,7 @@ Alt text always comes from a paired `[id]_alt` schema setting so the merchant ca
 If the image conveys no information (decorative pattern, ornamental graphic), pass an empty alt — but still pass it explicitly:
 
 ```liquid
-{{ image | image_url: width: 800 | image_tag: alt: '', class: 'wow_hero__pattern' }}
+{{ image | image_url: width: 800 | image_tag: alt: '', class: 'lab_hero__pattern' }}
 ```
 
 ### 2.4 CSS background images
@@ -118,15 +118,15 @@ Every `<button>` must have either visible text content **or** an `aria-label`. A
 
 ```liquid
 <!-- ✅ visible text -->
-<button class="wow_hero__cta">{{ section.settings.cta_label }}</button>
+<button class="lab_hero__cta">{{ section.settings.cta_label }}</button>
 
 <!-- ✅ icon-only with aria-label -->
-<button class="wow_announcement__close" aria-label="Dismiss announcement">
+<button class="lab_announcement__close" aria-label="Dismiss announcement">
   <svg aria-hidden="true" focusable="false">...</svg>
 </button>
 
 <!-- ❌ icon-only, no aria-label — broken -->
-<button class="wow_announcement__close">
+<button class="lab_announcement__close">
   <svg aria-hidden="true">...</svg>
 </button>
 ```
@@ -170,12 +170,12 @@ Removing the browser's default focus outline is the single most common a11y regr
 
 ```css
 /* ❌ broken — keyboard users lose all focus indication */
-#shopify-section-{{ section.id }} .wow_hero__cta:focus {
+#shopify-section-{{ section.id }} .lab_hero__cta:focus {
   outline: none;
 }
 
 /* ✅ replacement focus style provided */
-#shopify-section-{{ section.id }} .wow_hero__cta:focus-visible {
+#shopify-section-{{ section.id }} .lab_hero__cta:focus-visible {
   outline: 2px solid var(--color-foreground);
   outline-offset: 2px;
 }
@@ -252,7 +252,7 @@ if (!reduceMotion) {
 The page's `<h1>` belongs to the theme template (collection title, product title, page title). A section dropped onto that page is a sub-region — its main heading is `<h2>`.
 
 ```liquid
-<h2 class="wow_hero__heading">{{ section.settings.heading }}</h2>
+<h2 class="lab_hero__heading">{{ section.settings.heading }}</h2>
 ```
 
 ### 7.2 Card and block headings are `<h3>`
@@ -274,12 +274,12 @@ Never reach for an `<h1>`–`<h6>` because it happens to be the right size. If t
 Star rating displays are visual — the underlying meaning ("4 out of 5") must be exposed to screen readers.
 
 ```html
-<div class="wow_testimonial__stars" role="img" aria-label="4 out of 5 stars">
-  <svg class="wow_testimonial__star" aria-hidden="true" focusable="false">...</svg>
-  <svg class="wow_testimonial__star" aria-hidden="true" focusable="false">...</svg>
-  <svg class="wow_testimonial__star" aria-hidden="true" focusable="false">...</svg>
-  <svg class="wow_testimonial__star" aria-hidden="true" focusable="false">...</svg>
-  <svg class="wow_testimonial__star wow_testimonial__star--empty" aria-hidden="true" focusable="false">...</svg>
+<div class="lab_testimonial__stars" role="img" aria-label="4 out of 5 stars">
+  <svg class="lab_testimonial__star" aria-hidden="true" focusable="false">...</svg>
+  <svg class="lab_testimonial__star" aria-hidden="true" focusable="false">...</svg>
+  <svg class="lab_testimonial__star" aria-hidden="true" focusable="false">...</svg>
+  <svg class="lab_testimonial__star" aria-hidden="true" focusable="false">...</svg>
+  <svg class="lab_testimonial__star lab_testimonial__star--empty" aria-hidden="true" focusable="false">...</svg>
 </div>
 ```
 
@@ -299,7 +299,7 @@ npm run validate-all      # shopify theme check + mobile + accessibility
 
 ---
 
-## 10. WOW Accessibility Checklist
+## 10. Liquid Lab Accessibility Checklist
 
 Walk through every box before marking a section validated.
 

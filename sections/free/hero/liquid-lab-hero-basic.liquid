@@ -28,40 +28,40 @@
 {% comment %} 2. HTML structure {% endcomment %}
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
-    id="wow-{{ section_id }}"
-    class="wow_hero_basic wow_hero_basic--align-{{ section.settings.content_alignment }} wow_hero_basic--pos-{{ section.settings.content_position }} wow_hero_basic--width-{{ section.settings.section_width }}{% if section.settings.full_height %} wow_hero_basic--full-height{% endif %} wow_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} wow_section"
+    id="lab-{{ section_id }}"
+    class="lab_hero_basic lab_hero_basic--align-{{ section.settings.content_alignment }} lab_hero_basic--pos-{{ section.settings.content_position }} lab_hero_basic--width-{{ section.settings.section_width }}{% if section.settings.full_height %} lab_hero_basic--full-height{% endif %} lab_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} lab_section"
     aria-label="{{ section.settings.heading | default: 'Hero section' | escape }}"
   >
     {% if section.settings.image != blank %}
-      <div class="wow_hero_basic__media">
+      <div class="lab_hero_basic__media">
         {{ section.settings.image
           | image_url: width: 1920
           | image_tag:
             alt: section.settings.image_alt | default: section.settings.heading | default: 'Hero image',
             loading: image_loading,
             fetchpriority: image_fetchpriority,
-            class: 'wow_hero_basic__image',
+            class: 'lab_hero_basic__image',
             widths: '400, 600, 800, 1000, 1200, 1600, 1920',
             sizes: '100vw'
         }}
-        <div class="wow_hero_basic__overlay"></div>
+        <div class="lab_hero_basic__overlay"></div>
       </div>
     {% endif %}
 
-    <div class="wow_hero_basic__inner">
-      <div class="wow_hero_basic__content">
+    <div class="lab_hero_basic__inner">
+      <div class="lab_hero_basic__content">
         {% if section.settings.heading != blank %}
-          <h2 class="wow_hero_basic__title">{{ section.settings.heading | escape }}</h2>
+          <h2 class="lab_hero_basic__title">{{ section.settings.heading | escape }}</h2>
         {% endif %}
 
         {% if section.settings.subheading != blank %}
-          <p class="wow_hero_basic__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
+          <p class="lab_hero_basic__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
         {% endif %}
 
         {% if section.settings.button_label != blank %}
           <a
             href="{{ section.settings.button_url | default: '#' }}"
-            class="wow_hero_basic__btn"
+            class="lab_hero_basic__btn"
             aria-label="{{ section.settings.button_label | escape }}"
           >
             {{ section.settings.button_label | escape }}
@@ -74,7 +74,7 @@
 
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
-  #shopify-section-{{ section.id }} .wow_hero_basic {
+  #shopify-section-{{ section.id }} .lab_hero_basic {
     position: relative;
     display: flex;
     align-items: center;
@@ -97,11 +97,11 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic--full-height {
+  #shopify-section-{{ section.id }} .lab_hero_basic--full-height {
     min-height: 100vh;
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__media {
+  #shopify-section-{{ section.id }} .lab_hero_basic__media {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -111,7 +111,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__image {
+  #shopify-section-{{ section.id }} .lab_hero_basic__image {
     width: 100%;
     height: 100%;
     object-fit: {{ section.settings.image_object_fit }};
@@ -121,14 +121,14 @@
     display: block;
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__overlay {
+  #shopify-section-{{ section.id }} .lab_hero_basic__overlay {
     position: absolute;
     inset: 0;
     background-color: color-mix(in srgb, {{ section.settings.image_overlay_color }} {{ overlay_color_pct }}%, transparent);
     opacity: {{ overlay_opacity }};
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__inner {
+  #shopify-section-{{ section.id }} .lab_hero_basic__inner {
     position: relative;
     z-index: 1;
     width: 100%;
@@ -139,40 +139,40 @@
   }
 
   /* Horizontal placement of the content block within the inner — driven by content_position */
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-left .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center-left .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-left .wow_hero_basic__inner {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-left .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-left .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-left .lab_hero_basic__inner {
     justify-content: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-center .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-center .wow_hero_basic__inner {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-center .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-center .lab_hero_basic__inner {
     justify-content: center;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-right .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center-right .wow_hero_basic__inner,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-right .wow_hero_basic__inner {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-right .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-right .lab_hero_basic__inner,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-right .lab_hero_basic__inner {
     justify-content: flex-end;
   }
 
   /* Vertical placement of the content block within the section — driven by content_position */
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-left,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-center,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-top-right {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-left,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-center,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-right {
     align-items: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center-left,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-center-right {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-left,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-right {
     align-items: center;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-left,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-center,
-  #shopify-section-{{ section.id }} .wow_hero_basic--pos-bottom-right {
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-left,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-center,
+  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-right {
     align-items: flex-end;
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__content {
+  #shopify-section-{{ section.id }} .lab_hero_basic__content {
     max-width: {{ section.settings.content_max_width }}px;
     width: 100%;
     display: flex;
@@ -181,20 +181,20 @@
   }
 
   /* Text alignment of items within the content block — driven by content_alignment */
-  #shopify-section-{{ section.id }} .wow_hero_basic--align-left .wow_hero_basic__content {
+  #shopify-section-{{ section.id }} .lab_hero_basic--align-left .lab_hero_basic__content {
     text-align: left;
     align-items: flex-start;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--align-center .wow_hero_basic__content {
+  #shopify-section-{{ section.id }} .lab_hero_basic--align-center .lab_hero_basic__content {
     text-align: center;
     align-items: center;
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--align-right .wow_hero_basic__content {
+  #shopify-section-{{ section.id }} .lab_hero_basic--align-right .lab_hero_basic__content {
     text-align: right;
     align-items: flex-end;
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__title {
+  #shopify-section-{{ section.id }} .lab_hero_basic__title {
     margin: 0;
     font-size: {{ section.settings.heading_size }}px;
     font-weight: {{ section.settings.heading_weight }};
@@ -208,7 +208,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__subtitle {
+  #shopify-section-{{ section.id }} .lab_hero_basic__subtitle {
     margin: 0;
     font-size: {{ section.settings.subheading_size }}px;
     font-weight: {{ section.settings.subheading_weight }};
@@ -222,7 +222,7 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__btn {
+  #shopify-section-{{ section.id }} .lab_hero_basic__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -245,10 +245,10 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-fill .wow_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-darken .wow_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-lift .wow_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-glow .wow_hero_basic__btn:hover {
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-fill .lab_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-darken .lab_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-lift .lab_hero_basic__btn:hover,
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-glow .lab_hero_basic__btn:hover {
     {% if section.settings.button_hover_bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.button_hover_bg_color }} {{ section.settings.button_hover_bg_color_opacity }}%, transparent);
     {% endif %}
@@ -259,17 +259,17 @@
       border-color: color-mix(in srgb, {{ section.settings.button_hover_border_color }} {{ section.settings.button_hover_border_color_opacity }}%, transparent);
     {% endif %}
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-darken .wow_hero_basic__btn:hover {
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-darken .lab_hero_basic__btn:hover {
     filter: brightness(0.88);
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-lift .wow_hero_basic__btn:hover {
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-lift .lab_hero_basic__btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-glow .wow_hero_basic__btn:hover {
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-glow .lab_hero_basic__btn:hover {
     box-shadow: 0 0 24px {% if section.settings.button_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.button_hover_bg_color }} 60%, transparent){% else %}rgba(0, 0, 0, 0.18){% endif %};
   }
-  #shopify-section-{{ section.id }} .wow_hero_basic--btn-hover-outline .wow_hero_basic__btn:hover {
+  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-outline .lab_hero_basic__btn:hover {
     background-color: transparent;
     {% if section.settings.button_hover_text_color != blank %}
       color: color-mix(in srgb, {{ section.settings.button_hover_text_color }} {{ section.settings.button_hover_text_color_opacity }}%, transparent);
@@ -279,16 +279,16 @@
     {% endif %}
   }
 
-  #shopify-section-{{ section.id }} .wow_hero_basic__btn:focus-visible {
+  #shopify-section-{{ section.id }} .lab_hero_basic__btn:focus-visible {
     outline: 2px solid var(--color-foreground);
     outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .wow_hero_basic__btn {
+    #shopify-section-{{ section.id }} .lab_hero_basic__btn {
       transition: none;
     }
-    #shopify-section-{{ section.id }} .wow_hero_basic__btn:hover {
+    #shopify-section-{{ section.id }} .lab_hero_basic__btn:hover {
       transform: none;
     }
   }
@@ -313,9 +313,9 @@
 
 {% schema %}
 {
-  "name": "⚡ Hero — Basic",
+  "name": "🧪 Hero — Basic",
   "tag": "section",
-  "class": "wow_section",
+  "class": "lab_section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -533,8 +533,8 @@
   ],
   "presets": [
     {
-      "name": "⚡ Hero — Dark",
-      "category": "WOW Sections",
+      "name": "🧪 Hero — Dark",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Engineered for performance.",
         "subheading": "Pro-grade hardware. Zero compromises.",
@@ -558,8 +558,8 @@
       }
     },
     {
-      "name": "⚡ Hero — Warm",
-      "category": "WOW Sections",
+      "name": "🧪 Hero — Warm",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Soft on skin. Real results.",
         "subheading": "Clean ingredients, formulated to actually do something.",
@@ -583,8 +583,8 @@
       }
     },
     {
-      "name": "⚡ Hero — Bold",
-      "category": "WOW Sections",
+      "name": "🧪 Hero — Bold",
+      "category": "Liquid Lab",
       "settings": {
         "heading": "Made to last.",
         "subheading": "Pieces designed to outlive every trend cycle.",
