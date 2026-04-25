@@ -273,11 +273,21 @@
     transition: opacity 0.2s ease, background-color 0.2s ease;
   }
 
-  #shopify-section-{{ section.id }} .wow_announcement_bar__close:hover,
+  #shopify-section-{{ section.id }} .wow_announcement_bar__close:hover {
+    opacity: 1;
+    background-color: var(--color-border);
+  }
+
   #shopify-section-{{ section.id }} .wow_announcement_bar__close:focus-visible {
     opacity: 1;
     background-color: var(--color-border);
-    outline: none;
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section.id }} .wow_announcement_bar__link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
   }
 
   #shopify-section-{{ section.id }} .wow_announcement_bar__close-icon {

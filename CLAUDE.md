@@ -74,7 +74,8 @@ These are non-negotiable. Violating any of them means the section is broken.
 - Run `shopify theme check --path .` before marking any section complete.
 - Create the registry JSON file and update `registry/index.json` after every new section.
 - After generating or editing any section, run `npm run sync` to copy the section into `../dawn-dev/sections/` and push it to the live dev store. The PostToolUse hook triggers this automatically on any `.liquid` edit under `sections/`, but the command must also be runnable manually from the project root.
-- After every section generation, run `npm run validate-all` (theme check + mobile check). Fix all FAILs before committing. WARNs must be manually verified on mobile preview at 375px viewport width. See [.claude/skills/mobile-check.md](.claude/skills/mobile-check.md).
+- After every section generation, run `npm run validate-all` (theme check + mobile check + accessibility check). Fix all FAILs before committing. WARNs must be manually verified on mobile preview at 375px viewport width. See [.claude/skills/mobile-check.md](.claude/skills/mobile-check.md).
+- Every section must pass `npm run a11y-check` with 0 FAILs before committing. Read [.claude/skills/accessibility.md](.claude/skills/accessibility.md) before generating any section.
 
 ### CSS
 - Never use `!important`.

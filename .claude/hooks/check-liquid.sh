@@ -33,6 +33,14 @@ case "$file_path" in
       echo "node not found on PATH — skipping mobile-check." >&2
     fi
     echo "📱 Manual check reminder: open preview on mobile at 375px viewport width"
+
+    echo ""
+    echo "♿ Running accessibility check..."
+    if command -v node >/dev/null 2>&1; then
+      node scripts/validate/accessibility-check.js || true
+    else
+      echo "node not found on PATH — skipping accessibility-check." >&2
+    fi
     ;;
 esac
 

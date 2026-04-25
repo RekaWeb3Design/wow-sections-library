@@ -279,6 +279,11 @@
     {% endif %}
   }
 
+  #shopify-section-{{ section.id }} .wow_hero_basic__btn:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     #shopify-section-{{ section.id }} .wow_hero_basic__btn {
       transition: none;
