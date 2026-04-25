@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "last_updated": "2026-04-25",
-  "total_sections": 6,
+  "total_sections": 7,
   "sections": [
     {
       "name": "wow-announcement-bar-basic",
@@ -33,6 +33,40 @@
       "settings_count": 45,
       "blocks_supported": false,
       "created_at": "2026-04-23",
+      "source": "original"
+    },
+    {
+      "name": "wow-collection-cards",
+      "display_name": "WOW Collection Cards",
+      "category": "collections",
+      "tags": [
+        "collection",
+        "products",
+        "grid",
+        "cards",
+        "ecommerce",
+        "sale-badge",
+        "vendor",
+        "free"
+      ],
+      "tier": "free",
+      "version": "1.0.0",
+      "description": "Product grid that pulls from a merchant-selected Shopify collection — first WOW section to use live store data. Each card renders product image (LCP-optimized: eager + fetchpriority high for the first two cards on above-the-fold sections), title (linked to product.url), price (with strikethrough compare_at_price when on sale), optional vendor name, optional sale badge (only renders when compare_at_price > price AND show_sale_badge is enabled), and a 'View product' CTA. Responsive 2/3/4 column grid via §8.4 card pattern. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/product_title/product_price, §8.4 card with all 5 hover effects (none/lift/scale/border/glow) and 4 shadow tiers, §8.5 image (border radius, dual-control overlay, object-fit, aspect ratio), §8.6 background, §8.8 layout (content alignment, header max width, items gap/align, columns, section width), §8.9 universal (hide on mobile/desktop, custom CSS). Independent sale badge color + text-color tokens. Optional view-all button linked to collection.url. Falls back to Dawn placeholder SVGs when no collection is selected so the section is editable in Theme Editor before products are wired up. prefers-reduced-motion respected; focus-visible rings on every link/CTA; product cards are <article>; product titles are <h3>; aria-labels on every product link include the product name.",
+      "preview_url": "",
+      "screenshot": "",
+      "liquid_file": "sections/free/collections/wow-collection-cards.liquid",
+      "compatible_themes": [
+        "dawn",
+        "sense",
+        "craft",
+        "debut",
+        "horizon"
+      ],
+      "shopify_version": "2.0",
+      "settings_count": 87,
+      "blocks_supported": false,
+      "shopify_data": true,
+      "created_at": "2026-04-25",
       "source": "original"
     },
     {

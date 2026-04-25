@@ -1,0 +1,1080 @@
+{% comment %} 1. Assigns {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign collection = collections[section.settings.collection]
+  assign products_count = section.settings.products_count
+  assign columns = section.settings.columns
+  assign show_vendor = section.settings.show_vendor
+  assign show_sale_badge = section.settings.show_sale_badge
+  assign show_view_all_button = section.settings.show_view_all_button
+  assign card_hover = section.settings.product_card_hover_transform
+  assign animation_enabled = section.settings.animation_enabled
+  assign animation_type = section.settings.animation_type
+  assign animation_delay = section.settings.animation_delay
+  assign aspect_ratio = section.settings.product_image_aspect_ratio
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+
+  if section.index <= 2
+    assign section_eager = true
+  else
+    assign section_eager = false
+  endif
+%}
+
+{% comment %} 2. HTML structure {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_collection_cards wow_collection_cards--cols-{{ columns }} wow_collection_cards--align-{{ section.settings.content_alignment }} wow_collection_cards--shadow-{{ section.settings.product_card_shadow }} wow_collection_cards--hover-shadow-{{ section.settings.product_card_hover_shadow }} wow_collection_cards--hover-{{ card_hover }} wow_collection_cards--width-{{ section.settings.section_width }}{% if animation_enabled %} wow_collection_cards--animated wow_collection_cards--anim-{{ animation_type }}{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'Featured collection' | escape }}"
+  >
+    <div class="wow_collection_cards__inner">
+      {% if section.settings.heading != blank or section.settings.subheading != blank %}
+        <header class="wow_collection_cards__header">
+          {% if section.settings.heading != blank %}
+            <h2 class="wow_collection_cards__heading">{{ section.settings.heading | escape }}</h2>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <p class="wow_collection_cards__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+          {% endif %}
+        </header>
+      {% endif %}
+
+      <ul class="wow_collection_cards__grid" role="list">
+        {% if collection != blank and collection.products.size > 0 %}
+          {% for product in collection.products limit: products_count %}
+            {% liquid
+              assign on_sale = false
+              if product.compare_at_price > product.price
+                assign on_sale = true
+              endif
+
+              if section_eager and forloop.index <= 2
+                assign img_loading = 'eager'
+                assign img_fetchpriority = 'high'
+              else
+                assign img_loading = 'lazy'
+                assign img_fetchpriority = 'auto'
+              endif
+            %}
+
+            <li role="listitem" class="wow_collection_cards__item"
+              {% if animation_enabled %}style="animation-delay: {{ animation_delay | times: forloop.index0 }}ms;"{% endif %}>
+              <article class="wow_collection_cards__card">
+                <a href="{{ product.url }}" class="wow_collection_cards__media-link" aria-label="{{ 'View product: ' | append: product.title | escape }}" tabindex="-1">
+                  <div class="wow_collection_cards__media">
+                    {% if product.featured_image != blank %}
+                      {{ product.featured_image
+                        | image_url: width: 800
+                        | image_tag:
+                          alt: product.featured_image.alt | default: product.title,
+                          loading: img_loading,
+                          fetchpriority: img_fetchpriority,
+                          width: product.featured_image.width,
+                          height: product.featured_image.height,
+                          widths: '400, 600, 800',
+                          sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw',
+                          class: 'wow_collection_cards__image'
+                      }}
+                    {% else %}
+                      <div class="wow_collection_cards__image wow_collection_cards__image--placeholder" aria-hidden="true">
+                        {{ 'product-1' | placeholder_svg_tag: 'wow_collection_cards__placeholder-svg' }}
+                      </div>
+                    {% endif %}
+
+                    {% if show_sale_badge and on_sale %}
+                      <span class="wow_collection_cards__badge">{{ section.settings.sale_badge_text | escape }}</span>
+                    {% endif %}
+                  </div>
+                </a>
+
+                <div class="wow_collection_cards__body">
+                  {% if show_vendor and product.vendor != blank %}
+                    <p class="wow_collection_cards__vendor">{{ product.vendor | escape }}</p>
+                  {% endif %}
+
+                  <h3 class="wow_collection_cards__title">
+                    <a href="{{ product.url }}" class="wow_collection_cards__title-link">{{ product.title | escape }}</a>
+                  </h3>
+
+                  <p class="wow_collection_cards__price">
+                    {% if on_sale %}
+                      <span class="wow_collection_cards__price-sale">{{ product.price | money }}</span>
+                      <s class="wow_collection_cards__price-was">{{ product.compare_at_price | money }}</s>
+                    {% else %}
+                      <span class="wow_collection_cards__price-regular">{{ product.price | money }}</span>
+                    {% endif %}
+                  </p>
+
+                  <a
+                    href="{{ product.url }}"
+                    class="wow_collection_cards__cta"
+                    aria-label="{{ 'View product: ' | append: product.title | escape }}"
+                  >
+                    {{ section.settings.product_button_label | default: 'View product' | escape }}
+                  </a>
+                </div>
+              </article>
+            </li>
+          {% endfor %}
+        {% else %}
+          {% comment %} Placeholder cards when no collection is selected (Theme Editor preview) {% endcomment %}
+          {% for i in (1..products_count) %}
+            <li role="listitem" class="wow_collection_cards__item">
+              <article class="wow_collection_cards__card">
+                <div class="wow_collection_cards__media">
+                  <div class="wow_collection_cards__image wow_collection_cards__image--placeholder" aria-hidden="true">
+                    {{ 'product-1' | placeholder_svg_tag: 'wow_collection_cards__placeholder-svg' }}
+                  </div>
+                </div>
+                <div class="wow_collection_cards__body">
+                  {% if show_vendor %}
+                    <p class="wow_collection_cards__vendor">Vendor name</p>
+                  {% endif %}
+                  <h3 class="wow_collection_cards__title">
+                    <span class="wow_collection_cards__title-link">Sample product {{ forloop.index }}</span>
+                  </h3>
+                  <p class="wow_collection_cards__price">
+                    <span class="wow_collection_cards__price-regular">$49.00</span>
+                  </p>
+                  <span class="wow_collection_cards__cta wow_collection_cards__cta--placeholder" aria-hidden="true">{{ section.settings.product_button_label | default: 'View product' | escape }}</span>
+                </div>
+              </article>
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+
+      {% if show_view_all_button and section.settings.button_label != blank and collection != blank %}
+        <div class="wow_collection_cards__footer">
+          <a
+            href="{{ collection.url }}"
+            class="wow_collection_cards__view-all"
+            aria-label="{{ 'View all in ' | append: collection.title | escape }}"
+          >
+            {{ section.settings.button_label | escape }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scoped {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_collection_cards {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__inner {
+    width: 100%;
+    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}960px{% else %}var(--page-width, 1200px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__header {
+    width: 100%;
+    max-width: {{ section.settings.content_max_width }}px;
+    margin: 0 auto clamp(1.5rem, 4vw, 3rem);
+    text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__heading {
+    margin: 0 0 clamp(0.5rem, 1.5vw, 1rem);
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    text-align: {{ section.settings.heading_text_align }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__subheading {
+    margin: 0;
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    text-align: {{ section.settings.subheading_text_align }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: {{ section.settings.items_gap }}px;
+    align-items: {{ section.settings.items_align }};
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .wow_collection_cards--cols-2 .wow_collection_cards__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #shopify-section-{{ section.id }} .wow_collection_cards--cols-3 .wow_collection_cards__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #shopify-section-{{ section.id }} .wow_collection_cards--cols-4 .wow_collection_cards__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__item {
+    margin: 0;
+    display: flex;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: {{ section.settings.product_card_padding }}px;
+    border-radius: {{ section.settings.product_card_border_radius }}px;
+    border: {{ section.settings.product_card_border_width }}px solid {% if section.settings.product_card_border_color != blank %}color-mix(in srgb, {{ section.settings.product_card_border_color }} {{ section.settings.product_card_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    {% if section.settings.product_card_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.product_card_bg_color }} {{ section.settings.product_card_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: transparent;
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-soft .wow_collection_cards__card { box-shadow: 0 1px 3px color-mix(in srgb, var(--color-foreground) 8%, transparent); }
+  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-medium .wow_collection_cards__card { box-shadow: 0 4px 12px color-mix(in srgb, var(--color-foreground) 12%, transparent); }
+  #shopify-section-{{ section.id }} .wow_collection_cards--shadow-strong .wow_collection_cards__card { box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 18%, transparent); }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__card:hover {
+    {% if section.settings.product_card_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.product_card_hover_bg_color }} {{ section.settings.product_card_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.product_card_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.product_card_hover_border_color }} {{ section.settings.product_card_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-soft .wow_collection_cards__card:hover { box-shadow: 0 2px 8px color-mix(in srgb, var(--color-foreground) 10%, transparent); }
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-medium .wow_collection_cards__card:hover { box-shadow: 0 6px 20px color-mix(in srgb, var(--color-foreground) 14%, transparent); }
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-shadow-strong .wow_collection_cards__card:hover { box-shadow: 0 16px 40px color-mix(in srgb, var(--color-foreground) 22%, transparent); }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-lift .wow_collection_cards__card:hover {
+    transform: translateY(-4px);
+  }
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-scale .wow_collection_cards__card:hover {
+    transform: scale(1.02);
+  }
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-border .wow_collection_cards__card:hover {
+    border-color: var(--color-foreground);
+  }
+  #shopify-section-{{ section.id }} .wow_collection_cards--hover-glow .wow_collection_cards__card:hover {
+    box-shadow: 0 0 28px color-mix(in srgb, var(--color-foreground) 22%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__media-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ section.settings.product_image_border_radius }}px;
+    margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+    {% case aspect_ratio %}
+      {% when '1-1' %}aspect-ratio: 1 / 1;
+      {% when '4-3' %}aspect-ratio: 4 / 3;
+      {% when '16-9' %}aspect-ratio: 16 / 9;
+      {% when '3-2' %}aspect-ratio: 3 / 2;
+      {% when '2-3' %}aspect-ratio: 2 / 3;
+    {% endcase %}
+    background-color: color-mix(in srgb, var(--color-foreground) 4%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.product_image_object_fit }};
+    transition: transform 0.5s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__card:hover .wow_collection_cards__image {
+    transform: scale(1.05);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--color-foreground) 25%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__placeholder-svg {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+  }
+
+  {% if section.settings.product_image_overlay_opacity > 0 %}
+    #shopify-section-{{ section.id }} .wow_collection_cards__media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: color-mix(in srgb, {% if section.settings.product_image_overlay_color != blank %}{{ section.settings.product_image_overlay_color }}{% else %}var(--color-foreground){% endif %} {{ section.settings.product_image_overlay_color_opacity }}%, transparent);
+      opacity: calc({{ section.settings.product_image_overlay_opacity }} / 100);
+      pointer-events: none;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__badge {
+    position: absolute;
+    top: clamp(0.5rem, 1vw, 0.75rem);
+    left: clamp(0.5rem, 1vw, 0.75rem);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    z-index: 1;
+    {% if section.settings.sale_badge_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.sale_badge_color }} {{ section.settings.sale_badge_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-foreground);
+    {% endif %}
+    {% if section.settings.sale_badge_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.sale_badge_text_color }} {{ section.settings.sale_badge_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-background);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__body {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.25rem, 0.75vw, 0.5rem);
+    text-align: {% if section.settings.content_alignment == 'right' %}right{% elsif section.settings.content_alignment == 'center' %}center{% else %}left{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__vendor {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--color-foreground) 60%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__title {
+    margin: 0;
+    font-size: {{ section.settings.product_title_size }}px;
+    font-weight: {{ section.settings.product_title_weight }};
+    text-transform: {{ section.settings.product_title_transform }};
+    text-align: {{ section.settings.product_title_text_align }};
+    letter-spacing: calc({{ section.settings.product_title_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.product_title_line_height }} / 10);
+    {% if section.settings.product_title_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.product_title_color }} {{ section.settings.product_title_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .wow_collection_cards__title-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__price {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: {{ section.settings.product_price_size }}px;
+    font-weight: {{ section.settings.product_price_weight }};
+    text-transform: {{ section.settings.product_price_transform }};
+    letter-spacing: calc({{ section.settings.product_price_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.product_price_line_height }} / 10);
+    justify-content: {% if section.settings.content_alignment == 'right' %}flex-end{% elsif section.settings.content_alignment == 'center' %}center{% else %}flex-start{% endif %};
+    {% if section.settings.product_price_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.product_price_color }} {{ section.settings.product_price_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__price-sale {
+    {% if section.settings.sale_badge_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.sale_badge_color }} {{ section.settings.sale_badge_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__price-was {
+    font-weight: 400;
+    opacity: 0.6;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__cta {
+    display: inline-flex;
+    align-self: {% if section.settings.content_alignment == 'right' %}flex-end{% elsif section.settings.content_alignment == 'center' %}center{% else %}flex-start{% endif %};
+    align-items: center;
+    justify-content: center;
+    margin-top: clamp(0.5rem, 1vw, 0.75rem);
+    padding: 0.625rem 1.25rem;
+    min-height: 44px;
+    border-radius: 6px;
+    border: 1px solid var(--color-foreground);
+    background-color: transparent;
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__cta:hover {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__cta--placeholder {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__cta:focus-visible,
+  #shopify-section-{{ section.id }} .wow_collection_cards__title-link:focus-visible,
+  #shopify-section-{{ section.id }} .wow_collection_cards__media-link:focus-visible,
+  #shopify-section-{{ section.id }} .wow_collection_cards__view-all:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_collection_cards__view-all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter 0.2s ease, transform 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .wow_collection_cards__view-all:hover {
+    filter: brightness(0.9);
+    transform: translateY(-2px);
+  }
+
+  /* Animation */
+  {% if animation_enabled %}
+    #shopify-section-{{ section.id }} .wow_collection_cards--animated .wow_collection_cards__item {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section.id }} .wow_collection_cards--anim-fade .wow_collection_cards__item {
+      animation-name: wow_collection_cards_fade_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_collection_cards--anim-slide .wow_collection_cards__item {
+      animation-name: wow_collection_cards_slide_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_collection_cards--anim-zoom .wow_collection_cards__item {
+      animation-name: wow_collection_cards_zoom_{{ section.id }};
+    }
+    @keyframes wow_collection_cards_fade_{{ section.id }} {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes wow_collection_cards_slide_{{ section.id }} {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wow_collection_cards_zoom_{{ section.id }} {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_collection_cards__card,
+    #shopify-section-{{ section.id }} .wow_collection_cards__image,
+    #shopify-section-{{ section.id }} .wow_collection_cards__item,
+    #shopify-section-{{ section.id }} .wow_collection_cards__view-all,
+    #shopify-section-{{ section.id }} .wow_collection_cards__cta {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% schema %}
+{
+  "name": "⚡ Collection Cards",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Featured products" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Hand-picked picks from the latest collection." },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "products_count", "label": "Products to show", "min": 2, "max": 12, "step": 1, "default": 4 },
+    { "type": "text", "id": "product_button_label", "label": "Product card button label", "default": "View product" },
+    { "type": "text", "id": "button_label", "label": "View-all button label", "default": "View all" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 36 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1 },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 17 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
+
+    { "type": "range", "id": "product_title_size", "label": "Product title size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "product_title_weight",
+      "label": "Product title weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "product_title_transform",
+      "label": "Product title text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "product_title_text_align",
+      "label": "Product title text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "product_title_color", "label": "Product title color" },
+    { "type": "range", "id": "product_title_color_opacity", "label": "Product title color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "product_title_letter_spacing", "label": "Product title letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "product_title_line_height", "label": "Product title line height", "min": 10, "max": 30, "step": 1, "default": 14 },
+
+    { "type": "range", "id": "product_price_size", "label": "Product price size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "product_price_weight",
+      "label": "Product price weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "product_price_transform",
+      "label": "Product price text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "product_price_text_align",
+      "label": "Product price text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "product_price_color", "label": "Product price color" },
+    { "type": "range", "id": "product_price_color_opacity", "label": "Product price color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "product_price_letter_spacing", "label": "Product price letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "product_price_line_height", "label": "Product price line height", "min": 10, "max": 30, "step": 1, "default": 14 },
+
+    { "type": "header", "content": "Media" },
+    { "type": "range", "id": "product_image_border_radius", "label": "Product image border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 8 },
+    { "type": "color", "id": "product_image_overlay_color", "label": "Product image overlay color", "default": "#000000" },
+    { "type": "range", "id": "product_image_overlay_color_opacity", "label": "Product image overlay color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "product_image_overlay_opacity", "label": "Product image overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 0 },
+    {
+      "type": "select",
+      "id": "product_image_object_fit",
+      "label": "Product image object fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "product_image_aspect_ratio",
+      "label": "Product image aspect ratio",
+      "options": [
+        { "value": "natural", "label": "Natural" },
+        { "value": "1-1", "label": "1:1" },
+        { "value": "4-3", "label": "4:3" },
+        { "value": "16-9", "label": "16:9" },
+        { "value": "3-2", "label": "3:2" },
+        { "value": "2-3", "label": "2:3" }
+      ],
+      "default": "1-1"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Header max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 700 },
+    { "type": "range", "id": "items_gap", "label": "Gap between cards", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 24 },
+    {
+      "type": "select",
+      "id": "items_align",
+      "label": "Items alignment",
+      "options": [
+        { "value": "start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "stretch"
+    },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show vendor name", "default": false },
+    { "type": "checkbox", "id": "show_sale_badge", "label": "Show sale badge", "default": true },
+    { "type": "text", "id": "sale_badge_text", "label": "Sale badge text", "default": "Sale" },
+    { "type": "checkbox", "id": "show_view_all_button", "label": "Show view-all button", "default": true },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "product_card_bg_color", "label": "Product card background color" },
+    { "type": "range", "id": "product_card_bg_color_opacity", "label": "Product card background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "product_card_border_color", "label": "Product card border color" },
+    { "type": "range", "id": "product_card_border_color_opacity", "label": "Product card border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "product_card_border_width", "label": "Product card border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "product_card_border_radius", "label": "Product card border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "product_card_shadow",
+      "label": "Product card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "none"
+    },
+    { "type": "range", "id": "product_card_padding", "label": "Product card padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 12 },
+
+    { "type": "color", "id": "product_card_hover_bg_color", "label": "Product card hover background color" },
+    { "type": "range", "id": "product_card_hover_bg_color_opacity", "label": "Product card hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "product_card_hover_border_color", "label": "Product card hover border color" },
+    { "type": "range", "id": "product_card_hover_border_color_opacity", "label": "Product card hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    {
+      "type": "select",
+      "id": "product_card_hover_shadow",
+      "label": "Product card hover shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "soft"
+    },
+    {
+      "type": "select",
+      "id": "product_card_hover_transform",
+      "label": "Product card hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "scale", "label": "Scale" },
+        { "value": "border", "label": "Border highlight" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "lift"
+    },
+
+    { "type": "color", "id": "sale_badge_color", "label": "Sale badge background color" },
+    { "type": "range", "id": "sale_badge_color_opacity", "label": "Sale badge background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "sale_badge_text_color", "label": "Sale badge text color" },
+    { "type": "range", "id": "sale_badge_text_color_opacity", "label": "Sale badge text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay",
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 80,
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "presets": [
+    {
+      "name": "⚡ Collection — Dark",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Latest gear",
+        "subheading": "Engineered to outlast every season — explore the new drop.",
+        "product_button_label": "View product",
+        "button_label": "Shop the lineup",
+        "columns": "4",
+        "content_alignment": "left",
+        "products_count": 4,
+        "show_vendor": false,
+        "show_sale_badge": true,
+        "sale_badge_text": "Limited",
+        "show_view_all_button": true,
+        "heading_color": "#e8e9ff",
+        "heading_weight": "700",
+        "heading_letter_spacing": -2,
+        "subheading_color": "#9ea0c8",
+        "product_title_color": "#e8e9ff",
+        "product_price_color": "#e8e9ff",
+        "bg_color": "#0a0b1a",
+        "product_card_bg_color": "#141633",
+        "product_card_border_color": "#7c6ff7",
+        "product_card_border_color_opacity": 20,
+        "product_card_border_width": 1,
+        "product_card_border_radius": 14,
+        "product_card_padding": 16,
+        "product_card_shadow": "none",
+        "product_card_hover_bg_color": "#1a1d3d",
+        "product_card_hover_border_color": "#7c6ff7",
+        "product_card_hover_shadow": "strong",
+        "product_card_hover_transform": "lift",
+        "product_image_border_radius": 10,
+        "product_image_aspect_ratio": "1-1",
+        "sale_badge_color": "#7c6ff7",
+        "sale_badge_text_color": "#ffffff",
+        "items_gap": 20,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Collection — Warm",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Loved by everyone",
+        "subheading": "Best-sellers, picked by our customers — gentle on skin, hard to put down.",
+        "product_button_label": "Discover",
+        "button_label": "Browse the full range",
+        "columns": "3",
+        "content_alignment": "center",
+        "products_count": 3,
+        "show_vendor": true,
+        "show_sale_badge": true,
+        "sale_badge_text": "Loved",
+        "show_view_all_button": true,
+        "heading_color": "#3d2c1e",
+        "heading_weight": "400",
+        "heading_letter_spacing": -1,
+        "subheading_color": "#7a6552",
+        "product_title_color": "#3d2c1e",
+        "product_title_weight": "500",
+        "product_price_color": "#3d2c1e",
+        "bg_color": "#fdf6ee",
+        "product_card_bg_color": "#ffffff",
+        "product_card_border_color": "#e8d9c5",
+        "product_card_border_width": 0,
+        "product_card_border_radius": 32,
+        "product_card_padding": 20,
+        "product_card_shadow": "soft",
+        "product_card_hover_shadow": "medium",
+        "product_card_hover_transform": "scale",
+        "product_image_border_radius": 24,
+        "product_image_aspect_ratio": "4-3",
+        "sale_badge_color": "#d4956a",
+        "sale_badge_text_color": "#ffffff",
+        "items_gap": 32,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Collection — Bold",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "SHOP THE DROP",
+        "subheading": "FOUR PIECES. NO RESTOCKS. ACT FAST.",
+        "product_button_label": "Cop it",
+        "button_label": "See everything",
+        "columns": "4",
+        "content_alignment": "center",
+        "products_count": 4,
+        "show_vendor": false,
+        "show_sale_badge": true,
+        "sale_badge_text": "DROP 04",
+        "show_view_all_button": true,
+        "heading_color": "#1a1a1a",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 4,
+        "subheading_color": "#1a1a1a",
+        "subheading_transform": "uppercase",
+        "subheading_letter_spacing": 6,
+        "subheading_weight": "600",
+        "product_title_color": "#1a1a1a",
+        "product_title_weight": "700",
+        "product_title_transform": "uppercase",
+        "product_title_letter_spacing": 1,
+        "product_price_color": "#1a1a1a",
+        "product_price_weight": "700",
+        "bg_color": "#f2f0eb",
+        "product_card_bg_color": "#ffffff",
+        "product_card_border_color": "#1a1a1a",
+        "product_card_border_width": 2,
+        "product_card_border_radius": 0,
+        "product_card_padding": 14,
+        "product_card_shadow": "none",
+        "product_card_hover_border_color": "#1a1a1a",
+        "product_card_hover_shadow": "strong",
+        "product_card_hover_transform": "lift",
+        "product_image_border_radius": 0,
+        "product_image_aspect_ratio": "3-2",
+        "sale_badge_color": "#1a1a1a",
+        "sale_badge_text_color": "#ffffff",
+        "items_gap": 16,
+        "animation_enabled": true,
+        "animation_type": "slide"
+      }
+    }
+  ]
+}
+{% endschema %}
