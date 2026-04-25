@@ -2,11 +2,23 @@ const fs = require('fs');
 const path = require('path');
 
 const projectRoot = path.join(__dirname, '..');
-const sourceRoots = [
-  path.join(projectRoot, 'sections', 'free'),
-  path.join(projectRoot, 'sections', 'pro'),
+const dawnRoot = path.resolve(projectRoot, '..', 'dawn-dev');
+
+const syncTargets = [
+  {
+    label: 'sections',
+    sourceRoots: [
+      path.join(projectRoot, 'sections', 'free'),
+      path.join(projectRoot, 'sections', 'pro'),
+    ],
+    targetDir: path.join(dawnRoot, 'sections'),
+  },
+  {
+    label: 'snippets',
+    sourceRoots: [path.join(projectRoot, 'snippets')],
+    targetDir: path.join(dawnRoot, 'snippets'),
+  },
 ];
-const targetDir = path.resolve(projectRoot, '..', 'dawn-dev', 'sections');
 
 function collectLiquidFiles(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -23,16 +35,20 @@ function collectLiquidFiles(dir) {
   return files;
 }
 
-fs.mkdirSync(targetDir, { recursive: true });
-
-let copied = 0;
-for (const root of sourceRoots) {
-  for (const src of collectLiquidFiles(root)) {
-    const name = path.basename(src);
-    fs.copyFileSync(src, path.join(targetDir, name));
-    console.log(`✅ Copied: ${name}`);
-    copied++;
+let totalCopied = 0;
+for (const target of syncTargets) {
+  fs.mkdirSync(target.targetDir, { recursive: true });
+  let copied = 0;
+  for (const root of target.sourceRoots) {
+    for (const src of collectLiquidFiles(root)) {
+      const name = path.basename(src);
+      fs.copyFileSync(src, path.join(target.targetDir, name));
+      console.log(`✅ Copied (${target.label}): ${name}`);
+      copied++;
+    }
   }
+  console.log(`— ${copied} ${target.label} synced`);
+  totalCopied += copied;
 }
 
-console.log(`Sync complete — ${copied} sections copied to dawn-dev/`);
+console.log(`Sync complete — ${totalCopied} files copied to dawn-dev/`);
