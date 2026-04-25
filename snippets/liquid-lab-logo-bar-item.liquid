@@ -1,0 +1,57 @@
+{%- comment -%}
+  Renders one logo cell for liquid-lab-logo-bar.
+  Wraps in <a> if logo_url is set, otherwise <span>.
+  Honors per-logo height/opacity overrides via inline CSS variables.
+
+  Required: block, section
+{%- endcomment -%}
+
+{%- liquid
+  assign computed_alt = block.settings.logo_alt_override
+  if computed_alt == blank and block.settings.logo_image != blank
+    assign computed_alt = block.settings.logo_image.alt
+  endif
+  if computed_alt == blank
+    assign computed_alt = 'Brand logo'
+  endif
+
+  assign style_attr = ''
+  if block.settings.use_height_override
+    assign style_attr = style_attr | append: '--lab-logo-height-override: ' | append: block.settings.logo_height_override | append: 'px;'
+  endif
+  if block.settings.use_opacity_override
+    assign opacity_dec = block.settings.logo_opacity_override | times: 0.01
+    assign style_attr = style_attr | append: '--lab-logo-opacity-override: ' | append: opacity_dec | append: ';'
+  endif
+
+  if section.index <= 2
+    assign img_loading = 'eager'
+    assign img_priority = 'high'
+  else
+    assign img_loading = 'lazy'
+    assign img_priority = 'auto'
+  endif
+-%}
+{%- if block.settings.logo_url != blank -%}
+  <a href="{{ block.settings.logo_url }}" class="lab_logo_bar__link" aria-label="{{ computed_alt | escape }}"{% if style_attr != '' %} style="{{ style_attr }}"{% endif %}>
+{%- else -%}
+  <span class="lab_logo_bar__static"{% if style_attr != '' %} style="{{ style_attr }}"{% endif %}>
+{%- endif -%}
+{%- if block.settings.logo_image != blank -%}
+{{ block.settings.logo_image | image_url: width: 360 | image_tag:
+  alt: computed_alt,
+  loading: img_loading,
+  fetchpriority: img_priority,
+  width: 240,
+  height: 80,
+  widths: '120, 240, 360',
+  sizes: '240px',
+  class: 'lab_logo_bar__image' }}
+{%- else -%}
+{{ 'logo' | placeholder_svg_tag: 'lab_logo_bar__image lab_logo_bar__placeholder' }}
+{%- endif -%}
+{%- if block.settings.logo_url != blank -%}
+  </a>
+{%- else -%}
+  </span>
+{%- endif -%}

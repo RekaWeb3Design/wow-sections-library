@@ -1,0 +1,786 @@
+{%- liquid
+  assign section_id = section.id
+  assign layout_type = section.settings.layout_type
+  assign block_count = section.blocks.size
+  assign needs_extra_render = false
+  if block_count > 0 and block_count < 4
+    assign needs_extra_render = true
+  endif
+
+  assign aria_label_value = section.settings.heading
+  if aria_label_value == blank
+    assign aria_label_value = 'Trusted brand logos'
+  endif
+
+  assign show_header = false
+  if section.settings.show_heading and section.settings.heading != blank
+    assign show_header = true
+  endif
+  if section.settings.show_subheading and section.settings.subheading != blank
+    assign show_header = true
+  endif
+
+  assign show_cta_btn = false
+  if section.settings.show_cta and section.settings.cta_label != blank
+    assign show_cta_btn = true
+  endif
+
+  assign bg_alpha = section.settings.bg_color_opacity | times: 0.01
+  assign gradient_alpha = section.settings.gradient_color_opacity | times: 0.01
+  assign heading_alpha = section.settings.heading_color_opacity | times: 0.01
+  assign subheading_alpha = section.settings.subheading_color_opacity | times: 0.01
+  assign border_alpha = section.settings.border_color_opacity | times: 0.01
+  assign cta_bg_alpha = section.settings.cta_bg_color_opacity | times: 0.01
+  assign cta_text_alpha = section.settings.cta_text_color_opacity | times: 0.01
+  assign cta_border_alpha = section.settings.cta_border_color_opacity | times: 0.01
+  assign cta_hover_bg_alpha = section.settings.cta_hover_bg_color_opacity | times: 0.01
+  assign cta_hover_text_alpha = section.settings.cta_hover_text_color_opacity | times: 0.01
+  assign cta_hover_border_alpha = section.settings.cta_hover_border_color_opacity | times: 0.01
+
+  assign logo_opacity_default_dec = section.settings.logo_opacity_default | times: 0.01
+  assign logo_opacity_hover_dec = section.settings.logo_opacity_hover | times: 0.01
+
+  assign edge_fade_size_pct = section.settings.marquee_edge_fade_size | append: '%'
+-%}
+
+<section
+  id="lab-{{ section_id }}"
+  class="lab_logo_bar lab_logo_bar--{{ layout_type }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.entrance_animation %} lab_logo_bar--anim lab_logo_bar--anim-{{ section.settings.entrance_type }}{% endif %}"
+  data-lab-direction="{{ section.settings.marquee_direction }}"
+  data-lab-pause-hover="{{ section.settings.marquee_pause_hover }}"
+  data-lab-edge-fade="{{ section.settings.marquee_edge_fade }}"
+  data-lab-layout="{{ layout_type }}"
+  aria-label="{{ aria_label_value | escape }}"
+>
+  <div class="lab_logo_bar__inner">
+    {%- if show_header -%}
+      <header class="lab_logo_bar__header" data-lab-align="{{ section.settings.header_align }}">
+        {%- if section.settings.show_heading and section.settings.heading != blank -%}
+          <h2 class="lab_logo_bar__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.show_subheading and section.settings.subheading != blank -%}
+          <div class="lab_logo_bar__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    {%- if block_count > 0 -%}
+      {%- if layout_type == 'marquee' -%}
+        <div class="lab_logo_bar__marquee" role="region" aria-label="{{ aria_label_value | escape }}">
+          <div class="lab_logo_bar__track">
+            {%- for block in section.blocks -%}
+              <div class="lab_logo_bar__item" {{ block.shopify_attributes }}>
+                {% render 'liquid-lab-logo-bar-item', block: block, section: section %}
+              </div>
+            {%- endfor -%}
+
+            {%- for block in section.blocks -%}
+              <div class="lab_logo_bar__item" aria-hidden="true">
+                {% render 'liquid-lab-logo-bar-item', block: block, section: section %}
+              </div>
+            {%- endfor -%}
+
+            {%- if needs_extra_render -%}
+              {%- for i in (1..2) -%}
+                {%- for block in section.blocks -%}
+                  <div class="lab_logo_bar__item" aria-hidden="true">
+                    {% render 'liquid-lab-logo-bar-item', block: block, section: section %}
+                  </div>
+                {%- endfor -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- else -%}
+        <div class="lab_logo_bar__grid" role="region" aria-label="{{ aria_label_value | escape }}">
+          {%- for block in section.blocks -%}
+            <div class="lab_logo_bar__item" {{ block.shopify_attributes }}>
+              {% render 'liquid-lab-logo-bar-item', block: block, section: section %}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if show_cta_btn -%}
+      <div class="lab_logo_bar__cta-wrap">
+        <a
+          href="{{ section.settings.cta_url | default: '#' }}"
+          class="lab_logo_bar__cta"
+          data-lab-hover="{{ section.settings.cta_hover_effect }}"
+        >
+          {{ section.settings.cta_label | escape }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section_id }} .lab_logo_bar {
+    --lab-logo-height-mobile: {{ section.settings.logo_max_height_mobile }}px;
+    --lab-logo-height-desktop: {{ section.settings.logo_max_height_desktop }}px;
+    --lab-logo-fit: {{ section.settings.logo_object_fit }};
+    --lab-logo-opacity-default: {{ logo_opacity_default_dec }};
+    --lab-logo-opacity-hover: {{ logo_opacity_hover_dec }};
+    --lab-logo-grayscale-default: {% if section.settings.logo_grayscale_default %}grayscale(100%){% else %}none{% endif %};
+    --lab-logo-grayscale-hover: {% if section.settings.logo_grayscale_off_hover %}grayscale(0%){% else %}var(--lab-logo-grayscale-default){% endif %};
+    --lab-marquee-duration: {{ section.settings.marquee_speed }}s;
+    --lab-fade-size: {{ edge_fade_size_pct }};
+    --lab-gap-mobile: {{ section.settings.items_gap_mobile }}px;
+    --lab-gap-desktop: {{ section.settings.items_gap_desktop }}px;
+    --lab-cols-mobile: {{ section.settings.columns_mobile }};
+    --lab-cols-desktop: {{ section.settings.columns_desktop }};
+    --lab-content-max: {{ section.settings.content_max_width }}px;
+    --lab-pad-top-mobile: {{ section.settings.padding_top }}px;
+    --lab-pad-bottom-mobile: {{ section.settings.padding_bottom }}px;
+    --lab-pad-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --lab-pad-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    position: relative;
+    padding-top: var(--lab-pad-top-mobile);
+    padding-bottom: var(--lab-pad-bottom-mobile);
+    color: var(--color-foreground);
+    {% if section.settings.bg_color != blank %}background-color: {{ section.settings.bg_color | color_modify: 'alpha', bg_alpha }};{% endif %}
+    {% if section.settings.enable_gradient and section.settings.gradient_color != blank and section.settings.bg_color != blank %}
+      {%- assign grad_dir = section.settings.gradient_direction -%}
+      background-image: linear-gradient({{ grad_dir }}, {{ section.settings.bg_color | color_modify: 'alpha', bg_alpha }}, {{ section.settings.gradient_color | color_modify: 'alpha', gradient_alpha }});
+    {% endif %}
+    {% if section.settings.enable_border_top and section.settings.border_color != blank %}border-top: {{ section.settings.border_width }}px solid {{ section.settings.border_color | color_modify: 'alpha', border_alpha }};{% endif %}
+    {% if section.settings.enable_border_bottom and section.settings.border_color != blank %}border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color | color_modify: 'alpha', border_alpha }};{% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__inner {
+    width: 100%;
+    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, var(--lab-content-max)){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+    box-sizing: border-box;
+  }
+
+  /* Header ----------------------------------------------------------------- */
+  #shopify-section-{{ section_id }} .lab_logo_bar__header {
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+    max-width: var(--lab-content-max);
+    margin-inline: auto;
+  }
+  #shopify-section-{{ section_id }} .lab_logo_bar__header[data-lab-align="left"]   { text-align: left; }
+  #shopify-section-{{ section_id }} .lab_logo_bar__header[data-lab-align="center"] { text-align: center; }
+  #shopify-section-{{ section_id }} .lab_logo_bar__header[data-lab-align="right"]  { text-align: right; }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__heading {
+    margin: 0 0 0.5rem;
+    font-size: {{ section.settings.heading_size_mobile }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    letter-spacing: {{ section.settings.heading_letter_spacing }}px;
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    color: {% if section.settings.heading_color != blank %}{{ section.settings.heading_color | color_modify: 'alpha', heading_alpha }}{% else %}var(--color-foreground){% endif %};
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__subheading {
+    font-size: {{ section.settings.subheading_size_mobile }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    line-height: 1.5;
+    color: {% if section.settings.subheading_color != blank %}{{ section.settings.subheading_color | color_modify: 'alpha', subheading_alpha }}{% else %}var(--color-foreground){% endif %};
+  }
+  #shopify-section-{{ section_id }} .lab_logo_bar__subheading > * { margin: 0 0 0.5rem; }
+  #shopify-section-{{ section_id }} .lab_logo_bar__subheading > *:last-child { margin-bottom: 0; }
+
+  /* Marquee ---------------------------------------------------------------- */
+  #shopify-section-{{ section_id }} .lab_logo_bar__marquee {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__track {
+    display: flex;
+    width: max-content;
+    gap: var(--lab-gap-mobile);
+    align-items: center;
+    animation: lab_logo_marquee_{{ section_id }} var(--lab-marquee-duration) linear infinite;
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar[data-lab-direction="right"] .lab_logo_bar__track {
+    animation-direction: reverse;
+  }
+
+  @keyframes lab_logo_marquee_{{ section_id }} {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-50% - (var(--lab-gap-mobile) / 2))); }
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar[data-lab-edge-fade="true"] .lab_logo_bar__marquee {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black var(--lab-fade-size), black calc(100% - var(--lab-fade-size)), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0%, black var(--lab-fade-size), black calc(100% - var(--lab-fade-size)), transparent 100%);
+  }
+
+  /* Grid ------------------------------------------------------------------- */
+  #shopify-section-{{ section_id }} .lab_logo_bar__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--lab-cols-mobile), minmax(0, 1fr));
+    gap: var(--lab-gap-mobile);
+    align-items: center;
+    justify-items: center;
+    max-width: var(--lab-content-max);
+    margin-inline: auto;
+  }
+
+  /* Item / link / image ---------------------------------------------------- */
+  #shopify-section-{{ section_id }} .lab_logo_bar__item {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__link,
+  #shopify-section-{{ section_id }} .lab_logo_bar__static {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 0.75rem;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 4px;
+    transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+    opacity: var(--lab-logo-opacity-override, var(--lab-logo-opacity-default));
+    filter: var(--lab-logo-grayscale-default);
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__image {
+    display: block;
+    height: var(--lab-logo-height-override, var(--lab-logo-height-mobile));
+    width: auto;
+    max-width: 100%;
+    object-fit: var(--lab-logo-fit);
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__placeholder {
+    fill: var(--color-foreground);
+    opacity: 0.4;
+  }
+
+  @media (hover: hover) {
+    #shopify-section-{{ section_id }} .lab_logo_bar__link:hover,
+    #shopify-section-{{ section_id }} .lab_logo_bar__link:focus-visible {
+      opacity: var(--lab-logo-opacity-override, var(--lab-logo-opacity-hover));
+      filter: var(--lab-logo-grayscale-hover);
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar[data-lab-pause-hover="true"]:hover .lab_logo_bar__track {
+      animation-play-state: paused;
+    }
+  }
+
+  /* CTA -------------------------------------------------------------------- */
+  #shopify-section-{{ section_id }} .lab_logo_bar__cta-wrap {
+    margin-top: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: {{ section.settings.header_align }};
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: {{ section.settings.cta_padding_y }}px {{ section.settings.cta_padding_x }}px;
+    border-style: solid;
+    border-width: {{ section.settings.cta_border_width }}px;
+    border-radius: {{ section.settings.cta_border_radius }}px;
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    background-color: {% if section.settings.cta_bg_color != blank %}{{ section.settings.cta_bg_color | color_modify: 'alpha', cta_bg_alpha }}{% else %}var(--color-button){% endif %};
+    color: {% if section.settings.cta_text_color != blank %}{{ section.settings.cta_text_color | color_modify: 'alpha', cta_text_alpha }}{% else %}var(--color-button-text){% endif %};
+    border-color: {% if section.settings.cta_border_color != blank %}{{ section.settings.cta_border_color | color_modify: 'alpha', cta_border_alpha }}{% else %}transparent{% endif %};
+  }
+
+  #shopify-section-{{ section_id }} .lab_logo_bar__cta:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="fill"]:hover,
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="darken"]:hover,
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="outline"]:hover {
+      background-color: {% if section.settings.cta_hover_bg_color != blank %}{{ section.settings.cta_hover_bg_color | color_modify: 'alpha', cta_hover_bg_alpha }}{% else %}var(--color-button){% endif %};
+      color: {% if section.settings.cta_hover_text_color != blank %}{{ section.settings.cta_hover_text_color | color_modify: 'alpha', cta_hover_text_alpha }}{% else %}var(--color-button-text){% endif %};
+      border-color: {% if section.settings.cta_hover_border_color != blank %}{{ section.settings.cta_hover_border_color | color_modify: 'alpha', cta_hover_border_alpha }}{% else %}transparent{% endif %};
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="darken"]:hover {
+      filter: brightness(0.85);
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="lift"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta[data-lab-hover="glow"]:hover {
+      box-shadow: 0 0 18px {% if section.settings.cta_hover_bg_color != blank %}{{ section.settings.cta_hover_bg_color | color_modify: 'alpha', 0.6 }}{% else %}rgba(0,0,0,0.25){% endif %};
+    }
+  }
+
+  /* Entrance animation ----------------------------------------------------- */
+  {% if section.settings.entrance_animation %}
+    #shopify-section-{{ section_id }} .lab_logo_bar__header,
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta-wrap {
+      opacity: 0;
+      animation: lab_logo_entrance_{{ section_id }} 0.7s ease forwards 0.1s;
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar--anim-fade .lab_logo_bar__cta-wrap { animation-delay: 0.25s; }
+
+    @keyframes lab_logo_entrance_{{ section_id }} {
+      from {
+        opacity: 0;
+        {% if section.settings.entrance_type == 'slide-up' %}transform: translateY(16px);{% endif %}
+      }
+      to {
+        opacity: 1;
+        {% if section.settings.entrance_type == 'slide-up' %}transform: translateY(0);{% endif %}
+      }
+    }
+  {% endif %}
+
+  /* Reduced motion --------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} .lab_logo_bar__track {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transform: none !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    #shopify-section-{{ section_id }} .lab_logo_bar__header,
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta-wrap {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    #shopify-section-{{ section_id }} .lab_logo_bar__link,
+    #shopify-section-{{ section_id }} .lab_logo_bar__cta {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Desktop breakpoint ----------------------------------------------------- */
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_logo_bar {
+      padding-top: var(--lab-pad-top-desktop);
+      padding-bottom: var(--lab-pad-bottom-desktop);
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__heading {
+      font-size: {{ section.settings.heading_size_desktop }}px;
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__subheading {
+      font-size: {{ section.settings.subheading_size_desktop }}px;
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__track {
+      gap: var(--lab-gap-desktop);
+    }
+
+    @keyframes lab_logo_marquee_{{ section_id }} {
+      from { transform: translateX(0); }
+      to   { transform: translateX(calc(-50% - (var(--lab-gap-desktop) / 2))); }
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__grid {
+      grid-template-columns: repeat(var(--lab-cols-desktop), minmax(0, 1fr));
+      gap: var(--lab-gap-desktop);
+    }
+
+    #shopify-section-{{ section_id }} .lab_logo_bar__image {
+      height: var(--lab-logo-height-override, var(--lab-logo-height-desktop));
+    }
+  }
+
+  /* Visibility (§8.9) ------------------------------------------------------ */
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+
+  /* Custom CSS ------------------------------------------------------------- */
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section_id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% if section.settings.layout_type == 'marquee' %}
+<script>
+  (function() {
+    if (!window.Shopify || !Shopify.designMode) return;
+    var section = document.getElementById('lab-{{ section_id }}');
+    if (!section) return;
+    var track = section.querySelector('.lab_logo_bar__track');
+    if (!track) return;
+    var slowed = ({{ section.settings.marquee_speed }} * 2) + 's';
+    track.style.animationDuration = slowed;
+  })();
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "🧪 Logo Bar",
+  "tag": "section",
+  "class": "lab_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 24,
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "checkbox", "id": "show_heading", "label": "Show heading", "default": true },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Trusted by leading brands", "visible_if": "{{ section.settings.show_heading }}" },
+    { "type": "checkbox", "id": "show_subheading", "label": "Show subheading", "default": false },
+    { "type": "richtext", "id": "subheading", "label": "Subheading", "default": "<p>Join 2,000+ stores already using our platform.</p>", "visible_if": "{{ section.settings.show_subheading }}" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show CTA button", "default": false },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "View all partners", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "url", "id": "cta_url", "label": "Button link", "visible_if": "{{ section.settings.show_cta }}" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size_mobile", "label": "Heading size (mobile)", "min": 14, "max": 48, "step": 1, "unit": "px", "default": 22 },
+    { "type": "range", "id": "heading_size_desktop", "label": "Heading size (desktop)", "min": 18, "max": 80, "step": 1, "unit": "px", "default": 32 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "select",
+      "id": "header_align",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -2, "max": 10, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 20, "step": 1, "default": 12, "info": "Displayed as 1/10 (12 = 1.2)" },
+    { "type": "range", "id": "subheading_size_mobile", "label": "Subheading size (mobile)", "min": 12, "max": 32, "step": 1, "unit": "px", "default": 14, "visible_if": "{{ section.settings.show_subheading }}" },
+    { "type": "range", "id": "subheading_size_desktop", "label": "Subheading size (desktop)", "min": 14, "max": 40, "step": 1, "unit": "px", "default": 16, "visible_if": "{{ section.settings.show_subheading }}" },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }
+      ],
+      "default": "400",
+      "visible_if": "{{ section.settings.show_subheading }}"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color", "visible_if": "{{ section.settings.show_subheading }}" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 70, "visible_if": "{{ section.settings.show_subheading }}" },
+
+    { "type": "header", "content": "Media" },
+    { "type": "range", "id": "logo_max_height_mobile", "label": "Logo max height (mobile)", "min": 16, "max": 80, "step": 2, "unit": "px", "default": 32 },
+    { "type": "range", "id": "logo_max_height_desktop", "label": "Logo max height (desktop)", "min": 16, "max": 120, "step": 2, "unit": "px", "default": 48 },
+    {
+      "type": "select",
+      "id": "logo_object_fit",
+      "label": "Logo fit",
+      "options": [
+        { "value": "contain", "label": "Contain" },
+        { "value": "cover", "label": "Cover" }
+      ],
+      "default": "contain"
+    },
+    { "type": "checkbox", "id": "logo_grayscale_default", "label": "Apply grayscale by default", "default": true },
+    { "type": "range", "id": "logo_opacity_default", "label": "Default logo opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 70 },
+    { "type": "checkbox", "id": "logo_grayscale_off_hover", "label": "Remove grayscale on hover", "default": true },
+    { "type": "range", "id": "logo_opacity_hover", "label": "Logo opacity on hover", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "Layout type",
+      "options": [
+        { "value": "marquee", "label": "Marquee (animated)" },
+        { "value": "grid", "label": "Grid (static)" }
+      ],
+      "default": "marquee"
+    },
+    { "type": "range", "id": "columns_mobile", "label": "Columns (mobile)", "min": 1, "max": 4, "step": 1, "default": 2, "visible_if": "{{ section.settings.layout_type == 'grid' }}" },
+    { "type": "range", "id": "columns_desktop", "label": "Columns (desktop)", "min": 2, "max": 8, "step": 1, "default": 5, "visible_if": "{{ section.settings.layout_type == 'grid' }}" },
+    { "type": "range", "id": "items_gap_mobile", "label": "Gap between logos (mobile)", "min": 8, "max": 80, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "items_gap_desktop", "label": "Gap between logos (desktop)", "min": 8, "max": 120, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 600, "max": 1600, "step": 50, "unit": "px", "default": 1200 },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Marquee", "info": "Only applies when layout is Marquee." },
+    {
+      "type": "select",
+      "id": "marquee_direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "visible_if": "{{ section.settings.layout_type == 'marquee' }}"
+    },
+    { "type": "range", "id": "marquee_speed", "label": "Loop duration", "min": 10, "max": 100, "step": 1, "unit": "s", "default": 30, "visible_if": "{{ section.settings.layout_type == 'marquee' }}" },
+    { "type": "checkbox", "id": "marquee_pause_hover", "label": "Pause on hover", "default": true, "visible_if": "{{ section.settings.layout_type == 'marquee' }}" },
+    { "type": "checkbox", "id": "marquee_edge_fade", "label": "Edge gradient fade", "default": true, "visible_if": "{{ section.settings.layout_type == 'marquee' }}" },
+    { "type": "range", "id": "marquee_edge_fade_size", "label": "Fade size", "min": 0, "max": 25, "step": 1, "unit": "%", "default": 8, "visible_if": "{{ section.settings.layout_type == 'marquee' }}" },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_color_opacity", "label": "Background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "enable_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.enable_gradient }}" },
+    { "type": "range", "id": "gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.enable_gradient }}" },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to top right", "label": "To top right" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.enable_gradient }}"
+    },
+    { "type": "checkbox", "id": "enable_border_top", "label": "Top border", "default": false },
+    { "type": "checkbox", "id": "enable_border_bottom", "label": "Bottom border", "default": false },
+    { "type": "color", "id": "border_color", "label": "Border color" },
+    { "type": "range", "id": "border_color_opacity", "label": "Border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "border_width", "label": "Border width", "min": 1, "max": 4, "step": 1, "unit": "px", "default": 1 },
+
+    { "type": "color", "id": "cta_bg_color", "label": "Button background color", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_bg_color_opacity", "label": "Button bg opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "color", "id": "cta_text_color", "label": "Button text color", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_text_color_opacity", "label": "Button text opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "color", "id": "cta_border_color", "label": "Button border color", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_border_color_opacity", "label": "Button border opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_border_width", "label": "Button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 1, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_border_radius", "label": "Button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 4, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_padding_x", "label": "Button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 24, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_padding_y", "label": "Button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 12, "visible_if": "{{ section.settings.show_cta }}" },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken",
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    { "type": "color", "id": "cta_hover_bg_color", "label": "Button hover bg", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_hover_bg_color_opacity", "label": "Button hover bg opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_hover_text_color_opacity", "label": "Button hover text opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "color", "id": "cta_hover_border_color", "label": "Button hover border", "visible_if": "{{ section.settings.show_cta }}" },
+    { "type": "range", "id": "cta_hover_border_color_opacity", "label": "Button hover border opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.show_cta }}" },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "entrance_animation", "label": "Animate header on load", "default": false },
+    {
+      "type": "select",
+      "id": "entrance_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide-up", "label": "Slide up" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.entrance_animation }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top (mobile)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom (mobile)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Custom CSS" },
+    { "type": "textarea", "id": "custom_css", "label": "Custom CSS", "info": "Advanced: applies only to this section. Selectors are auto-scoped under #shopify-section-{id}." }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        { "type": "image_picker", "id": "logo_image", "label": "Logo image" },
+        { "type": "text", "id": "logo_alt_override", "label": "Alt text override", "info": "Defaults to image alt or 'Brand logo'." },
+        { "type": "url", "id": "logo_url", "label": "Click-through URL", "info": "Optional — leave empty for non-clickable logo." },
+        { "type": "header", "content": "Override defaults" },
+        { "type": "checkbox", "id": "use_height_override", "label": "Custom height", "default": false },
+        { "type": "range", "id": "logo_height_override", "label": "Custom height", "min": 16, "max": 120, "step": 4, "unit": "px", "default": 48, "visible_if": "{{ block.settings.use_height_override }}" },
+        { "type": "checkbox", "id": "use_opacity_override", "label": "Custom opacity", "default": false },
+        { "type": "range", "id": "logo_opacity_override", "label": "Custom opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ block.settings.use_opacity_override }}" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "🧪 Logo Bar — Dark",
+      "category": "Liquid Lab",
+      "settings": {
+        "bg_color": "#0a0b1a",
+        "bg_color_opacity": 100,
+        "heading_color": "#e8e9ff",
+        "heading_color_opacity": 100,
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 2,
+        "subheading_color": "#e8e9ff",
+        "subheading_color_opacity": 70,
+        "logo_grayscale_default": true,
+        "logo_opacity_default": 60,
+        "logo_grayscale_off_hover": true,
+        "logo_opacity_hover": 100,
+        "enable_border_top": false,
+        "enable_border_bottom": false
+      },
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    },
+    {
+      "name": "🧪 Logo Bar — Warm",
+      "category": "Liquid Lab",
+      "settings": {
+        "bg_color": "#fdf6ee",
+        "bg_color_opacity": 100,
+        "heading_color": "#3d2c1e",
+        "heading_color_opacity": 100,
+        "heading_weight": "300",
+        "heading_transform": "none",
+        "heading_letter_spacing": -1,
+        "subheading_color": "#3d2c1e",
+        "subheading_color_opacity": 70,
+        "logo_grayscale_default": true,
+        "logo_opacity_default": 50,
+        "logo_grayscale_off_hover": true,
+        "logo_opacity_hover": 90
+      },
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    },
+    {
+      "name": "🧪 Logo Bar — Bold",
+      "category": "Liquid Lab",
+      "settings": {
+        "bg_color": "#f2f0eb",
+        "bg_color_opacity": 100,
+        "heading_color": "#1a1a1a",
+        "heading_color_opacity": 100,
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 5,
+        "subheading_color": "#1a1a1a",
+        "subheading_color_opacity": 70,
+        "logo_grayscale_default": false,
+        "logo_opacity_default": 100,
+        "logo_grayscale_off_hover": false,
+        "logo_opacity_hover": 70,
+        "enable_border_top": true,
+        "enable_border_bottom": true,
+        "border_color": "#1a1a1a",
+        "border_color_opacity": 100,
+        "border_width": 1
+      },
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    }
+  ]
+}
+{% endschema %}
