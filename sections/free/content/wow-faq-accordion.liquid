@@ -1,0 +1,766 @@
+{% comment %} 1. Assigns {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign animation_enabled = section.settings.animation_enabled
+  assign animation_type = section.settings.animation_type
+  assign animation_delay = section.settings.animation_delay
+  assign icon_style = section.settings.icon_style
+  assign show_divider = section.settings.show_divider
+  assign accordion_max_width = section.settings.accordion_max_width
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+%}
+
+{% comment %} 2. HTML structure {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_faq_accordion wow_faq_accordion--align-{{ section.settings.content_alignment }} wow_faq_accordion--pos-{{ section.settings.content_position }} wow_faq_accordion--icon-{{ icon_style }} wow_faq_accordion--width-{{ section.settings.section_width }}{% if show_divider %} wow_faq_accordion--has-divider{% endif %}{% if animation_enabled %} wow_faq_accordion--animated wow_faq_accordion--anim-{{ animation_type }}{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'FAQ' | escape }}"
+  >
+    <div class="wow_faq_accordion__inner">
+      {% if section.settings.heading != blank or section.settings.subheading != blank %}
+        <header class="wow_faq_accordion__header">
+          {% if section.settings.heading != blank %}
+            <h2 class="wow_faq_accordion__heading">{{ section.settings.heading | escape }}</h2>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <p class="wow_faq_accordion__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+          {% endif %}
+        </header>
+      {% endif %}
+
+      {% if section.blocks.size > 0 %}
+        <ul class="wow_faq_accordion__list" role="list">
+          {% for block in section.blocks %}
+            {% if block.type == 'faq_item' %}
+              <li role="listitem" class="wow_faq_accordion__item" {{ block.shopify_attributes }}>
+                <details
+                  class="wow_faq_accordion__details"
+                  {% if block.settings.open_by_default %}open{% endif %}
+                  {% if animation_enabled %}style="animation-delay: {{ animation_delay | times: forloop.index0 }}ms;"{% endif %}
+                >
+                  <summary class="wow_faq_accordion__summary">
+                    <span class="wow_faq_accordion__question">{{ block.settings.question | escape }}</span>
+                    {% if icon_style != 'none' %}
+                      <span class="wow_faq_accordion__icon" aria-hidden="true"></span>
+                    {% endif %}
+                  </summary>
+                  <div class="wow_faq_accordion__answer-wrap">
+                    <div class="wow_faq_accordion__answer-inner">
+                      <div class="wow_faq_accordion__answer">{{ block.settings.answer | escape | newline_to_br }}</div>
+                    </div>
+                  </div>
+                </details>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scoped {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_faq_accordion {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__inner {
+    width: 100%;
+    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+    display: flex;
+    flex-direction: column;
+    align-items: {% if section.settings.content_position == 'top-left' or section.settings.content_position == 'center-left' or section.settings.content_position == 'bottom-left' %}flex-start{% elsif section.settings.content_position == 'top-right' or section.settings.content_position == 'center-right' or section.settings.content_position == 'bottom-right' %}flex-end{% else %}center{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__header {
+    width: 100%;
+    max-width: {{ section.settings.content_max_width }}px;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+    text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__heading {
+    margin: 0 0 clamp(0.5rem, 1.5vw, 1rem);
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    text-align: {{ section.settings.heading_text_align }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__subheading {
+    margin: 0;
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    text-align: {{ section.settings.subheading_text_align }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: {{ accordion_max_width }}px;
+    display: grid;
+    gap: {{ section.settings.items_gap }}px;
+    align-items: {{ section.settings.items_align }};
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__item {
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion--has-divider .wow_faq_accordion__item {
+    border-bottom: {{ section.settings.divider_width }}px {{ section.settings.divider_style }} {% if section.settings.divider_color != blank %}color-mix(in srgb, {{ section.settings.divider_color }} {{ section.settings.divider_color_opacity }}%, transparent){% else %}color-mix(in srgb, var(--color-foreground) {{ section.settings.divider_color_opacity }}%, transparent){% endif %};
+    padding-bottom: {{ section.settings.items_gap }}px;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion--has-divider .wow_faq_accordion__item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__details {
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    min-height: 44px;
+    padding: clamp(0.75rem, 2vw, 1.25rem) 0;
+    user-select: none;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__summary:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__question {
+    flex: 1 1 auto;
+    font-size: {{ section.settings.question_size }}px;
+    font-weight: {{ section.settings.question_weight }};
+    text-transform: {{ section.settings.question_transform }};
+    text-align: {{ section.settings.question_text_align }};
+    letter-spacing: calc({{ section.settings.question_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.question_line_height }} / 10);
+    {% if section.settings.question_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.question_color }} {{ section.settings.question_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__icon {
+    flex: 0 0 auto;
+    position: relative;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.3s ease;
+  }
+
+  /* Plus / minus icon — two crossed bars */
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::before,
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: currentColor;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::before {
+    width: 1rem;
+    height: 2px;
+    transform: translate(-50%, -50%);
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__icon::after {
+    width: 2px;
+    height: 1rem;
+    transform: translate(-50%, -50%);
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-plus-minus .wow_faq_accordion__details[open] .wow_faq_accordion__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  /* Arrow icon — chevron right that rotates 90deg on open */
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-arrow .wow_faq_accordion__icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translate(-65%, -65%) rotate(-45deg);
+    transition: transform 0.3s ease;
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion--icon-arrow .wow_faq_accordion__details[open] .wow_faq_accordion__icon::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  /* Smooth height animation using the grid-rows trick */
+  #shopify-section-{{ section.id }} .wow_faq_accordion__answer-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion__details[open] .wow_faq_accordion__answer-wrap {
+    grid-template-rows: 1fr;
+  }
+  #shopify-section-{{ section.id }} .wow_faq_accordion__answer-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wow_faq_accordion__answer {
+    padding: 0 0 clamp(0.75rem, 2vw, 1.25rem);
+    font-size: {{ section.settings.answer_size }}px;
+    font-weight: {{ section.settings.answer_weight }};
+    text-transform: {{ section.settings.answer_transform }};
+    text-align: {{ section.settings.answer_text_align }};
+    letter-spacing: calc({{ section.settings.answer_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.answer_line_height }} / 10);
+    {% if section.settings.answer_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.answer_color }} {{ section.settings.answer_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  /* Animation — fade / slide / zoom on the details element */
+  {% if animation_enabled %}
+    #shopify-section-{{ section.id }} .wow_faq_accordion--animated .wow_faq_accordion__details {
+      opacity: 0;
+      animation-duration: 0.5s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-fade .wow_faq_accordion__details {
+      animation-name: wow_faq_accordion_fade_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-slide .wow_faq_accordion__details {
+      animation-name: wow_faq_accordion_slide_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_faq_accordion--anim-zoom .wow_faq_accordion__details {
+      animation-name: wow_faq_accordion_zoom_{{ section.id }};
+    }
+    @keyframes wow_faq_accordion_fade_{{ section.id }} {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes wow_faq_accordion_slide_{{ section.id }} {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wow_faq_accordion_zoom_{{ section.id }} {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_faq_accordion__icon,
+    #shopify-section-{{ section.id }} .wow_faq_accordion__icon::before,
+    #shopify-section-{{ section.id }} .wow_faq_accordion__icon::after,
+    #shopify-section-{{ section.id }} .wow_faq_accordion__answer-wrap,
+    #shopify-section-{{ section.id }} .wow_faq_accordion__details {
+      transition: none;
+      animation: none;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% schema %}
+{
+  "name": "⚡ FAQ Accordion",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Frequently asked questions" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Everything you need to know before you buy. Can't find an answer? Get in touch." },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 40 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1, "info": "1/100em" },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12, "info": "1/10 (15 = 1.5)" },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 17 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
+
+    { "type": "range", "id": "question_size", "label": "Question size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 18 },
+    {
+      "type": "select",
+      "id": "question_weight",
+      "label": "Question weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "question_transform",
+      "label": "Question text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "question_text_align",
+      "label": "Question text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "question_color", "label": "Question color" },
+    { "type": "range", "id": "question_color_opacity", "label": "Question color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "question_letter_spacing", "label": "Question letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "question_line_height", "label": "Question line height", "min": 10, "max": 30, "step": 1, "default": 14 },
+
+    { "type": "range", "id": "answer_size", "label": "Answer size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "answer_weight",
+      "label": "Answer weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "answer_transform",
+      "label": "Answer text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "answer_text_align",
+      "label": "Answer text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "answer_color", "label": "Answer color" },
+    { "type": "range", "id": "answer_color_opacity", "label": "Answer color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "answer_letter_spacing", "label": "Answer letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "answer_line_height", "label": "Answer line height", "min": 10, "max": 30, "step": 1, "default": 16 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 800 },
+    { "type": "range", "id": "accordion_max_width", "label": "Accordion max width", "min": 600, "max": 1200, "step": 50, "unit": "px", "default": 800 },
+    { "type": "range", "id": "items_gap", "label": "Gap between items", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "items_align",
+      "label": "Items alignment",
+      "options": [
+        { "value": "start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "stretch"
+    },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon style",
+      "options": [
+        { "value": "plus-minus", "label": "Plus / minus" },
+        { "value": "arrow", "label": "Arrow" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "plus-minus"
+    },
+    { "type": "checkbox", "id": "show_divider", "label": "Show divider between items", "default": true },
+    { "type": "color", "id": "divider_color", "label": "Divider color" },
+    { "type": "range", "id": "divider_color_opacity", "label": "Divider color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 15 },
+    { "type": "range", "id": "divider_width", "label": "Divider width", "min": 1, "max": 8, "step": 1, "unit": "px", "default": 1 },
+    {
+      "type": "select",
+      "id": "divider_style",
+      "label": "Divider style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" }
+      ],
+      "default": "solid"
+    },
+    { "type": "range", "id": "divider_opacity", "label": "Divider opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay",
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 80,
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ item",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "What's the question?" },
+        { "type": "textarea", "id": "answer", "label": "Answer", "default": "Write a clear, helpful answer that resolves the merchant's most common doubt." },
+        { "type": "checkbox", "id": "open_by_default", "label": "Open by default", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "⚡ FAQ Accordion — Dark",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Questions, answered",
+        "subheading": "Specs, shipping, support — what most customers want to know before they buy.",
+        "heading_weight": "700",
+        "heading_transform": "none",
+        "heading_letter_spacing": -2,
+        "heading_color": "#e8e9ff",
+        "subheading_color": "#9ea0c8",
+        "question_color": "#ffffff",
+        "answer_color": "#9ea0c8",
+        "bg_color": "#0a0b1a",
+        "icon_style": "plus-minus",
+        "show_divider": true,
+        "divider_color": "#7c6ff7",
+        "divider_color_opacity": 25,
+        "items_gap": 0,
+        "accordion_max_width": 800,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      },
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "How long does shipping take?", "answer": "Standard orders ship in 1–2 business days and arrive in 3–5 days. Expedited delivery is available at checkout for next-day arrival in major cities.", "open_by_default": true } },
+        { "type": "faq_item", "settings": { "question": "What's your return policy?", "answer": "30-day no-questions-asked returns. Print the prepaid label from your account, drop it at any carrier, and we'll refund within 5 business days of the package arriving back at our warehouse." } },
+        { "type": "faq_item", "settings": { "question": "Do you offer warranties?", "answer": "Every product carries a 2-year manufacturer warranty against defects. Premium tier customers get an extended 5-year coverage at no additional cost — automatically applied at purchase." } },
+        { "type": "faq_item", "settings": { "question": "Can I track my order?", "answer": "A tracking link arrives by email the moment your order ships. You can also follow the shipment in real time from your account dashboard." } }
+      ]
+    },
+    {
+      "name": "⚡ FAQ Accordion — Warm",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "We've got you",
+        "subheading": "A few of the things customers ask us most. Reach out if you need anything else — we read every message.",
+        "heading_weight": "400",
+        "heading_transform": "none",
+        "heading_letter_spacing": -1,
+        "heading_color": "#3d2c1e",
+        "subheading_color": "#7a6552",
+        "question_color": "#3d2c1e",
+        "answer_color": "#7a6552",
+        "bg_color": "#fdf6ee",
+        "icon_style": "arrow",
+        "show_divider": true,
+        "divider_color": "#d4956a",
+        "divider_color_opacity": 30,
+        "items_gap": 8,
+        "accordion_max_width": 720,
+        "question_weight": "500",
+        "animation_enabled": true,
+        "animation_type": "fade"
+      },
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "Are your products cruelty-free?", "answer": "Always. Every formula is developed without animal testing and we choose suppliers who meet the same standard. Look for the Leaping Bunny mark on each label.", "open_by_default": true } },
+        { "type": "faq_item", "settings": { "question": "How do I choose the right shade?", "answer": "Take our 30-second skin quiz on the home page — it matches you with two recommended shades, and we'll send free samples before you commit to the full size." } },
+        { "type": "faq_item", "settings": { "question": "Will it work for sensitive skin?", "answer": "Our entire range is fragrance-free and dermatologist-tested on sensitive skin. If you react to any product, return it opened within 60 days for a full refund." } },
+        { "type": "faq_item", "settings": { "question": "Do you offer subscriptions?", "answer": "Yes — set any product to auto-deliver every 4, 6, or 8 weeks and save 15%. Skip, swap, or cancel any time from your account." } }
+      ]
+    },
+    {
+      "name": "⚡ FAQ Accordion — Bold",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "FAQ",
+        "subheading": "STRAIGHT ANSWERS TO THE STUFF THAT ACTUALLY MATTERS.",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 4,
+        "subheading_transform": "uppercase",
+        "subheading_letter_spacing": 6,
+        "heading_color": "#1a1a1a",
+        "subheading_color": "#1a1a1a",
+        "question_color": "#1a1a1a",
+        "answer_color": "#3a3a3a",
+        "bg_color": "#f2f0eb",
+        "icon_style": "plus-minus",
+        "show_divider": true,
+        "divider_color": "#1a1a1a",
+        "divider_color_opacity": 100,
+        "divider_width": 2,
+        "items_gap": 0,
+        "accordion_max_width": 900,
+        "question_weight": "700",
+        "question_transform": "uppercase",
+        "question_letter_spacing": 1,
+        "animation_enabled": true,
+        "animation_type": "slide"
+      },
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "Is this the real deal?", "answer": "Made in our own factory. No middlemen, no markups, no excuses. Spec sheet is on every product page — read it.", "open_by_default": true } },
+        { "type": "faq_item", "settings": { "question": "How fast can I get it?", "answer": "Order by 2pm — it ships today. Major cities get next-day. Everywhere else: two days, max." } },
+        { "type": "faq_item", "settings": { "question": "What if I don't love it?", "answer": "30 days. Send it back. Full refund. We pay return shipping. That's the whole policy." } },
+        { "type": "faq_item", "settings": { "question": "Bulk orders?", "answer": "Email orders@brand.com. We answer in under 4 hours during business days and quote within 24." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
