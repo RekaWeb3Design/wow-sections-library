@@ -18,7 +18,7 @@
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="wow-{{ section_id }}"
-    class="wow_features_icons wow_features_icons--cols-{{ columns }} wow_features_icons--align-{{ alignment }} wow_features_icons--shadow-{{ section.settings.feature_card_shadow }} wow_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} wow_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} wow_features_icons--mobile-stack{% endif %}{% if animation_enabled %} wow_features_icons--animated wow_features_icons--anim-{{ animation_type }}{% endif %} wow_section"
+    class="wow_features_icons wow_features_icons--cols-{{ columns }} wow_features_icons--align-{{ alignment }} wow_features_icons--pos-{{ section.settings.content_position }} wow_features_icons--width-{{ section.settings.section_width }} wow_features_icons--shadow-{{ section.settings.feature_card_shadow }} wow_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} wow_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} wow_features_icons--mobile-stack{% endif %}{% if animation_enabled %} wow_features_icons--animated wow_features_icons--anim-{{ animation_type }}{% endif %} wow_section"
     aria-label="{{ section.settings.heading | default: 'Features' | escape }}"
   >
     <div class="wow_features_icons__inner">
@@ -95,9 +95,9 @@
 
   #shopify-section-{{ section.id }} .wow_features_icons__inner {
     width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding-inline: clamp(1rem, 4vw, 3rem);
+    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 4vw, 3.5rem);
@@ -107,20 +107,43 @@
     display: flex;
     flex-direction: column;
     gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    max-width: 52rem;
+    max-width: {{ section.settings.content_max_width }}px;
+    width: 100%;
   }
 
+  /* content_alignment controls text-align inside the header */
   #shopify-section-{{ section.id }} .wow_features_icons--align-left .wow_features_icons__header {
     text-align: left;
-    align-self: flex-start;
   }
   #shopify-section-{{ section.id }} .wow_features_icons--align-center .wow_features_icons__header {
     text-align: center;
-    align-self: center;
   }
   #shopify-section-{{ section.id }} .wow_features_icons--align-right .wow_features_icons__header {
     text-align: right;
+  }
+
+  /* content_position controls where the header block sits within the inner — horizontal axis maps to align-self */
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-left .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-center-left .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-left .wow_features_icons__header {
+    align-self: flex-start;
+  }
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-center .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-center .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-center .wow_features_icons__header {
+    align-self: center;
+  }
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-top-right .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-center-right .wow_features_icons__header,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-right .wow_features_icons__header {
     align-self: flex-end;
+  }
+
+  /* content_position vertical axis: bottom variants render header AFTER the grid in column flow */
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-left .wow_features_icons__inner,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-center .wow_features_icons__inner,
+  #shopify-section-{{ section.id }} .wow_features_icons--pos-bottom-right .wow_features_icons__inner {
+    flex-direction: column-reverse;
   }
 
   #shopify-section-{{ section.id }} .wow_features_icons__title {
@@ -294,6 +317,23 @@
       opacity: 1;
     }
   }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
 </style>
 
 {% comment %} 4. JavaScript — only when animation enabled {% endcomment %}
@@ -433,7 +473,38 @@
       ],
       "default": "center"
     },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Header position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Header max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 800 },
     { "type": "checkbox", "id": "mobile_stack", "label": "Stack cards on mobile", "default": true },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
 
     { "type": "header", "content": "Appearance" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
@@ -530,7 +601,15 @@
 
     { "type": "header", "content": "Spacing" },
     { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 }
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
   ],
   "blocks": [
     {
@@ -612,6 +691,8 @@
       "category": "WOW Sections",
       "settings": {
         "columns": "3",
+        "content_position": "center",
+        "section_width": "boxed",
         "heading_weight": "300",
         "feature_card_border_width": 1,
         "feature_card_border_radius": 8,
@@ -653,6 +734,8 @@
       "category": "WOW Sections",
       "settings": {
         "columns": "3",
+        "content_position": "top-left",
+        "section_width": "full",
         "heading_weight": "700",
         "heading_transform": "uppercase",
         "feature_card_border_width": 0,
@@ -696,6 +779,8 @@
       "category": "WOW Sections",
       "settings": {
         "columns": "3",
+        "content_position": "center",
+        "section_width": "boxed",
         "heading_weight": "400",
         "feature_card_border_width": 0,
         "feature_card_border_radius": 48,
