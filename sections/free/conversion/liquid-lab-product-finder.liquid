@@ -1,0 +1,783 @@
+{%- comment -%} 1. Assigns {%- endcomment -%}
+{%- liquid
+  assign section_id = section.id
+  assign s = section.settings
+  assign anim_enabled = s.entrance_animation
+  assign anim_type = s.entrance_type
+  assign bg_pct = s.bg_opacity
+  assign bg_grad_pct = s.bg_gradient_color_opacity
+
+  assign card_shadow = s.card_shadow
+  case card_shadow
+    when 'soft'
+      assign card_shadow_css = '0 2px 8px color-mix(in srgb, var(--color-foreground) 8%, transparent)'
+    when 'medium'
+      assign card_shadow_css = '0 4px 16px color-mix(in srgb, var(--color-foreground) 14%, transparent)'
+    when 'strong'
+      assign card_shadow_css = '0 10px 28px color-mix(in srgb, var(--color-foreground) 22%, transparent)'
+    else
+      assign card_shadow_css = 'none'
+  endcase
+-%}
+
+{%- comment -%} 2. HTML structure {%- endcomment -%}
+<div class="color-{{ s.color_scheme }} gradient">
+  <section
+    id="lab-{{ section_id }}"
+    class="lab_product_finder lab_product_finder--width-{{ s.section_width }}{% if anim_enabled %} lab_product_finder--animated lab_product_finder--anim-{{ anim_type }}{% endif %} lab_section"
+    aria-label="{{ s.heading | default: 'Product finder' | escape }}"
+  >
+    <div class="lab_product_finder__inner">
+      {%- render 'liquid-lab-product-finder',
+        show_heading: s.show_heading,
+        heading: s.heading,
+        show_subheading: s.show_subheading,
+        subheading: s.subheading,
+        form_target: s.form_target,
+        submit_label: s.submit_label,
+        blocks: section.blocks,
+        card_settings: section,
+        context: 'standalone'
+      -%}
+    </div>
+  </section>
+</div>
+
+{%- comment -%} 3. CSS — section scoped {%- endcomment -%}
+<style>
+  /* Section root — padding + background */
+  #shopify-section-{{ section_id }} .lab_product_finder {
+    padding-top: {{ s.padding_top }}px;
+    padding-bottom: {{ s.padding_bottom }}px;
+    {% if s.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if s.bg_gradient and s.bg_color != blank and s.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ s.bg_gradient_direction }},
+        color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ s.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  /* Section inner — width control per §8.9 */
+  #shopify-section-{{ section_id }} .lab_product_finder__inner {
+    width: 100%;
+    max-width: {% if s.section_width == 'full' %}100%{% elsif s.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if s.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+  }
+
+  /* Finder root — owns card alignment */
+  #shopify-section-{{ section_id }} .lab_finder {
+    display: block;
+    width: 100%;
+  }
+
+  /* Card */
+  #shopify-section-{{ section_id }} .lab_finder__card {
+    width: 100%;
+    max-width: {{ s.card_max_width }}px;
+    margin-inline: {% if s.card_align == 'left' %}0 auto 0 0{% elsif s.card_align == 'right' %}0 0 0 auto{% else %}auto{% endif %};
+    padding: {{ s.card_padding_mobile }}px;
+    border-radius: {{ s.card_border_radius }}px;
+    border: {{ s.card_border_width }}px solid {% if s.card_border_color != blank %}color-mix(in srgb, {{ s.card_border_color }} {{ s.card_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    box-shadow: {{ card_shadow_css }};
+    {% if s.card_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.card_bg_color }} {{ s.card_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__card {
+      padding: {{ s.card_padding_desktop }}px;
+    }
+  }
+
+  /* Heading */
+  #shopify-section-{{ section_id }} .lab_finder__heading {
+    margin: 0;
+    font-size: {{ s.heading_size_mobile }}px;
+    font-weight: {{ s.heading_weight }};
+    text-transform: {{ s.heading_transform }};
+    text-align: {{ s.heading_text_align }};
+    letter-spacing: calc({{ s.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ s.heading_line_height }} / 10);
+    {% if s.heading_color != blank %}
+      color: color-mix(in srgb, {{ s.heading_color }} {{ s.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__heading {
+      font-size: {{ s.heading_size_desktop }}px;
+    }
+  }
+
+  /* Subheading */
+  #shopify-section-{{ section_id }} .lab_finder__subheading {
+    margin: 0;
+    font-size: {{ s.subheading_size_mobile }}px;
+    font-weight: {{ s.subheading_weight }};
+    {% if s.subheading_color != blank %}
+      color: color-mix(in srgb, {{ s.subheading_color }} {{ s.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: color-mix(in srgb, var(--color-foreground) 75%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__subheading > * { margin: 0; }
+  #shopify-section-{{ section_id }} .lab_finder__subheading > * + * { margin-top: 0.5em; }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__subheading {
+      font-size: {{ s.subheading_size_desktop }}px;
+    }
+  }
+
+  /* Form */
+  #shopify-section-{{ section_id }} .lab_finder__form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1rem);
+    margin: 0;
+  }
+
+  /* Fields container */
+  #shopify-section-{{ section_id }} .lab_finder__fields {
+    display: flex;
+    flex-direction: column;
+    gap: {{ s.fields_gap_mobile }}px;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_finder__fields {
+      gap: {{ s.fields_gap_desktop }}px;
+    }
+    #shopify-section-{{ section_id }} .lab_finder--fields-horizontal-row .lab_finder__fields {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    #shopify-section-{{ section_id }} .lab_finder--fields-horizontal-row .lab_finder__field {
+      flex: 1 1 160px;
+      min-width: 0;
+    }
+  }
+
+  /* Field — label + select wrap */
+  #shopify-section-{{ section_id }} .lab_finder__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__label {
+    font-size: {{ s.label_size }}px;
+    font-weight: {{ s.label_weight }};
+    text-transform: {{ s.label_transform }};
+    letter-spacing: 0.02em;
+    {% if s.label_color != blank %}
+      color: color-mix(in srgb, {{ s.label_color }} {{ s.label_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select-wrap {
+    position: relative;
+    display: block;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    min-height: 44px;
+    padding: {{ s.field_padding_y }}px {{ s.field_padding_x | plus: 32 }}px {{ s.field_padding_y }}px {{ s.field_padding_x }}px;
+    border: {{ s.field_border_width }}px solid {% if s.field_border_color != blank %}color-mix(in srgb, {{ s.field_border_color }} {{ s.field_border_color_opacity }}%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 22%, transparent){% endif %};
+    border-radius: {{ s.field_border_radius }}px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    {% if s.field_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.field_bg_color }} {{ s.field_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if s.field_text_color != blank %}
+      color: color-mix(in srgb, {{ s.field_text_color }} {{ s.field_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__select:focus,
+  #shopify-section-{{ section_id }} .lab_finder__select:focus-visible {
+    outline: none;
+    border-color: {% if s.field_focus_color != blank %}color-mix(in srgb, {{ s.field_focus_color }} {{ s.field_focus_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
+    box-shadow: 0 0 0 3px {% if s.field_focus_color != blank %}color-mix(in srgb, {{ s.field_focus_color }} 25%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 18%, transparent){% endif %};
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 8px;
+    pointer-events: none;
+    color: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Submit button */
+  #shopify-section-{{ section_id }} .lab_finder__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: {{ s.cta_padding_y }}px {{ s.cta_padding_x }}px;
+    border-radius: {{ s.cta_border_radius }}px;
+    border: {{ s.cta_border_width }}px solid {% if s.cta_border_color != blank %}color-mix(in srgb, {{ s.cta_border_color }} {{ s.cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    align-self: flex-start;
+    {% if s.cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.cta_bg_color }} {{ s.cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if s.cta_text_color != blank %}
+      color: color-mix(in srgb, {{ s.cta_text_color }} {{ s.cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--submit-full .lab_finder__submit {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  /* Hover variants */
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-fill .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-darken .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-lift .lab_finder__submit:hover,
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-glow .lab_finder__submit:hover {
+    {% if s.cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ s.cta_hover_bg_color }} {{ s.cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ s.cta_hover_text_color }} {{ s.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ s.cta_hover_border_color }} {{ s.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-darken .lab_finder__submit:hover {
+    filter: brightness(0.88);
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-lift .lab_finder__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-glow .lab_finder__submit:hover {
+    box-shadow: 0 0 24px {% if s.cta_hover_bg_color != blank %}color-mix(in srgb, {{ s.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder--btn-hover-outline .lab_finder__submit:hover {
+    background-color: transparent;
+    {% if s.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ s.cta_hover_text_color }} {{ s.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if s.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ s.cta_hover_border_color }} {{ s.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section_id }} .lab_finder__submit:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* Animation */
+  {% if anim_enabled %}
+    #shopify-section-{{ section_id }} .lab_product_finder--animated .lab_product_finder__inner {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section_id }} .lab_product_finder--anim-fade .lab_product_finder__inner {
+      animation-name: lab_finder_fade_{{ section_id }};
+    }
+    #shopify-section-{{ section_id }} .lab_product_finder--anim-slide-up .lab_product_finder__inner {
+      animation-name: lab_finder_slide_{{ section_id }};
+    }
+    @keyframes lab_finder_fade_{{ section_id }} {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes lab_finder_slide_{{ section_id }} {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} *,
+    #shopify-section-{{ section_id }} *::before,
+    #shopify-section-{{ section_id }} *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section_id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if s.custom_css != blank %}
+    #shopify-section-{{ section_id }} {
+      {{ s.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% schema %}
+{
+  "name": "🧪 Product Finder",
+  "tag": "section",
+  "class": "lab_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "checkbox", "id": "show_heading", "label": "Show heading", "default": true },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Find your perfect product", "visible_if": "{{ section.settings.show_heading }}" },
+    { "type": "checkbox", "id": "show_subheading", "label": "Show subheading", "default": false },
+    { "type": "richtext", "id": "subheading", "label": "Subheading", "default": "<p>Tell us a little about what you're after.</p>", "visible_if": "{{ section.settings.show_subheading }}" },
+
+    { "type": "header", "content": "Form" },
+    { "type": "url", "id": "form_target", "label": "Collection URL", "info": "The collection page to filter. Filtering must be enabled on that collection in Online Store → Search & filtering." },
+    { "type": "text", "id": "submit_label", "label": "Submit button label", "default": "Search" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size_mobile", "label": "Heading size (mobile)", "min": 12, "max": 60, "step": 1, "unit": "px", "default": 24 },
+    { "type": "range", "id": "heading_size_desktop", "label": "Heading size (desktop)", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 36 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0, "info": "Displayed as 1/100em (10 = 0.1em)" },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12, "info": "Displayed as 1/10 (12 = 1.2)" },
+
+    { "type": "range", "id": "subheading_size_mobile", "label": "Subheading size (mobile)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "subheading_size_desktop", "label": "Subheading size (desktop)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "range", "id": "label_size", "label": "Field label size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Field label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "label_transform",
+      "label": "Field label transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "label_color", "label": "Field label color" },
+    { "type": "range", "id": "label_color_opacity", "label": "Field label color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "fields_layout",
+      "label": "Fields layout",
+      "options": [
+        { "value": "vertical_stack", "label": "Vertical stack" },
+        { "value": "horizontal_row", "label": "Horizontal row (desktop)" }
+      ],
+      "default": "vertical_stack"
+    },
+    { "type": "range", "id": "fields_gap_mobile", "label": "Field gap (mobile)", "min": 8, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "fields_gap_desktop", "label": "Field gap (desktop)", "min": 8, "max": 48, "step": 2, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "card_align",
+      "label": "Card alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "card_max_width", "label": "Card max width", "min": 320, "max": 800, "step": 20, "unit": "px", "default": 520 },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Section background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Section background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "card_bg_color", "label": "Card background color" },
+    { "type": "range", "id": "card_bg_color_opacity", "label": "Card background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "card_border_color", "label": "Card border color" },
+    { "type": "range", "id": "card_border_color_opacity", "label": "Card border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "card_border_width", "label": "Card border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "card_border_radius", "label": "Card border radius", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "soft"
+    },
+    { "type": "range", "id": "card_padding_mobile", "label": "Card padding (mobile)", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "card_padding_desktop", "label": "Card padding (desktop)", "min": 16, "max": 64, "step": 2, "unit": "px", "default": 32 },
+
+    { "type": "color", "id": "field_bg_color", "label": "Field background color" },
+    { "type": "range", "id": "field_bg_color_opacity", "label": "Field background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "field_text_color", "label": "Field text color" },
+    { "type": "range", "id": "field_text_color_opacity", "label": "Field text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "field_border_color", "label": "Field border color" },
+    { "type": "range", "id": "field_border_color_opacity", "label": "Field border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "field_border_width", "label": "Field border width", "min": 0, "max": 3, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "field_border_radius", "label": "Field border radius", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "field_padding_x", "label": "Field horizontal padding", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "field_padding_y", "label": "Field vertical padding", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    { "type": "color", "id": "field_focus_color", "label": "Field focus color" },
+    { "type": "range", "id": "field_focus_color_opacity", "label": "Field focus color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "color", "id": "cta_bg_color", "label": "Submit button background color" },
+    { "type": "range", "id": "cta_bg_color_opacity", "label": "Submit button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_text_color", "label": "Submit button text color" },
+    { "type": "range", "id": "cta_text_color_opacity", "label": "Submit button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_border_color", "label": "Submit button border color" },
+    { "type": "range", "id": "cta_border_color_opacity", "label": "Submit button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "cta_border_width", "label": "Submit button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "cta_border_radius", "label": "Submit button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "cta_padding_x", "label": "Submit button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "cta_padding_y", "label": "Submit button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Submit button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
+    },
+    { "type": "color", "id": "cta_hover_bg_color", "label": "Submit button hover background color" },
+    { "type": "range", "id": "cta_hover_bg_color_opacity", "label": "Submit button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Submit button hover text color" },
+    { "type": "range", "id": "cta_hover_text_color_opacity", "label": "Submit button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_border_color", "label": "Submit button hover border color" },
+    { "type": "range", "id": "cta_hover_border_color_opacity", "label": "Submit button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "submit_full_width", "label": "Submit button full width", "default": true },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "entrance_animation", "label": "Enable entrance animation", "default": false },
+    {
+      "type": "select",
+      "id": "entrance_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide-up", "label": "Slide up" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.entrance_animation }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "filter",
+      "name": "Filter dropdown",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "filter_label", "label": "Field label", "default": "Filter", "info": "Shown above the dropdown" },
+        {
+          "type": "select",
+          "id": "filter_param_type",
+          "label": "Filter type",
+          "options": [
+            { "value": "tag", "label": "Product tag" },
+            { "value": "metafield", "label": "Product metafield" },
+            { "value": "vendor", "label": "Vendor" }
+          ],
+          "default": "tag"
+        },
+        { "type": "text", "id": "filter_param_key", "label": "Metafield key", "info": "Format: namespace.key (e.g. custom.flavor). Required for metafield type.", "visible_if": "{{ block.settings.filter_param_type == 'metafield' }}" },
+        { "type": "text", "id": "filter_default_label", "label": "Default option label", "default": "Any", "info": "Shown when no filter is selected" },
+        { "type": "textarea", "id": "filter_options_manual", "label": "Filter options", "default": "Option 1|option-1\nOption 2|option-2\nOption 3|option-3", "info": "One per line. Format: Label|value (the value should match the tag/metafield value as it appears in URLs — usually lowercase, hyphenated)." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "🧪 Product Finder — Dark",
+      "category": "Liquid Lab",
+      "settings": {
+        "heading": "Find your match",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 2,
+        "heading_color": "#e8e9ff",
+        "subheading_color": "#b8baef",
+        "label_color": "#b8baef",
+        "label_transform": "uppercase",
+        "card_align": "center",
+        "card_max_width": 540,
+        "card_bg_color": "#111228",
+        "card_border_color": "#2a2d5a",
+        "card_border_width": 1,
+        "card_border_radius": 16,
+        "card_shadow": "medium",
+        "field_bg_color": "#1a1c3d",
+        "field_text_color": "#e8e9ff",
+        "field_border_color": "#2a2d5a",
+        "field_border_radius": 10,
+        "field_focus_color": "#5b5fff",
+        "cta_bg_color": "#5b5fff",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 10,
+        "cta_hover_effect": "lift",
+        "submit_full_width": true,
+        "bg_color": "#0a0b1a"
+      },
+      "blocks": [
+        { "type": "filter", "settings": { "filter_label": "Category", "filter_param_type": "tag", "filter_default_label": "Any category", "filter_options_manual": "Tops|tops\nBottoms|bottoms\nAccessories|accessories" } },
+        { "type": "filter", "settings": { "filter_label": "Brand", "filter_param_type": "vendor", "filter_default_label": "Any brand", "filter_options_manual": "Acme|Acme\nNova|Nova\nOrbit|Orbit" } },
+        { "type": "filter", "settings": { "filter_label": "Price range", "filter_param_type": "tag", "filter_default_label": "Any price", "filter_options_manual": "Under $50|under-50\n$50–$150|50-150\n$150+|over-150" } }
+      ]
+    },
+    {
+      "name": "🧪 Product Finder — Warm",
+      "category": "Liquid Lab",
+      "settings": {
+        "heading": "What are you looking for?",
+        "heading_weight": "300",
+        "heading_letter_spacing": -1,
+        "heading_color": "#3d2c1e",
+        "subheading_color": "#6b4f3a",
+        "label_color": "#6b4f3a",
+        "card_align": "center",
+        "card_max_width": 520,
+        "card_bg_color": "#fff8f2",
+        "card_border_color": "#e8d5c0",
+        "card_border_width": 1,
+        "card_border_radius": 12,
+        "card_shadow": "soft",
+        "field_bg_color": "#fdf6ee",
+        "field_text_color": "#3d2c1e",
+        "field_border_color": "#e8d5c0",
+        "field_border_radius": 50,
+        "field_focus_color": "#c8956d",
+        "cta_bg_color": "#c8956d",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 50,
+        "cta_hover_effect": "glow",
+        "submit_full_width": true,
+        "bg_color": "#fdf6ee"
+      },
+      "blocks": [
+        { "type": "filter", "settings": { "filter_label": "Skin type", "filter_param_type": "tag", "filter_default_label": "Any skin type", "filter_options_manual": "Dry|dry\nOily|oily\nCombination|combination\nSensitive|sensitive" } },
+        { "type": "filter", "settings": { "filter_label": "Concern", "filter_param_type": "tag", "filter_default_label": "Any concern", "filter_options_manual": "Hydration|hydration\nBrightening|brightening\nFirming|firming" } },
+        { "type": "filter", "settings": { "filter_label": "Routine step", "filter_param_type": "tag", "filter_default_label": "Any step", "filter_options_manual": "Cleanse|cleanse\nTreat|treat\nMoisturize|moisturize" } }
+      ]
+    },
+    {
+      "name": "🧪 Product Finder — Bold",
+      "category": "Liquid Lab",
+      "settings": {
+        "heading": "PICK YOUR FIT",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 5,
+        "heading_color": "#1a1a1a",
+        "subheading_color": "#1a1a1a",
+        "label_color": "#1a1a1a",
+        "label_transform": "uppercase",
+        "card_align": "center",
+        "card_max_width": 560,
+        "card_bg_color": "#ffffff",
+        "card_border_color": "#1a1a1a",
+        "card_border_width": 2,
+        "card_border_radius": 0,
+        "card_shadow": "none",
+        "field_bg_color": "#ffffff",
+        "field_text_color": "#1a1a1a",
+        "field_border_color": "#1a1a1a",
+        "field_border_width": 2,
+        "field_border_radius": 0,
+        "field_focus_color": "#ff3b30",
+        "cta_bg_color": "#1a1a1a",
+        "cta_text_color": "#ffffff",
+        "cta_border_color": "#1a1a1a",
+        "cta_border_width": 2,
+        "cta_border_radius": 0,
+        "cta_hover_effect": "lift",
+        "submit_full_width": true,
+        "bg_color": "#f2f0eb",
+        "entrance_animation": true,
+        "entrance_type": "slide-up"
+      },
+      "blocks": [
+        { "type": "filter", "settings": { "filter_label": "STYLE", "filter_param_type": "tag", "filter_default_label": "ANY STYLE", "filter_options_manual": "Streetwear|streetwear\nMinimal|minimal\nVintage|vintage" } },
+        { "type": "filter", "settings": { "filter_label": "SIZE", "filter_param_type": "tag", "filter_default_label": "ANY SIZE", "filter_options_manual": "Small|s\nMedium|m\nLarge|l\nExtra Large|xl" } },
+        { "type": "filter", "settings": { "filter_label": "COLOR", "filter_param_type": "tag", "filter_default_label": "ANY COLOR", "filter_options_manual": "Black|black\nWhite|white\nNavy|navy\nOlive|olive" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

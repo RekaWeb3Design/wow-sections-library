@@ -1,0 +1,136 @@
+{%- comment -%}
+  Liquid Lab — Product Finder snippet (reusable)
+
+  Renders a block-based filter widget that submits to a Shopify-native
+  collection filter URL (filter.p.tag.*, filter.p.m.{ns}.{key}, filter.p.vendor).
+  Pure HTML — all CSS lives in the host section's <style> block and is
+  scoped to that section's id, so multiple instances on one page do not
+  collide. Designed to be re-used by #13 liquid-lab-hero-with-finder via
+  the `context: 'overlay'` parameter.
+
+  Parameters
+    show_heading      bool       Render heading element
+    heading           string     Heading copy
+    show_subheading   bool       Render subheading element
+    subheading        string     Subheading rich-text
+    form_target       string     Form action URL — collection page (default '/collections/all')
+    submit_label      string     Submit button label
+    blocks            array      section.blocks — filter type only
+    card_settings     section    Full section object (id + settings) — for class bindings
+    context           string     'standalone' (default) or 'overlay'
+{%- endcomment -%}
+
+{%- liquid
+  assign sid = card_settings.id
+  assign s = card_settings.settings
+  assign ctx = context | default: 'standalone'
+  assign btn_hover = s.cta_hover_effect | default: 'darken'
+  assign fields_layout = s.fields_layout | default: 'vertical_stack'
+  assign fields_layout_class = fields_layout | replace: '_', '-'
+  assign card_align = s.card_align | default: 'center'
+  assign anim_enabled = s.entrance_animation
+  assign anim_type = s.entrance_type | default: 'fade'
+  assign submit_full_width = s.submit_full_width
+  assign form_action = form_target | default: '/collections/all'
+
+  assign root_classes = 'lab_finder'
+  assign root_classes = root_classes | append: ' lab_finder--' | append: ctx
+  assign root_classes = root_classes | append: ' lab_finder--btn-hover-' | append: btn_hover
+  assign root_classes = root_classes | append: ' lab_finder--fields-' | append: fields_layout_class
+  assign root_classes = root_classes | append: ' lab_finder--card-align-' | append: card_align
+  if submit_full_width
+    assign root_classes = root_classes | append: ' lab_finder--submit-full'
+  endif
+  if anim_enabled
+    assign root_classes = root_classes | append: ' lab_finder--animated lab_finder--anim-' | append: anim_type
+  endif
+-%}
+
+<div
+  class="{{ root_classes }}"
+  data-lab-finder
+  data-lab-finder-context="{{ ctx }}"
+>
+  <div class="lab_finder__card">
+    {%- if show_heading and heading != blank -%}
+      <h2 class="lab_finder__heading">{{ heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if show_subheading and subheading != blank -%}
+      <div class="lab_finder__subheading">{{ subheading }}</div>
+    {%- endif -%}
+
+    <form
+      class="lab_finder__form"
+      action="{{ form_action }}"
+      method="get"
+      role="search"
+      aria-label="{{ heading | default: 'Product finder' | escape }}"
+    >
+      <div class="lab_finder__fields">
+        {%- for block in blocks -%}
+          {%- if block.type == 'filter' -%}
+            {%- liquid
+              assign param_type = block.settings.filter_param_type | default: 'tag'
+              assign param_name = ''
+              if param_type == 'tag'
+                assign param_name = 'filter.p.tag'
+              elsif param_type == 'vendor'
+                assign param_name = 'filter.p.vendor'
+              elsif param_type == 'metafield'
+                assign mkey = block.settings.filter_param_key | default: '' | strip
+                if mkey != ''
+                  assign param_name = 'filter.p.m.' | append: mkey
+                endif
+              endif
+
+              assign field_id = 'lab-finder-field-' | append: sid | append: '-' | append: forloop.index
+              assign field_disabled = false
+              if param_name == ''
+                assign field_disabled = true
+              endif
+            -%}
+            <div class="lab_finder__field"{{ block.shopify_attributes }}>
+              <label for="{{ field_id }}" class="lab_finder__label">
+                {{ block.settings.filter_label | default: 'Filter' | escape }}
+              </label>
+              <div class="lab_finder__select-wrap">
+                <select
+                  id="{{ field_id }}"
+                  class="lab_finder__select"
+                  {% unless field_disabled %}name="{{ param_name | escape }}"{% endunless %}
+                  {% if field_disabled %}disabled aria-disabled="true"{% endif %}
+                >
+                  <option value="">
+                    {{- block.settings.filter_default_label | default: 'Any' | escape -}}
+                  </option>
+                  {%- assign options_lines = block.settings.filter_options_manual | newline_to_br | split: '<br />' -%}
+                  {%- for line in options_lines -%}
+                    {%- assign trimmed = line | strip -%}
+                    {%- if trimmed != blank -%}
+                      {%- assign parts = trimmed | split: '|' -%}
+                      {%- if parts.size >= 2 -%}
+                        {%- assign opt_label = parts[0] | strip -%}
+                        {%- assign opt_value = parts[1] | strip -%}
+                        {%- if opt_label != '' and opt_value != '' -%}
+                          <option value="{{ opt_value | escape }}">{{ opt_label | escape }}</option>
+                        {%- endif -%}
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </select>
+                <svg class="lab_finder__chevron" aria-hidden="true" focusable="false" viewBox="0 0 12 8">
+                  <path d="M1 1.5 L6 6.5 L11 1.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <button type="submit" class="lab_finder__submit">
+        {{ submit_label | default: 'Search' | escape }}
+      </button>
+    </form>
+  </div>
+</div>
