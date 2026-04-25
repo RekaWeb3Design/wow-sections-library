@@ -1,0 +1,1032 @@
+{% comment %} 1. Assigns {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign image = section.settings.image
+  assign image_position = section.settings.image_position
+  assign image_width = section.settings.image_width
+  assign mobile_layout = section.settings.mobile_layout
+  assign vertical_alignment = section.settings.vertical_alignment
+  assign animation_enabled = section.settings.animation_enabled
+  assign animation_type = section.settings.animation_type
+  assign animation_delay = section.settings.animation_delay
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+  assign aspect_ratio = section.settings.image_aspect_ratio
+
+  if section.index <= 2
+    assign image_loading = 'eager'
+    assign image_fetchpriority = 'high'
+  else
+    assign image_loading = 'lazy'
+    assign image_fetchpriority = 'auto'
+  endif
+%}
+
+{% comment %} 2. HTML structure {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_image_with_text wow_image_with_text--image-{{ image_position }} wow_image_with_text--width-{{ image_width }} wow_image_with_text--align-{{ section.settings.content_alignment }} wow_image_with_text--pos-{{ section.settings.content_position }} wow_image_with_text--valign-{{ vertical_alignment }} wow_image_with_text--mobile-{{ mobile_layout }} wow_image_with_text--section-{{ section.settings.section_width }} wow_image_with_text--cta-hover-{{ section.settings.cta_hover_effect }} wow_image_with_text--cta2-hover-{{ section.settings.secondary_cta_hover_effect }}{% if animation_enabled %} wow_image_with_text--animated wow_image_with_text--anim-{{ animation_type }}{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'Image with text' | escape }}"
+  >
+    <div class="wow_image_with_text__inner">
+      <div class="wow_image_with_text__media">
+        {% if image != blank %}
+          <div class="wow_image_with_text__image-wrap">
+            {{ image | image_url: width: 1600 | image_tag:
+              alt: section.settings.image_alt | default: section.settings.heading,
+              loading: image_loading,
+              fetchpriority: image_fetchpriority,
+              width: image.width,
+              height: image.height,
+              widths: '400, 800, 1200, 1600',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              class: 'wow_image_with_text__image'
+            }}
+            {% if section.settings.image_overlay_opacity > 0 %}
+              <span class="wow_image_with_text__image-overlay" aria-hidden="true"></span>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="wow_image_with_text__image-wrap wow_image_with_text__image-wrap--placeholder" aria-hidden="true">
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'wow_image_with_text__image wow_image_with_text__image--placeholder' }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="wow_image_with_text__content"
+        {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
+        {% if section.settings.badge_text != blank %}
+          <span class="wow_image_with_text__badge">{{ section.settings.badge_text | escape }}</span>
+        {% endif %}
+
+        {% if section.settings.heading != blank %}
+          <h2 class="wow_image_with_text__heading">{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <p class="wow_image_with_text__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+        {% endif %}
+
+        {% if section.settings.body_text != blank %}
+          <div class="wow_image_with_text__body">{{ section.settings.body_text }}</div>
+        {% endif %}
+
+        {% if section.settings.cta_label != blank or section.settings.secondary_cta_label != blank %}
+          <div class="wow_image_with_text__actions">
+            {% if section.settings.cta_label != blank %}
+              <a
+                href="{{ section.settings.cta_url | default: '#' }}"
+                class="wow_image_with_text__cta wow_image_with_text__cta--primary"
+              >
+                {{ section.settings.cta_label | escape }}
+              </a>
+            {% endif %}
+            {% if section.settings.secondary_cta_label != blank %}
+              <a
+                href="{{ section.settings.secondary_cta_url | default: '#' }}"
+                class="wow_image_with_text__cta wow_image_with_text__cta--secondary"
+              >
+                {{ section.settings.secondary_cta_label | escape }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scoped {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_image_with_text {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__inner {
+    width: 100%;
+    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}960px{% else %}var(--page-width, 1200px){% endif %};
+    margin-inline: auto;
+    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ section.settings.items_gap }}px;
+    align-items: {{ section.settings.items_align }};
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__media {
+    order: {% if mobile_layout == 'image-first' %}1{% else %}2{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__content {
+    order: {% if mobile_layout == 'image-first' %}2{% else %}1{% endif %};
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    width: 100%;
+    max-width: {{ section.settings.content_max_width }}px;
+    margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
+    text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    {% case aspect_ratio %}
+      {% when '1-1' %}aspect-ratio: 1 / 1;
+      {% when '4-3' %}aspect-ratio: 4 / 3;
+      {% when '16-9' %}aspect-ratio: 16 / 9;
+      {% when '3-2' %}aspect-ratio: 3 / 2;
+      {% when '2-3' %}aspect-ratio: 2 / 3;
+    {% endcase %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.image_object_fit }};
+    transition: transform 0.6s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap:hover .wow_image_with_text__image {
+    transform: scale(1.03);
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image-wrap--placeholder {
+    aspect-ratio: 4 / 3;
+    background-color: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image--placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    color: color-mix(in srgb, var(--color-foreground) 25%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__image-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: color-mix(in srgb, {% if section.settings.image_overlay_color != blank %}{{ section.settings.image_overlay_color }}{% else %}var(--color-foreground){% endif %} {{ section.settings.image_overlay_color_opacity }}%, transparent);
+    opacity: calc({{ section.settings.image_overlay_opacity }} / 100);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__badge {
+    align-self: {% if section.settings.content_alignment == 'left' %}flex-start{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}center{% endif %};
+    display: inline-flex;
+    align-items: center;
+    padding: clamp(0.25rem, 0.5vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.9rem);
+    border-radius: 999px;
+    font-size: {{ section.settings.badge_size }}px;
+    font-weight: {{ section.settings.badge_weight }};
+    text-transform: {{ section.settings.badge_transform }};
+    text-align: {{ section.settings.badge_text_align }};
+    letter-spacing: calc({{ section.settings.badge_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.badge_line_height }} / 10);
+    background-color: color-mix(in srgb, var(--color-foreground) 8%, transparent);
+    {% if section.settings.badge_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.badge_color }} {{ section.settings.badge_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__heading {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    text-align: {{ section.settings.heading_text_align }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__subheading {
+    margin: 0;
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    text-align: {{ section.settings.subheading_text_align }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__body {
+    margin: 0;
+    font-size: {{ section.settings.body_text_size }}px;
+    font-weight: {{ section.settings.body_text_weight }};
+    text-transform: {{ section.settings.body_text_transform }};
+    text-align: {{ section.settings.body_text_text_align }};
+    letter-spacing: calc({{ section.settings.body_text_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.body_text_line_height }} / 10);
+    {% if section.settings.body_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.body_text_color }} {{ section.settings.body_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__body p {
+    margin: 0 0 0.75em;
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text__body p:last-child {
+    margin-bottom: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+    margin-top: clamp(0.5rem, 1vw, 1rem);
+    justify-content: {% if section.settings.content_alignment == 'left' %}flex-start{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}center{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__cta--primary {
+    padding: {{ section.settings.cta_padding_y }}px {{ section.settings.cta_padding_x }}px;
+    border-radius: {{ section.settings.cta_border_radius }}px;
+    border: {{ section.settings.cta_border_width }}px solid {% if section.settings.cta_border_color != blank %}color-mix(in srgb, {{ section.settings.cta_border_color }} {{ section.settings.cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    font-weight: 600;
+    {% if section.settings.cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_bg_color }} {{ section.settings.cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if section.settings.cta_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_text_color }} {{ section.settings.cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-fill .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-darken .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-lift .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-glow .wow_image_with_text__cta--primary:hover {
+    {% if section.settings.cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-darken .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-darken .wow_image_with_text__cta--secondary:hover {
+    filter: brightness(0.88);
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-lift .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-lift .wow_image_with_text__cta--secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-glow .wow_image_with_text__cta--primary:hover {
+    box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-glow .wow_image_with_text__cta--secondary:hover {
+    box-shadow: 0 0 24px {% if section.settings.secondary_cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.secondary_cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-outline .wow_image_with_text__cta--primary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-outline .wow_image_with_text__cta--secondary:hover {
+    background-color: transparent;
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta-hover-outline .wow_image_with_text__cta--primary:hover {
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__cta--secondary {
+    padding: {{ section.settings.secondary_cta_padding_y }}px {{ section.settings.secondary_cta_padding_x }}px;
+    border-radius: {{ section.settings.secondary_cta_border_radius }}px;
+    border: {{ section.settings.secondary_cta_border_width }}px solid {% if section.settings.secondary_cta_border_color != blank %}color-mix(in srgb, {{ section.settings.secondary_cta_border_color }} {{ section.settings.secondary_cta_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
+    font-weight: 600;
+    {% if section.settings.secondary_cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.secondary_cta_bg_color }} {{ section.settings.secondary_cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: transparent;
+    {% endif %}
+    {% if section.settings.secondary_cta_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.secondary_cta_text_color }} {{ section.settings.secondary_cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-fill .wow_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-darken .wow_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-lift .wow_image_with_text__cta--secondary:hover,
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-glow .wow_image_with_text__cta--secondary:hover {
+    {% if section.settings.secondary_cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_bg_color }} {{ section.settings.secondary_cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.secondary_cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_text_color }} {{ section.settings.secondary_cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.secondary_cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_border_color }} {{ section.settings.secondary_cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .wow_image_with_text--cta2-hover-outline .wow_image_with_text__cta--secondary:hover {
+    {% if section.settings.secondary_cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_text_color }} {{ section.settings.secondary_cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.secondary_cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.secondary_cta_hover_border_color }} {{ section.settings.secondary_cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_image_with_text__cta:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* Animation */
+  {% if animation_enabled %}
+    #shopify-section-{{ section.id }} .wow_image_with_text--animated .wow_image_with_text__content,
+    #shopify-section-{{ section.id }} .wow_image_with_text--animated .wow_image_with_text__media {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-fade .wow_image_with_text__content,
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-fade .wow_image_with_text__media {
+      animation-name: wow_image_with_text_fade_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-slide .wow_image_with_text__content,
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-slide .wow_image_with_text__media {
+      animation-name: wow_image_with_text_slide_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-zoom .wow_image_with_text__content,
+    #shopify-section-{{ section.id }} .wow_image_with_text--anim-zoom .wow_image_with_text__media {
+      animation-name: wow_image_with_text_zoom_{{ section.id }};
+    }
+    @keyframes wow_image_with_text_fade_{{ section.id }} {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes wow_image_with_text_slide_{{ section.id }} {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wow_image_with_text_zoom_{{ section.id }} {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  {% endif %}
+
+  /* Desktop split layout — image position via order, image_width via grid columns */
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .wow_image_with_text__inner {
+      grid-template-columns:
+        {% case image_width %}
+          {% when '40' %}{% if image_position == 'right' %}1fr 40%{% else %}40% 1fr{% endif %};
+          {% when '60' %}{% if image_position == 'right' %}1fr 60%{% else %}60% 1fr{% endif %};
+          {% else %}1fr 1fr;
+        {% endcase %}
+      align-items: {% if vertical_alignment == 'top' %}start{% elsif vertical_alignment == 'bottom' %}end{% else %}center{% endif %};
+    }
+    #shopify-section-{{ section.id }} .wow_image_with_text__media {
+      order: {% if image_position == 'right' %}2{% else %}1{% endif %};
+    }
+    #shopify-section-{{ section.id }} .wow_image_with_text__content {
+      order: {% if image_position == 'right' %}1{% else %}2{% endif %};
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_image_with_text__image,
+    #shopify-section-{{ section.id }} .wow_image_with_text__cta,
+    #shopify-section-{{ section.id }} .wow_image_with_text__content,
+    #shopify-section-{{ section.id }} .wow_image_with_text__media {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% schema %}
+{
+  "name": "⚡ Image with Text",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "badge_text", "label": "Badge text", "default": "New collection" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Crafted for the long haul" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "A short supporting line that frames the section." },
+    { "type": "richtext", "id": "body_text", "label": "Body text", "default": "<p>Tell the story behind the product. Two or three sentences that explain what makes it different — materials, process, the people who built it.</p>" },
+    { "type": "text", "id": "cta_label", "label": "Primary button label", "default": "Shop the collection" },
+    { "type": "url", "id": "cta_url", "label": "Primary button link" },
+    { "type": "text", "id": "secondary_cta_label", "label": "Secondary button label", "default": "Learn more" },
+    { "type": "url", "id": "secondary_cta_url", "label": "Secondary button link" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "badge_size", "label": "Badge size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "badge_weight",
+      "label": "Badge weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "badge_transform",
+      "label": "Badge text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "select",
+      "id": "badge_text_align",
+      "label": "Badge text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "badge_color", "label": "Badge color" },
+    { "type": "range", "id": "badge_color_opacity", "label": "Badge color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "badge_letter_spacing", "label": "Badge letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 8, "info": "1/100em" },
+    { "type": "range", "id": "badge_line_height", "label": "Badge line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 44 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1 },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 18 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 14 },
+
+    { "type": "range", "id": "body_text_size", "label": "Body text size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "body_text_weight",
+      "label": "Body text weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "body_text_transform",
+      "label": "Body text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "body_text_text_align",
+      "label": "Body text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "body_text_color", "label": "Body text color" },
+    { "type": "range", "id": "body_text_color_opacity", "label": "Body text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "body_text_letter_spacing", "label": "Body text letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "body_text_line_height", "label": "Body text line height", "min": 10, "max": 30, "step": 1, "default": 16 },
+
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Lifestyle image" },
+    { "type": "range", "id": "image_border_radius", "label": "Image border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    { "type": "color", "id": "image_overlay_color", "label": "Image overlay color", "default": "#000000" },
+    { "type": "range", "id": "image_overlay_color_opacity", "label": "Image overlay color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "image_overlay_opacity", "label": "Image overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 0 },
+    {
+      "type": "select",
+      "id": "image_object_fit",
+      "label": "Image object fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "natural", "label": "Natural" },
+        { "value": "1-1", "label": "1:1" },
+        { "value": "4-3", "label": "4:3" },
+        { "value": "16-9", "label": "16:9" },
+        { "value": "3-2", "label": "3:2" },
+        { "value": "2-3", "label": "2:3" }
+      ],
+      "default": "4-3"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width",
+      "options": [
+        { "value": "40", "label": "40%" },
+        { "value": "50", "label": "50%" },
+        { "value": "60", "label": "60%" }
+      ],
+      "default": "50"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "image-first", "label": "Image first" },
+        { "value": "text-first", "label": "Text first" }
+      ],
+      "default": "image-first"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center-left"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 560 },
+    { "type": "range", "id": "items_gap", "label": "Gap between image and text", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 48 },
+    {
+      "type": "select",
+      "id": "items_align",
+      "label": "Items alignment",
+      "options": [
+        { "value": "start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "center"
+    },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "cta_bg_color", "label": "Primary button background color" },
+    { "type": "range", "id": "cta_bg_color_opacity", "label": "Primary button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_text_color", "label": "Primary button text color" },
+    { "type": "range", "id": "cta_text_color_opacity", "label": "Primary button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_border_color", "label": "Primary button border color" },
+    { "type": "range", "id": "cta_border_color_opacity", "label": "Primary button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "cta_border_width", "label": "Primary button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "cta_border_radius", "label": "Primary button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 6 },
+    { "type": "range", "id": "cta_padding_x", "label": "Primary button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "cta_padding_y", "label": "Primary button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Primary button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
+    },
+    { "type": "color", "id": "cta_hover_bg_color", "label": "Primary button hover background color" },
+    { "type": "range", "id": "cta_hover_bg_color_opacity", "label": "Primary button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Primary button hover text color" },
+    { "type": "range", "id": "cta_hover_text_color_opacity", "label": "Primary button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_border_color", "label": "Primary button hover border color" },
+    { "type": "range", "id": "cta_hover_border_color_opacity", "label": "Primary button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "color", "id": "secondary_cta_bg_color", "label": "Secondary button background color" },
+    { "type": "range", "id": "secondary_cta_bg_color_opacity", "label": "Secondary button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "secondary_cta_text_color", "label": "Secondary button text color" },
+    { "type": "range", "id": "secondary_cta_text_color_opacity", "label": "Secondary button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "secondary_cta_border_color", "label": "Secondary button border color" },
+    { "type": "range", "id": "secondary_cta_border_color_opacity", "label": "Secondary button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "secondary_cta_border_width", "label": "Secondary button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "secondary_cta_border_radius", "label": "Secondary button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 6 },
+    { "type": "range", "id": "secondary_cta_padding_x", "label": "Secondary button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "secondary_cta_padding_y", "label": "Secondary button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "secondary_cta_hover_effect",
+      "label": "Secondary button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "fill"
+    },
+    { "type": "color", "id": "secondary_cta_hover_bg_color", "label": "Secondary button hover background color" },
+    { "type": "range", "id": "secondary_cta_hover_bg_color_opacity", "label": "Secondary button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "secondary_cta_hover_text_color", "label": "Secondary button hover text color" },
+    { "type": "range", "id": "secondary_cta_hover_text_color_opacity", "label": "Secondary button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "secondary_cta_hover_border_color", "label": "Secondary button hover border color" },
+    { "type": "range", "id": "secondary_cta_hover_border_color_opacity", "label": "Secondary button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay",
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 0,
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "presets": [
+    {
+      "name": "⚡ Image+Text — Dark",
+      "category": "WOW Sections",
+      "settings": {
+        "badge_text": "New drop",
+        "heading": "Built in titanium, made to outlast",
+        "subheading": "The frame weighs less than your phone. The battery outlives most laptops.",
+        "body_text": "<p>Two years of engineering, one obsession: a daily-carry tool that disappears into your routine. We picked aerospace-grade titanium because it's the only material that survives a decade of pocket abuse without showing it.</p>",
+        "cta_label": "Shop the lineup",
+        "secondary_cta_label": "Read the spec sheet",
+        "image_position": "right",
+        "image_width": "50",
+        "vertical_alignment": "center",
+        "image_aspect_ratio": "4-3",
+        "image_border_radius": 16,
+        "image_alt": "Titanium product photographed on a dark surface",
+        "badge_color": "#7c6ff7",
+        "heading_color": "#e8e9ff",
+        "heading_weight": "700",
+        "heading_letter_spacing": -2,
+        "subheading_color": "#9ea0c8",
+        "body_text_color": "#9ea0c8",
+        "bg_color": "#0a0b1a",
+        "cta_bg_color": "#7c6ff7",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 8,
+        "cta_hover_effect": "lift",
+        "secondary_cta_text_color": "#e8e9ff",
+        "secondary_cta_border_color": "#7c6ff7",
+        "secondary_cta_border_radius": 8,
+        "secondary_cta_hover_bg_color": "#7c6ff7",
+        "secondary_cta_hover_text_color": "#ffffff",
+        "secondary_cta_hover_effect": "fill",
+        "items_gap": 64,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Image+Text — Warm",
+      "category": "WOW Sections",
+      "settings": {
+        "badge_text": "Slow-made",
+        "heading": "Small batches, real ingredients, no compromise",
+        "subheading": "Every formula is mixed by hand in our Brooklyn studio.",
+        "body_text": "<p>We work with three farms upstate to source the botanicals — never more than is in season, never anything we wouldn't put on our own skin. The result is a shorter ingredient list and a longer-lasting product.</p>",
+        "cta_label": "Start your ritual",
+        "secondary_cta_label": "Meet the makers",
+        "image_position": "left",
+        "image_width": "50",
+        "vertical_alignment": "center",
+        "image_aspect_ratio": "1-1",
+        "image_border_radius": 32,
+        "image_alt": "Small-batch skincare arranged on a linen surface",
+        "badge_text_align": "left",
+        "badge_color": "#d4956a",
+        "badge_transform": "none",
+        "badge_letter_spacing": 0,
+        "heading_color": "#3d2c1e",
+        "heading_weight": "400",
+        "heading_letter_spacing": -1,
+        "subheading_color": "#7a6552",
+        "body_text_color": "#7a6552",
+        "bg_color": "#fdf6ee",
+        "cta_bg_color": "#d4956a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 50,
+        "cta_hover_effect": "glow",
+        "secondary_cta_text_color": "#3d2c1e",
+        "secondary_cta_border_color": "#3d2c1e",
+        "secondary_cta_border_radius": 50,
+        "secondary_cta_hover_bg_color": "#3d2c1e",
+        "secondary_cta_hover_text_color": "#fdf6ee",
+        "secondary_cta_hover_effect": "fill",
+        "items_gap": 56,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Image+Text — Bold",
+      "category": "WOW Sections",
+      "settings": {
+        "badge_text": "Drop 04",
+        "heading": "BUILT FOR THE STREETS",
+        "subheading": "OVERSIZED FITS. DEAD-STOCK FABRICS. NO RESTOCKS, EVER.",
+        "body_text": "<p>Each piece is cut from material we'll never see again. When it's gone, it's gone — that's the deal. Get it before the next drop drops you.</p>",
+        "cta_label": "Cop the drop",
+        "secondary_cta_label": "See the lookbook",
+        "image_position": "right",
+        "image_width": "60",
+        "vertical_alignment": "center",
+        "image_aspect_ratio": "3-2",
+        "image_border_radius": 0,
+        "image_alt": "Streetwear lookbook shot on city street",
+        "badge_text_align": "left",
+        "badge_color": "#1a1a1a",
+        "badge_transform": "uppercase",
+        "badge_letter_spacing": 12,
+        "badge_weight": "700",
+        "heading_color": "#1a1a1a",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 4,
+        "subheading_color": "#1a1a1a",
+        "subheading_transform": "uppercase",
+        "subheading_letter_spacing": 6,
+        "subheading_weight": "600",
+        "body_text_color": "#3a3a3a",
+        "bg_color": "#f2f0eb",
+        "cta_bg_color": "#1a1a1a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 0,
+        "cta_border_width": 2,
+        "cta_border_color": "#1a1a1a",
+        "cta_hover_effect": "lift",
+        "secondary_cta_text_color": "#1a1a1a",
+        "secondary_cta_border_color": "#1a1a1a",
+        "secondary_cta_border_radius": 0,
+        "secondary_cta_border_width": 2,
+        "secondary_cta_hover_bg_color": "#1a1a1a",
+        "secondary_cta_hover_text_color": "#ffffff",
+        "secondary_cta_hover_effect": "fill",
+        "items_gap": 48,
+        "animation_enabled": true,
+        "animation_type": "slide"
+      }
+    }
+  ]
+}
+{% endschema %}
