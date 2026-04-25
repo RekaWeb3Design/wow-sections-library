@@ -1,0 +1,828 @@
+{% comment %} 1. Assigns {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign show_labels = section.settings.show_labels
+  assign animation_enabled = section.settings.animation_enabled
+  assign animation_type = section.settings.animation_type
+  assign animation_delay = section.settings.animation_delay
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+%}
+
+{% comment %} 2. HTML structure {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_countdown_timer wow_countdown_timer--align-{{ section.settings.content_alignment }} wow_countdown_timer--pos-{{ section.settings.content_position }} wow_countdown_timer--width-{{ section.settings.section_width }} wow_countdown_timer--cta-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} wow_countdown_timer--animated wow_countdown_timer--anim-{{ animation_type }}{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'Countdown timer' | escape }}"
+    data-wow-countdown-end="{{ section.settings.end_date | escape }}"
+  >
+    <div class="wow_countdown_timer__inner"
+      {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
+      {% if section.settings.heading != blank %}
+        <h2 class="wow_countdown_timer__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <p class="wow_countdown_timer__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+      {% endif %}
+
+      <div
+        class="wow_countdown_timer__display"
+        data-wow-countdown-display
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="days">
+          <span class="wow_countdown_timer__digit" data-wow-countdown-value="days">00</span>
+          {% if show_labels %}
+            <span class="wow_countdown_timer__label">{{ section.settings.label_days | default: 'Days' | escape }}</span>
+          {% endif %}
+        </div>
+        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="hours">
+          <span class="wow_countdown_timer__digit" data-wow-countdown-value="hours">00</span>
+          {% if show_labels %}
+            <span class="wow_countdown_timer__label">{{ section.settings.label_hours | default: 'Hours' | escape }}</span>
+          {% endif %}
+        </div>
+        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="minutes">
+          <span class="wow_countdown_timer__digit" data-wow-countdown-value="minutes">00</span>
+          {% if show_labels %}
+            <span class="wow_countdown_timer__label">{{ section.settings.label_minutes | default: 'Minutes' | escape }}</span>
+          {% endif %}
+        </div>
+        <span class="wow_countdown_timer__separator" aria-hidden="true">:</span>
+        <div class="wow_countdown_timer__digit-block" data-wow-countdown-block="seconds">
+          <span class="wow_countdown_timer__digit" data-wow-countdown-value="seconds">00</span>
+          {% if show_labels %}
+            <span class="wow_countdown_timer__label">{{ section.settings.label_seconds | default: 'Seconds' | escape }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <p class="wow_countdown_timer__expired" data-wow-countdown-expired hidden>
+        {{ section.settings.expired_message | default: 'This offer has ended.' | escape }}
+      </p>
+
+      {% if section.settings.cta_label != blank %}
+        <a
+          href="{{ section.settings.cta_url | default: '#' }}"
+          class="wow_countdown_timer__cta"
+          data-wow-countdown-cta
+        >
+          {{ section.settings.cta_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scoped {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_countdown_timer {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__inner {
+    width: 100%;
+    max-width: {{ section.settings.content_max_width }}px;
+    margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
+    text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
+    display: flex;
+    flex-direction: column;
+    align-items: {% if section.settings.content_alignment == 'left' %}flex-start{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}center{% endif %};
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__heading {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    text-align: {{ section.settings.heading_text_align }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__subheading {
+    margin: 0;
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    text-align: {{ section.settings.subheading_text_align }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__display {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.25rem, 1vw, 0.75rem);
+    flex-wrap: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__digit-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.25rem, 0.75vw, 0.5rem);
+    min-width: clamp(3.5rem, 10vw, 5.5rem);
+    padding: clamp(0.5rem, 1.5vw, 1rem) clamp(0.75rem, 2vw, 1.25rem);
+    border-radius: {{ section.settings.digit_border_radius }}px;
+    border: {{ section.settings.digit_border_width }}px solid {% if section.settings.digit_border_color != blank %}color-mix(in srgb, {{ section.settings.digit_border_color }} {{ section.settings.digit_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    {% if section.settings.digit_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.digit_bg_color }} {{ section.settings.digit_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__digit {
+    font-size: {{ section.settings.timer_digits_size }}px;
+    font-weight: {{ section.settings.timer_digits_weight }};
+    text-transform: {{ section.settings.timer_digits_transform }};
+    text-align: {{ section.settings.timer_digits_text_align }};
+    letter-spacing: calc({{ section.settings.timer_digits_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.timer_digits_line_height }} / 10);
+    font-variant-numeric: tabular-nums;
+    {% if section.settings.timer_digits_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.timer_digits_color }} {{ section.settings.timer_digits_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__label {
+    font-size: {{ section.settings.timer_labels_size }}px;
+    font-weight: {{ section.settings.timer_labels_weight }};
+    text-transform: {{ section.settings.timer_labels_transform }};
+    text-align: {{ section.settings.timer_labels_text_align }};
+    letter-spacing: calc({{ section.settings.timer_labels_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.timer_labels_line_height }} / 10);
+    {% if section.settings.timer_labels_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.timer_labels_color }} {{ section.settings.timer_labels_color_opacity }}%, transparent);
+    {% else %}
+      color: color-mix(in srgb, var(--color-foreground) 65%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__separator {
+    font-size: clamp(1.25rem, 4vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: clamp(0.5rem, 1.5vw, 1rem);
+    {% if section.settings.separator_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.separator_color }} {{ section.settings.separator_color_opacity }}%, transparent);
+    {% else %}
+      color: color-mix(in srgb, var(--color-foreground) 35%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__expired {
+    margin: 0;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: {{ section.settings.cta_padding_y }}px {{ section.settings.cta_padding_x }}px;
+    border-radius: {{ section.settings.cta_border_radius }}px;
+    border: {{ section.settings.cta_border_width }}px solid {% if section.settings.cta_border_color != blank %}color-mix(in srgb, {{ section.settings.cta_border_color }} {{ section.settings.cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    {% if section.settings.cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_bg_color }} {{ section.settings.cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if section.settings.cta_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_text_color }} {{ section.settings.cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-fill .wow_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-darken .wow_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-lift .wow_countdown_timer__cta:hover,
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-glow .wow_countdown_timer__cta:hover {
+    {% if section.settings.cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-darken .wow_countdown_timer__cta:hover {
+    filter: brightness(0.88);
+  }
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-lift .wow_countdown_timer__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  }
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-glow .wow_countdown_timer__cta:hover {
+    box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_countdown_timer--cta-hover-outline .wow_countdown_timer__cta:hover {
+    background-color: transparent;
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_countdown_timer__cta:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* Animation */
+  {% if animation_enabled %}
+    #shopify-section-{{ section.id }} .wow_countdown_timer--animated .wow_countdown_timer__inner {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-fade .wow_countdown_timer__inner {
+      animation-name: wow_countdown_timer_fade_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-slide .wow_countdown_timer__inner {
+      animation-name: wow_countdown_timer_slide_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_countdown_timer--anim-zoom .wow_countdown_timer__inner {
+      animation-name: wow_countdown_timer_zoom_{{ section.id }};
+    }
+    @keyframes wow_countdown_timer_fade_{{ section.id }} {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes wow_countdown_timer_slide_{{ section.id }} {
+      from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wow_countdown_timer_zoom_{{ section.id }} {
+      from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_countdown_timer__inner,
+    #shopify-section-{{ section.id }} .wow_countdown_timer__cta {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% comment %} 4. JavaScript — countdown timer {% endcomment %}
+<script>
+  (function () {
+    var section = document.getElementById('wow-{{ section.id }}');
+    if (!section) return;
+
+    var endDateStr = section.dataset.wowCountdownEnd;
+    var endDate = new Date(endDateStr);
+    if (isNaN(endDate.getTime())) return;
+
+    var display = section.querySelector('[data-wow-countdown-display]');
+    var expiredEl = section.querySelector('[data-wow-countdown-expired]');
+    var ctaEl = section.querySelector('[data-wow-countdown-cta]');
+    var valueEls = {
+      days: section.querySelector('[data-wow-countdown-value="days"]'),
+      hours: section.querySelector('[data-wow-countdown-value="hours"]'),
+      minutes: section.querySelector('[data-wow-countdown-value="minutes"]'),
+      seconds: section.querySelector('[data-wow-countdown-value="seconds"]')
+    };
+
+    var intervalId = null;
+
+    function pad(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function update() {
+      var now = new Date().getTime();
+      var diff = endDate.getTime() - now;
+
+      if (diff <= 0) {
+        if (display) display.hidden = true;
+        if (expiredEl) expiredEl.hidden = false;
+        if (ctaEl) ctaEl.hidden = true;
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        return;
+      }
+
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (valueEls.days) valueEls.days.textContent = pad(days);
+      if (valueEls.hours) valueEls.hours.textContent = pad(hours);
+      if (valueEls.minutes) valueEls.minutes.textContent = pad(minutes);
+      if (valueEls.seconds) valueEls.seconds.textContent = pad(seconds);
+    }
+
+    update();
+    intervalId = setInterval(update, 1000);
+
+    function handleUnload(e) {
+      if (e.target !== section) return;
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      document.removeEventListener('shopify:section:unload', handleUnload);
+    }
+    document.addEventListener('shopify:section:unload', handleUnload);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "⚡ Countdown Timer",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Limited-time launch" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Free shipping on every order until the timer hits zero." },
+    { "type": "text", "id": "end_date", "label": "End date", "default": "2026-12-31T23:59:59", "info": "Format: YYYY-MM-DDTHH:MM:SS — local time of the visitor's browser" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Shop the launch" },
+    { "type": "url", "id": "cta_url", "label": "Button link" },
+    { "type": "text", "id": "expired_message", "label": "Expired message", "default": "This offer has ended." },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 36 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1 },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
+
+    { "type": "range", "id": "timer_digits_size", "label": "Timer digit size", "min": 16, "max": 80, "step": 1, "unit": "px", "default": 40 },
+    {
+      "type": "select",
+      "id": "timer_digits_weight",
+      "label": "Timer digit weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "timer_digits_transform",
+      "label": "Timer digit text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "timer_digits_text_align",
+      "label": "Timer digit text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "timer_digits_color", "label": "Timer digit color" },
+    { "type": "range", "id": "timer_digits_color_opacity", "label": "Timer digit color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "timer_digits_letter_spacing", "label": "Timer digit letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "timer_digits_line_height", "label": "Timer digit line height", "min": 10, "max": 30, "step": 1, "default": 11 },
+
+    { "type": "range", "id": "timer_labels_size", "label": "Timer label size", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "timer_labels_weight",
+      "label": "Timer label weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "timer_labels_transform",
+      "label": "Timer label text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "select",
+      "id": "timer_labels_text_align",
+      "label": "Timer label text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "timer_labels_color", "label": "Timer label color" },
+    { "type": "range", "id": "timer_labels_color_opacity", "label": "Timer label color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "timer_labels_letter_spacing", "label": "Timer label letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 8 },
+    { "type": "range", "id": "timer_labels_line_height", "label": "Timer label line height", "min": 10, "max": 30, "step": 1, "default": 14 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 700 },
+    { "type": "checkbox", "id": "show_labels", "label": "Show day/hour/min/sec labels", "default": true },
+    { "type": "text", "id": "label_days", "label": "Days label", "default": "Days" },
+    { "type": "text", "id": "label_hours", "label": "Hours label", "default": "Hours" },
+    { "type": "text", "id": "label_minutes", "label": "Minutes label", "default": "Minutes" },
+    { "type": "text", "id": "label_seconds", "label": "Seconds label", "default": "Seconds" },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "digit_bg_color", "label": "Digit block background color" },
+    { "type": "range", "id": "digit_bg_color_opacity", "label": "Digit block background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "digit_border_color", "label": "Digit block border color" },
+    { "type": "range", "id": "digit_border_color_opacity", "label": "Digit block border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "digit_border_width", "label": "Digit block border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "digit_border_radius", "label": "Digit block border radius", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 8 },
+    { "type": "color", "id": "separator_color", "label": "Separator color" },
+    { "type": "range", "id": "separator_color_opacity", "label": "Separator color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "color", "id": "cta_bg_color", "label": "Button background color" },
+    { "type": "range", "id": "cta_bg_color_opacity", "label": "Button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_text_color", "label": "Button text color" },
+    { "type": "range", "id": "cta_text_color_opacity", "label": "Button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_border_color", "label": "Button border color" },
+    { "type": "range", "id": "cta_border_color_opacity", "label": "Button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "cta_border_width", "label": "Button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "cta_border_radius", "label": "Button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 6 },
+    { "type": "range", "id": "cta_padding_x", "label": "Button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "cta_padding_y", "label": "Button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "lift"
+    },
+    { "type": "color", "id": "cta_hover_bg_color", "label": "Button hover background color" },
+    { "type": "range", "id": "cta_hover_bg_color_opacity", "label": "Button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text color" },
+    { "type": "range", "id": "cta_hover_text_color_opacity", "label": "Button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_border_color", "label": "Button hover border color" },
+    { "type": "range", "id": "cta_hover_border_color_opacity", "label": "Button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay",
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 0,
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "presets": [
+    {
+      "name": "⚡ Countdown — Dark",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Drop closes in",
+        "subheading": "Limited run. Once it's over, it's over.",
+        "end_date": "2026-12-31T23:59:59",
+        "cta_label": "Cop the drop",
+        "expired_message": "This drop has sold out.",
+        "heading_color": "#e8e9ff",
+        "heading_weight": "700",
+        "heading_letter_spacing": -2,
+        "subheading_color": "#9ea0c8",
+        "timer_digits_color": "#ffffff",
+        "timer_labels_color": "#9ea0c8",
+        "separator_color": "#7c6ff7",
+        "bg_color": "#0a0b1a",
+        "digit_bg_color": "#141633",
+        "digit_border_color": "#7c6ff7",
+        "digit_border_color_opacity": 30,
+        "digit_border_width": 1,
+        "digit_border_radius": 12,
+        "cta_bg_color": "#7c6ff7",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 8,
+        "cta_hover_effect": "lift",
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Countdown — Warm",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Holiday gift cutoff",
+        "subheading": "Order before the timer ends to arrive in time for the 25th.",
+        "end_date": "2026-12-22T15:00:00",
+        "cta_label": "Shop gifts",
+        "expired_message": "Cutoff has passed — gifts will arrive after the holidays.",
+        "heading_color": "#3d2c1e",
+        "heading_weight": "400",
+        "heading_letter_spacing": -1,
+        "subheading_color": "#7a6552",
+        "timer_digits_color": "#3d2c1e",
+        "timer_labels_color": "#a8927a",
+        "separator_color": "#d4956a",
+        "bg_color": "#fdf6ee",
+        "digit_bg_color": "#ffffff",
+        "digit_border_color": "#e8d9c5",
+        "digit_border_width": 0,
+        "digit_border_radius": 24,
+        "cta_bg_color": "#d4956a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 50,
+        "cta_padding_x": 36,
+        "cta_hover_effect": "glow",
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Countdown — Bold",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "DROP 04 ENDS IN",
+        "subheading": "FOUR PIECES. NO RESTOCK. ZERO MERCY.",
+        "end_date": "2026-12-15T20:00:00",
+        "cta_label": "GET IT NOW",
+        "expired_message": "DROP 04 IS OVER. NEXT DROP TBA.",
+        "heading_color": "#1a1a1a",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 4,
+        "subheading_color": "#1a1a1a",
+        "subheading_transform": "uppercase",
+        "subheading_letter_spacing": 6,
+        "subheading_weight": "600",
+        "timer_digits_color": "#1a1a1a",
+        "timer_digits_weight": "700",
+        "timer_labels_color": "#1a1a1a",
+        "timer_labels_letter_spacing": 12,
+        "separator_color": "#1a1a1a",
+        "bg_color": "#f2f0eb",
+        "digit_bg_color": "#ffffff",
+        "digit_border_color": "#1a1a1a",
+        "digit_border_width": 2,
+        "digit_border_radius": 0,
+        "cta_bg_color": "#1a1a1a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 0,
+        "cta_border_width": 2,
+        "cta_border_color": "#1a1a1a",
+        "cta_padding_x": 32,
+        "cta_hover_effect": "lift",
+        "animation_enabled": true,
+        "animation_type": "slide"
+      }
+    }
+  ]
+}
+{% endschema %}

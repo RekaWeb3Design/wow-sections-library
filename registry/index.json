@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "last_updated": "2026-04-25",
-  "total_sections": 7,
+  "total_sections": 10,
   "sections": [
     {
       "name": "wow-announcement-bar-basic",
@@ -66,6 +66,70 @@
       "settings_count": 87,
       "blocks_supported": false,
       "shopify_data": true,
+      "created_at": "2026-04-25",
+      "source": "original"
+    },
+    {
+      "name": "wow-contact-form",
+      "display_name": "WOW Contact Form",
+      "category": "contact",
+      "tags": [
+        "contact",
+        "form",
+        "message",
+        "shopify-contact",
+        "two-column",
+        "free"
+      ],
+      "tier": "free",
+      "version": "1.0.0",
+      "description": "Contact form wired to Shopify's native /contact endpoint via the {% form 'contact' %} Liquid tag — automatic CSRF token. Required fields: name, email, message. Optional toggleable fields: phone (with tel-pattern validation), subject. Two layout modes: single-column (every field stacked) and two-column (name + email side-by-side via CSS Grid from 600px up; phone + subject also paired when both are enabled; message always full-width). Pre-fills name + email from the logged-in customer when available. On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error renders an alert region (role='alert') listing every form.errors translated field. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 700, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block + form_max_width slider (400-900, default 700). Always-visible labels with required-indicator asterisk on name/email/message; focus-visible 3px box-shadow ring on every input + submit. Three Dark/Warm/Bold presets with brand-tailored copy.",
+      "preview_url": "",
+      "screenshot": "",
+      "liquid_file": "sections/free/contact/wow-contact-form.liquid",
+      "compatible_themes": [
+        "dawn",
+        "sense",
+        "craft",
+        "debut",
+        "horizon"
+      ],
+      "shopify_version": "2.0",
+      "settings_count": 75,
+      "blocks_supported": false,
+      "shopify_data": true,
+      "created_at": "2026-04-25",
+      "source": "original"
+    },
+    {
+      "name": "wow-countdown-timer",
+      "display_name": "WOW Countdown Timer",
+      "category": "conversion",
+      "tags": [
+        "countdown",
+        "timer",
+        "urgency",
+        "launch",
+        "promotion",
+        "vanilla-js",
+        "free"
+      ],
+      "tier": "free",
+      "version": "1.0.0",
+      "description": "Live countdown to a merchant-set end date (YYYY-MM-DDTHH:MM:SS) showing days, hours, minutes, and seconds. Vanilla-JS IIFE scoped to the section ID via document.getElementById, updates every second with setInterval, pads each value to two digits with String.padStart, and replaces the timer with a merchant-set expired message when the countdown reaches zero (also clearing the interval and hiding the CTA). Listens for shopify:section:unload to clear the interval and detach handlers — Theme Editor safe. Each digit block is a separate styled container (bg color, border, radius — all merchant-controlled) with the digit + optional label below; colon separators between blocks. aria-live='polite' + aria-atomic='true' on the timer wrapper so screen readers get the time-remaining announcement without spamming the user every second. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/timer_digits/timer_labels, §8.3 button settings, §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width, section_width), §8.9 universal. Independent separator color and digit-block styling tokens. Three Dark/Warm/Bold presets.",
+      "preview_url": "",
+      "screenshot": "",
+      "liquid_file": "sections/free/conversion/wow-countdown-timer.liquid",
+      "compatible_themes": [
+        "dawn",
+        "sense",
+        "craft",
+        "debut",
+        "horizon"
+      ],
+      "shopify_version": "2.0",
+      "settings_count": 87,
+      "blocks_supported": false,
       "created_at": "2026-04-25",
       "source": "original"
     },
@@ -190,6 +254,39 @@
       "shopify_version": "2.0",
       "settings_count": 107,
       "blocks_supported": false,
+      "created_at": "2026-04-25",
+      "source": "original"
+    },
+    {
+      "name": "wow-newsletter-signup",
+      "display_name": "WOW Newsletter Signup",
+      "category": "conversion",
+      "tags": [
+        "newsletter",
+        "email",
+        "signup",
+        "subscribe",
+        "form",
+        "shopify-customer",
+        "free"
+      ],
+      "tier": "free",
+      "version": "1.0.0",
+      "description": "Email-capture section wired to Shopify's native customer endpoint via the {% form 'customer' %} Liquid tag — automatic CSRF token, no manual hidden inputs needed. Captures email (required) plus optional first name. Two layout modes: stacked (input above button, full width) and inline (input + button side-by-side from 600px up via flexbox). On successful submission renders the merchant-set success message via form.posted_successfully?; on validation error surfaces form.errors.messages.email. Includes the full UI Element Settings Standard: §8.2 typography for heading/subheading/privacy_text, §8.3 button settings (with all five hover effects), §8.6 background, §8.8 layout (content_alignment, content_position, content_max_width default 600, section_width), §8.9 universal (hide_on_mobile, hide_on_desktop, custom_css). Independent input styling block: bg, border color/width/radius, focus border. Visually-hidden labels for the input fields plus aria-describedby pointing at the privacy text. focus-visible 3px box-shadow ring on inputs and submit. Three Dark/Warm/Bold presets with brand-tailored copy and color tuning.",
+      "preview_url": "",
+      "screenshot": "",
+      "liquid_file": "sections/free/conversion/wow-newsletter-signup.liquid",
+      "compatible_themes": [
+        "dawn",
+        "sense",
+        "craft",
+        "debut",
+        "horizon"
+      ],
+      "shopify_version": "2.0",
+      "settings_count": 79,
+      "blocks_supported": false,
+      "shopify_data": true,
       "created_at": "2026-04-25",
       "source": "original"
     },

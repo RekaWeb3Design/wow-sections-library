@@ -1,0 +1,789 @@
+{% comment %} 1. Assigns {% endcomment %}
+{% liquid
+  assign section_id = section.id
+  assign show_phone = section.settings.show_phone_field
+  assign show_subject = section.settings.show_subject_field
+  assign layout_style = section.settings.layout_style
+  assign animation_enabled = section.settings.animation_enabled
+  assign animation_type = section.settings.animation_type
+  assign animation_delay = section.settings.animation_delay
+  assign bg_pct = section.settings.bg_opacity
+  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
+%}
+
+{% comment %} 2. HTML structure {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <section
+    id="wow-{{ section_id }}"
+    class="wow_contact_form wow_contact_form--align-{{ section.settings.content_alignment }} wow_contact_form--pos-{{ section.settings.content_position }} wow_contact_form--layout-{{ layout_style }} wow_contact_form--width-{{ section.settings.section_width }} wow_contact_form--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} wow_contact_form--animated wow_contact_form--anim-{{ animation_type }}{% endif %} wow_section"
+    aria-label="{{ section.settings.heading | default: 'Contact form' | escape }}"
+  >
+    <div class="wow_contact_form__inner"
+      {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
+      {% if section.settings.heading != blank %}
+        <h2 class="wow_contact_form__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <p class="wow_contact_form__subheading">{{ section.settings.subheading | escape | newline_to_br }}</p>
+      {% endif %}
+
+      {% form 'contact', id: 'wow-contact-form-' | append: section_id, class: 'wow_contact_form__form' %}
+        {% if form.posted_successfully? %}
+          <p class="wow_contact_form__success" role="status">
+            {{ section.settings.success_message | escape }}
+          </p>
+        {% else %}
+          {% if form.errors %}
+            <div class="wow_contact_form__errors" role="alert">
+              <p class="wow_contact_form__errors-title">{{ 'There was a problem with your submission' | escape }}</p>
+              <ul class="wow_contact_form__errors-list" role="list">
+                {% for field in form.errors %}
+                  <li role="listitem">{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <div class="wow_contact_form__grid">
+            <div class="wow_contact_form__field wow_contact_form__field--name">
+              <label for="wow-contact-name-{{ section_id }}" class="wow_contact_form__label">
+                {{ section.settings.name_label | default: 'Name' | escape }}
+                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="wow-contact-name-{{ section_id }}"
+                name="contact[name]"
+                class="wow_contact_form__input"
+                autocomplete="name"
+                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                required
+              >
+            </div>
+
+            <div class="wow_contact_form__field wow_contact_form__field--email">
+              <label for="wow-contact-email-{{ section_id }}" class="wow_contact_form__label">
+                {{ section.settings.email_label | default: 'Email' | escape }}
+                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="email"
+                id="wow-contact-email-{{ section_id }}"
+                name="contact[email]"
+                class="wow_contact_form__input"
+                autocomplete="email"
+                value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                required
+              >
+            </div>
+
+            {% if show_phone %}
+              <div class="wow_contact_form__field wow_contact_form__field--phone">
+                <label for="wow-contact-phone-{{ section_id }}" class="wow_contact_form__label">
+                  {{ section.settings.phone_label | default: 'Phone' | escape }}
+                </label>
+                <input
+                  type="tel"
+                  id="wow-contact-phone-{{ section_id }}"
+                  name="contact[phone]"
+                  class="wow_contact_form__input"
+                  autocomplete="tel"
+                  pattern="[0-9\-+\s\(\)]+"
+                  value="{% if form.phone %}{{ form.phone }}{% endif %}"
+                >
+              </div>
+            {% endif %}
+
+            {% if show_subject %}
+              <div class="wow_contact_form__field wow_contact_form__field--subject">
+                <label for="wow-contact-subject-{{ section_id }}" class="wow_contact_form__label">
+                  {{ section.settings.subject_label | default: 'Subject' | escape }}
+                </label>
+                <input
+                  type="text"
+                  id="wow-contact-subject-{{ section_id }}"
+                  name="contact[subject]"
+                  class="wow_contact_form__input"
+                >
+              </div>
+            {% endif %}
+
+            <div class="wow_contact_form__field wow_contact_form__field--message">
+              <label for="wow-contact-message-{{ section_id }}" class="wow_contact_form__label">
+                {{ section.settings.message_label | default: 'Message' | escape }}
+                <span class="wow_contact_form__required" aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="wow-contact-message-{{ section_id }}"
+                name="contact[body]"
+                rows="6"
+                class="wow_contact_form__input wow_contact_form__textarea"
+                required
+              >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="wow_contact_form__submit">
+            {{ section.settings.button_label | default: 'Send message' | escape }}
+          </button>
+        {% endif %}
+      {% endform %}
+    </div>
+  </section>
+</div>
+
+{% comment %} 3. CSS — section scoped {% endcomment %}
+<style>
+  #shopify-section-{{ section.id }} .wow_contact_form {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+    {% if section.settings.bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
+      background-image: linear-gradient(
+        {{ section.settings.bg_gradient_direction }},
+        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
+        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
+      );
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__inner {
+    width: 100%;
+    max-width: {{ section.settings.content_max_width }}px;
+    margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
+    text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__heading {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-transform: {{ section.settings.heading_transform }};
+    text-align: {{ section.settings.heading_text_align }};
+    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.heading_line_height }} / 10);
+    {% if section.settings.heading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__subheading {
+    margin: 0;
+    font-size: {{ section.settings.subheading_size }}px;
+    font-weight: {{ section.settings.subheading_weight }};
+    text-transform: {{ section.settings.subheading_transform }};
+    text-align: {{ section.settings.subheading_text_align }};
+    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
+    line-height: calc({{ section.settings.subheading_line_height }} / 10);
+    {% if section.settings.subheading_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground-75, var(--color-foreground));
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__form {
+    width: 100%;
+    max-width: {{ section.settings.form_max_width }}px;
+    margin: 0 {% if section.settings.content_alignment == 'left' %}auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 auto{% else %}auto{% endif %};
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(0.75rem, 1.5vw, 1rem);
+  }
+
+  @media (min-width: 600px) {
+    #shopify-section-{{ section.id }} .wow_contact_form--layout-two-column .wow_contact_form__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    #shopify-section-{{ section.id }} .wow_contact_form--layout-two-column .wow_contact_form__field--message {
+      grid-column: 1 / -1;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__required {
+    color: color-mix(in srgb, var(--color-foreground) 60%, transparent);
+    margin-left: 0.125rem;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    border-radius: {{ section.settings.input_border_radius }}px;
+    border: {{ section.settings.input_border_width }}px solid {% if section.settings.input_border_color != blank %}color-mix(in srgb, {{ section.settings.input_border_color }} {{ section.settings.input_border_color_opacity }}%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    {% if section.settings.input_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.input_bg_color }} {{ section.settings.input_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-background);
+    {% endif %}
+    {% if section.settings.input_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.input_text_color }} {{ section.settings.input_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-foreground);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__textarea {
+    min-height: 144px;
+    resize: vertical;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__input::placeholder {
+    color: color-mix(in srgb, currentColor 50%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__input:focus,
+  #shopify-section-{{ section.id }} .wow_contact_form__input:focus-visible {
+    outline: none;
+    border-color: {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} {{ section.settings.focus_border_color_opacity }}%, transparent){% else %}var(--color-foreground){% endif %};
+    box-shadow: 0 0 0 3px {% if section.settings.focus_border_color != blank %}color-mix(in srgb, {{ section.settings.focus_border_color }} 25%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 18%, transparent){% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__submit {
+    align-self: {% if section.settings.content_alignment == 'right' %}flex-end{% elsif section.settings.content_alignment == 'left' %}flex-start{% else %}center{% endif %};
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: {{ section.settings.cta_padding_y }}px {{ section.settings.cta_padding_x }}px;
+    border-radius: {{ section.settings.cta_border_radius }}px;
+    border: {{ section.settings.cta_border_width }}px solid {% if section.settings.cta_border_color != blank %}color-mix(in srgb, {{ section.settings.cta_border_color }} {{ section.settings.cta_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    {% if section.settings.cta_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_bg_color }} {{ section.settings.cta_bg_color_opacity }}%, transparent);
+    {% else %}
+      background-color: var(--color-button);
+    {% endif %}
+    {% if section.settings.cta_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_text_color }} {{ section.settings.cta_text_color_opacity }}%, transparent);
+    {% else %}
+      color: var(--color-button-text);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-fill .wow_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-darken .wow_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-lift .wow_contact_form__submit:hover,
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-glow .wow_contact_form__submit:hover {
+    {% if section.settings.cta_hover_bg_color != blank %}
+      background-color: color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} {{ section.settings.cta_hover_bg_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-darken .wow_contact_form__submit:hover {
+    filter: brightness(0.88);
+  }
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-lift .wow_contact_form__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  }
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-glow .wow_contact_form__submit:hover {
+    box-shadow: 0 0 24px {% if section.settings.cta_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.cta_hover_bg_color }} 60%, transparent){% else %}color-mix(in srgb, var(--color-foreground) 25%, transparent){% endif %};
+  }
+  #shopify-section-{{ section.id }} .wow_contact_form--btn-hover-outline .wow_contact_form__submit:hover {
+    background-color: transparent;
+    {% if section.settings.cta_hover_text_color != blank %}
+      color: color-mix(in srgb, {{ section.settings.cta_hover_text_color }} {{ section.settings.cta_hover_text_color_opacity }}%, transparent);
+    {% endif %}
+    {% if section.settings.cta_hover_border_color != blank %}
+      border-color: color-mix(in srgb, {{ section.settings.cta_hover_border_color }} {{ section.settings.cta_hover_border_color_opacity }}%, transparent);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__submit:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__success {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+    color: var(--color-foreground);
+    font-weight: 500;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__errors {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--color-foreground) 8%, transparent);
+    color: var(--color-foreground);
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__errors-title {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  #shopify-section-{{ section.id }} .wow_contact_form__errors-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    list-style: disc;
+  }
+
+  /* Animation */
+  {% if animation_enabled %}
+    #shopify-section-{{ section.id }} .wow_contact_form--animated .wow_contact_form__inner {
+      opacity: 0;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out;
+    }
+    #shopify-section-{{ section.id }} .wow_contact_form--anim-fade .wow_contact_form__inner {
+      animation-name: wow_contact_form_fade_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_contact_form--anim-slide .wow_contact_form__inner {
+      animation-name: wow_contact_form_slide_{{ section.id }};
+    }
+    #shopify-section-{{ section.id }} .wow_contact_form--anim-zoom .wow_contact_form__inner {
+      animation-name: wow_contact_form_zoom_{{ section.id }};
+    }
+    @keyframes wow_contact_form_fade_{{ section.id }} {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes wow_contact_form_slide_{{ section.id }} {
+      from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wow_contact_form_zoom_{{ section.id }} {
+      from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); }
+    }
+  {% endif %}
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wow_contact_form__inner,
+    #shopify-section-{{ section.id }} .wow_contact_form__submit,
+    #shopify-section-{{ section.id }} .wow_contact_form__input {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+  }
+
+  {% if section.settings.hide_on_mobile %}
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+  {% if section.settings.hide_on_desktop %}
+    @media (min-width: 750px) {
+      #shopify-section-{{ section.id }} { display: none; }
+    }
+  {% endif %}
+
+  {% if section.settings.custom_css != blank %}
+    #shopify-section-{{ section.id }} {
+      {{ section.settings.custom_css }}
+    }
+  {% endif %}
+</style>
+
+{% schema %}
+{
+  "name": "⚡ Contact Form",
+  "tag": "section",
+  "class": "wow_section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Get in touch" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Questions, feedback, custom orders — we'd love to hear from you. We reply within one business day." },
+    { "type": "checkbox", "id": "show_phone_field", "label": "Show phone field", "default": false },
+    { "type": "checkbox", "id": "show_subject_field", "label": "Show subject field", "default": true },
+    { "type": "text", "id": "button_label", "label": "Submit button label", "default": "Send message" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thanks — we got your message and will be in touch within one business day." },
+    { "type": "text", "id": "name_label", "label": "Name field label", "default": "Name" },
+    { "type": "text", "id": "email_label", "label": "Email field label", "default": "Email" },
+    { "type": "text", "id": "phone_label", "label": "Phone field label", "default": "Phone" },
+    { "type": "text", "id": "subject_label", "label": "Subject field label", "default": "Subject" },
+    { "type": "text", "id": "message_label", "label": "Message field label", "default": "Message" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 36 },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color" },
+    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -1 },
+    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 16 },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "300", "label": "Thin" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_transform",
+      "label": "Subheading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "subheading_text_align",
+      "label": "Subheading text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
+    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
+    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Form layout",
+      "options": [
+        { "value": "single-column", "label": "Single column" },
+        { "value": "two-column", "label": "Two column (name + email side by side)" }
+      ],
+      "default": "two-column"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Middle center" },
+        { "value": "center-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "content_max_width", "label": "Header max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 700 },
+    { "type": "range", "id": "form_max_width", "label": "Form max width", "min": 400, "max": 900, "step": 50, "unit": "px", "default": 700 },
+    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "boxed", "label": "Boxed (theme width)" },
+        { "value": "narrow", "label": "Narrow" }
+      ],
+      "default": "boxed"
+    },
+
+    { "type": "header", "content": "Appearance" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "color", "id": "bg_color", "label": "Background color" },
+    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
+    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
+    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
+    {
+      "type": "select",
+      "id": "bg_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to bottom", "label": "To bottom" },
+        { "value": "to right", "label": "To right" },
+        { "value": "to bottom right", "label": "To bottom right" },
+        { "value": "to bottom left", "label": "To bottom left" }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.bg_gradient }}"
+    },
+
+    { "type": "color", "id": "input_bg_color", "label": "Input background color" },
+    { "type": "range", "id": "input_bg_color_opacity", "label": "Input background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "input_border_color", "label": "Input border color" },
+    { "type": "range", "id": "input_border_color_opacity", "label": "Input border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "input_border_width", "label": "Input border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "input_border_radius", "label": "Input border radius", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 6 },
+    { "type": "color", "id": "input_text_color", "label": "Input text color" },
+    { "type": "range", "id": "input_text_color_opacity", "label": "Input text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "focus_border_color", "label": "Input focus border color" },
+    { "type": "range", "id": "focus_border_color_opacity", "label": "Input focus border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "color", "id": "cta_bg_color", "label": "Submit button background color" },
+    { "type": "range", "id": "cta_bg_color_opacity", "label": "Submit button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_text_color", "label": "Submit button text color" },
+    { "type": "range", "id": "cta_text_color_opacity", "label": "Submit button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_border_color", "label": "Submit button border color" },
+    { "type": "range", "id": "cta_border_color_opacity", "label": "Submit button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "cta_border_width", "label": "Submit button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "cta_border_radius", "label": "Submit button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 6 },
+    { "type": "range", "id": "cta_padding_x", "label": "Submit button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 32 },
+    { "type": "range", "id": "cta_padding_y", "label": "Submit button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    {
+      "type": "select",
+      "id": "cta_hover_effect",
+      "label": "Submit button hover effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "darken"
+    },
+    { "type": "color", "id": "cta_hover_bg_color", "label": "Submit button hover background color" },
+    { "type": "range", "id": "cta_hover_bg_color_opacity", "label": "Submit button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Submit button hover text color" },
+    { "type": "range", "id": "cta_hover_text_color_opacity", "label": "Submit button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "cta_hover_border_color", "label": "Submit button hover border color" },
+    { "type": "range", "id": "cta_hover_border_color_opacity", "label": "Submit button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "animation_enabled", "label": "Enable animation", "default": false },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay",
+      "min": 0, "max": 500, "step": 50, "unit": "ms", "default": 0,
+      "visible_if": "{{ section.settings.animation_enabled }}"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+
+    { "type": "header", "content": "Custom CSS" },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
+    }
+  ],
+  "presets": [
+    {
+      "name": "⚡ Contact Form — Dark",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Talk to a human",
+        "subheading": "Real people, fast replies — usually within an hour during business days.",
+        "show_phone_field": true,
+        "show_subject_field": true,
+        "button_label": "Send it",
+        "success_message": "Got it. Expect a reply within the hour.",
+        "layout_style": "two-column",
+        "content_alignment": "center",
+        "heading_color": "#e8e9ff",
+        "heading_weight": "700",
+        "heading_letter_spacing": -2,
+        "subheading_color": "#9ea0c8",
+        "bg_color": "#0a0b1a",
+        "input_bg_color": "#141633",
+        "input_border_color": "#7c6ff7",
+        "input_border_color_opacity": 30,
+        "input_text_color": "#e8e9ff",
+        "focus_border_color": "#7c6ff7",
+        "cta_bg_color": "#7c6ff7",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 8,
+        "cta_hover_effect": "lift",
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Contact Form — Warm",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "Drop us a note",
+        "subheading": "We read every message — and we mean every. Tell us what's on your mind.",
+        "show_phone_field": false,
+        "show_subject_field": false,
+        "button_label": "Send",
+        "success_message": "Thanks for writing. We'll be back in touch within a day.",
+        "layout_style": "single-column",
+        "content_alignment": "center",
+        "heading_color": "#3d2c1e",
+        "heading_weight": "400",
+        "heading_letter_spacing": -1,
+        "subheading_color": "#7a6552",
+        "bg_color": "#fdf6ee",
+        "input_bg_color": "#ffffff",
+        "input_border_color": "#e8d9c5",
+        "input_border_radius": 16,
+        "input_text_color": "#3d2c1e",
+        "focus_border_color": "#d4956a",
+        "cta_bg_color": "#d4956a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 50,
+        "cta_padding_x": 40,
+        "cta_hover_effect": "glow",
+        "form_max_width": 600,
+        "animation_enabled": true,
+        "animation_type": "fade"
+      }
+    },
+    {
+      "name": "⚡ Contact Form — Bold",
+      "category": "WOW Sections",
+      "settings": {
+        "heading": "GET AT US",
+        "subheading": "BULK ORDERS. CUSTOMS. WHOLESALE. PRESS. WHATEVER.",
+        "show_phone_field": true,
+        "show_subject_field": true,
+        "button_label": "SEND IT",
+        "success_message": "RECEIVED. EXPECT A REPLY THIS WEEK.",
+        "layout_style": "two-column",
+        "content_alignment": "center",
+        "heading_color": "#1a1a1a",
+        "heading_weight": "700",
+        "heading_transform": "uppercase",
+        "heading_letter_spacing": 4,
+        "subheading_color": "#1a1a1a",
+        "subheading_transform": "uppercase",
+        "subheading_letter_spacing": 6,
+        "subheading_weight": "600",
+        "bg_color": "#f2f0eb",
+        "input_bg_color": "#ffffff",
+        "input_border_color": "#1a1a1a",
+        "input_border_width": 2,
+        "input_border_radius": 0,
+        "input_text_color": "#1a1a1a",
+        "focus_border_color": "#1a1a1a",
+        "cta_bg_color": "#1a1a1a",
+        "cta_text_color": "#ffffff",
+        "cta_border_radius": 0,
+        "cta_border_width": 2,
+        "cta_border_color": "#1a1a1a",
+        "cta_padding_x": 36,
+        "cta_hover_effect": "lift",
+        "form_max_width": 800,
+        "animation_enabled": true,
+        "animation_type": "slide"
+      }
+    }
+  ]
+}
+{% endschema %}
