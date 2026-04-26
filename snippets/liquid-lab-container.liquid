@@ -3,6 +3,8 @@
 
   Parameters:
     - width: 'narrow' | 'boxed' | 'wide' | 'full' (required, default: 'boxed')
+    - inner_x: 'none' | 'small' | 'medium' | 'large' (optional, default: 'none')
+        Adds extra horizontal padding INSIDE the section background, additive to gutter.
     - extra_class: string, optional additional classes
     - content: yield content (use {% capture %} to pass)
 
@@ -10,9 +12,16 @@
     {%- capture lab_content -%}
       <h2>Hello</h2>
     {%- endcapture -%}
-    {% render 'liquid-lab-container', width: 'boxed', content: lab_content %}
+    {% render 'liquid-lab-container', width: 'boxed', inner_x: 'medium', content: lab_content %}
 {%- endcomment -%}
 
-<div class="lab_container lab_container--{{ width | default: 'boxed' }}{% if extra_class %} {{ extra_class }}{% endif %}">
+{%- liquid
+  assign inner_x_class = ''
+  if inner_x and inner_x != blank and inner_x != 'none'
+    assign inner_x_class = ' lab_container--inner-x-' | append: inner_x
+  endif
+-%}
+
+<div class="lab_container lab_container--{{ width | default: 'boxed' }}{{ inner_x_class }}{% if extra_class %} {{ extra_class }}{% endif %}">
   {{ content }}
 </div>

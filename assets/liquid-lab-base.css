@@ -27,6 +27,16 @@
   --lab-spacing-medium-desktop: 80px;
   --lab-spacing-large-mobile: 96px;
   --lab-spacing-large-desktop: 128px;
+
+  /* Inner spacing scale — applied as PADDING inside <section> (between content and bg edges).
+     Defaults mirror the section spacing scale so the brand stays cohesive; merchants can
+     override the inner scale independently in Theme Settings. */
+  --lab-inner-spacing-small-mobile: var(--lab-spacing-small-mobile);
+  --lab-inner-spacing-small-desktop: var(--lab-spacing-small-desktop);
+  --lab-inner-spacing-medium-mobile: var(--lab-spacing-medium-mobile);
+  --lab-inner-spacing-medium-desktop: var(--lab-spacing-medium-desktop);
+  --lab-inner-spacing-large-mobile: var(--lab-spacing-large-mobile);
+  --lab-inner-spacing-large-desktop: var(--lab-spacing-large-desktop);
 }
 
 /* === Container utility === */
@@ -76,4 +86,72 @@
 /* Touch adjacent sections (e.g. announcement bars) */
 .lab_section--no-margin {
   margin: 0;
+}
+
+/* === Inner Y spacing (vertical PADDING inside the section) === */
+.lab_section--inner-y-none   { padding-block: 0; }
+.lab_section--inner-y-small  { padding-block: var(--lab-inner-spacing-small-mobile); }
+.lab_section--inner-y-medium { padding-block: var(--lab-inner-spacing-medium-mobile); }
+.lab_section--inner-y-large  { padding-block: var(--lab-inner-spacing-large-mobile); }
+
+@media screen and (min-width: 750px) {
+  .lab_section--inner-y-small  { padding-block: var(--lab-inner-spacing-small-desktop); }
+  .lab_section--inner-y-medium { padding-block: var(--lab-inner-spacing-medium-desktop); }
+  .lab_section--inner-y-large  { padding-block: var(--lab-inner-spacing-large-desktop); }
+}
+
+/* === Inner X spacing (extra horizontal PADDING on container, additive to gutter) ===
+   Stacked on top of `--lab-gutter-*` so content moves further inward without changing
+   the section background. Full-width containers get pure inner spacing (no gutter). */
+.lab_container--inner-x-none {}
+
+.lab_container--inner-x-small {
+  padding-inline: calc(var(--lab-gutter-mobile) + var(--lab-inner-spacing-small-mobile));
+}
+.lab_container--inner-x-medium {
+  padding-inline: calc(var(--lab-gutter-mobile) + var(--lab-inner-spacing-medium-mobile));
+}
+.lab_container--inner-x-large {
+  padding-inline: calc(var(--lab-gutter-mobile) + var(--lab-inner-spacing-large-mobile));
+}
+
+@media screen and (min-width: 750px) {
+  .lab_container--inner-x-small {
+    padding-inline: calc(var(--lab-gutter-tablet) + var(--lab-inner-spacing-small-desktop));
+  }
+  .lab_container--inner-x-medium {
+    padding-inline: calc(var(--lab-gutter-tablet) + var(--lab-inner-spacing-medium-desktop));
+  }
+  .lab_container--inner-x-large {
+    padding-inline: calc(var(--lab-gutter-tablet) + var(--lab-inner-spacing-large-desktop));
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .lab_container--inner-x-small {
+    padding-inline: calc(var(--lab-gutter-desktop) + var(--lab-inner-spacing-small-desktop));
+  }
+  .lab_container--inner-x-medium {
+    padding-inline: calc(var(--lab-gutter-desktop) + var(--lab-inner-spacing-medium-desktop));
+  }
+  .lab_container--inner-x-large {
+    padding-inline: calc(var(--lab-gutter-desktop) + var(--lab-inner-spacing-large-desktop));
+  }
+}
+
+/* Edge case: full-width container has no gutter — inner spacing alone */
+.lab_container--full.lab_container--inner-x-small {
+  padding-inline: var(--lab-inner-spacing-small-mobile);
+}
+.lab_container--full.lab_container--inner-x-medium {
+  padding-inline: var(--lab-inner-spacing-medium-mobile);
+}
+.lab_container--full.lab_container--inner-x-large {
+  padding-inline: var(--lab-inner-spacing-large-mobile);
+}
+
+@media screen and (min-width: 750px) {
+  .lab_container--full.lab_container--inner-x-small  { padding-inline: var(--lab-inner-spacing-small-desktop); }
+  .lab_container--full.lab_container--inner-x-medium { padding-inline: var(--lab-inner-spacing-medium-desktop); }
+  .lab_container--full.lab_container--inner-x-large  { padding-inline: var(--lab-inner-spacing-large-desktop); }
 }
