@@ -1,0 +1,96 @@
+{%- comment -%}
+  Liquid Lab — Heading Snippet
+
+  Renders a heading + optional subheading with full typography control.
+  Block-compatible: works in any context where these params are passed.
+
+  Required parameters:
+    - text: heading text (string, can be inline_richtext)
+    - unique_id: string (required for CSS scoping — use section.id or block.id)
+
+  Optional parameters:
+    - subtext: subheading text (richtext)
+    - level: 'h1' | 'h2' | 'h3' | 'h4' (default 'h2')
+    - size_mobile: number in px (default 24)
+    - size_desktop: number in px (default 36)
+    - weight: '300' | '400' | '500' | '600' | '700' (default '600')
+    - transform: 'none' | 'uppercase' | 'capitalize' (default 'none')
+    - align: 'left' | 'center' | 'right' (default 'center')
+    - color_override: hex color (optional, overrides color scheme)
+    - color_opacity: 0-100 (default 100)
+    - letter_spacing: number (default 0, in 1/100em units)
+    - line_height: number (default 12, in 1/10 units → 1.2)
+    - subtext_size_mobile: number (default 14)
+    - subtext_size_desktop: number (default 16)
+    - subtext_weight: string (default '400')
+    - subtext_color_override: hex (optional)
+    - extra_class: string (optional)
+{%- endcomment -%}
+
+{%- liquid
+  assign level = level | default: 'h2'
+  assign size_mobile = size_mobile | default: 24
+  assign size_desktop = size_desktop | default: 36
+  assign weight = weight | default: '600'
+  assign transform = transform | default: 'none'
+  assign align = align | default: 'center'
+  assign color_opacity = color_opacity | default: 100
+  assign letter_spacing = letter_spacing | default: 0
+  assign line_height = line_height | default: 12
+  assign subtext_size_mobile = subtext_size_mobile | default: 14
+  assign subtext_size_desktop = subtext_size_desktop | default: 16
+  assign subtext_weight = subtext_weight | default: '400'
+-%}
+
+<div class="lab_heading lab_heading--align-{{ align }}{% if extra_class %} {{ extra_class }}{% endif %}" data-lab-heading-id="{{ unique_id }}">
+  {%- if text != blank -%}
+    <{{ level }} class="lab_heading__text">{{ text }}</{{ level }}>
+  {%- endif -%}
+  {%- if subtext != blank -%}
+    <div class="lab_heading__subtext">{{ subtext }}</div>
+  {%- endif -%}
+</div>
+
+<style>
+  [data-lab-heading-id="{{ unique_id }}"].lab_heading {
+    text-align: {{ align }};
+  }
+  [data-lab-heading-id="{{ unique_id }}"] .lab_heading__text {
+    margin: 0;
+    font-size: {{ size_mobile }}px;
+    font-weight: {{ weight }};
+    text-transform: {{ transform }};
+    letter-spacing: calc({{ letter_spacing }} / 100 * 1em);
+    line-height: calc({{ line_height }} / 10);
+    {%- if color_override and color_override != blank -%}
+      color: color-mix(in srgb, {{ color_override }} {{ color_opacity }}%, transparent);
+    {%- else -%}
+      color: var(--lab-text);
+    {%- endif -%}
+  }
+  [data-lab-heading-id="{{ unique_id }}"] .lab_heading__subtext {
+    margin: 0.5em 0 0;
+    font-size: {{ subtext_size_mobile }}px;
+    font-weight: {{ subtext_weight }};
+    {%- if subtext_color_override and subtext_color_override != blank -%}
+      color: {{ subtext_color_override }};
+    {%- else -%}
+      color: var(--lab-text-secondary);
+    {%- endif -%}
+  }
+  [data-lab-heading-id="{{ unique_id }}"] .lab_heading__subtext > * {
+    margin: 0;
+  }
+  [data-lab-heading-id="{{ unique_id }}"] .lab_heading__subtext > * + * {
+    margin-top: 0.5em;
+  }
+
+  @media screen and (min-width: 750px) {
+    [data-lab-heading-id="{{ unique_id }}"] .lab_heading__text {
+      font-size: {{ size_desktop }}px;
+    }
+    [data-lab-heading-id="{{ unique_id }}"] .lab_heading__subtext {
+      font-size: {{ subtext_size_desktop }}px;
+    }
+  }
+</style>

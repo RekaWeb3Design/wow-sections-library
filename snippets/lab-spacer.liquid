@@ -1,0 +1,32 @@
+{%- comment -%}
+  Liquid Lab — Spacer Snippet
+
+  Renders an empty div with controlled height — useful for adding vertical
+  whitespace between elements without restructuring the layout.
+  Block-compatible (Phase 2 will become a standalone block).
+
+  Optional parameters:
+    - size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'custom' (default 'md')
+    - height_custom_mobile: number in px (default 32)
+    - height_custom_desktop: number in px (default 48)
+
+  Sizes use the same scale as the spacing system:
+    xs: 16px / 24px
+    sm: 32px / 48px
+    md: 60px / 80px
+    lg: 96px / 128px
+    xl: 128px / 200px
+{%- endcomment -%}
+
+{%- liquid
+  assign size = size | default: 'md'
+  assign height_custom_mobile = height_custom_mobile | default: 32
+  assign height_custom_desktop = height_custom_desktop | default: 48
+-%}
+
+<div class="lab_spacer lab_spacer--{{ size }}"
+  {%- if size == 'custom' -%}
+    style="--lab-spacer-mobile: {{ height_custom_mobile }}px; --lab-spacer-desktop: {{ height_custom_desktop }}px;"
+  {%- endif -%}
+  aria-hidden="true"
+></div>

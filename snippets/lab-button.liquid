@@ -1,0 +1,138 @@
+{%- comment -%}
+  Liquid Lab — Button Snippet
+
+  Renders a styled button or link.
+  Block-compatible: works in any context.
+
+  Required parameters:
+    - label: button text
+    - url: button link
+    - unique_id: string (required for CSS scoping)
+
+  Optional parameters:
+    - style: 'primary' | 'secondary' | 'outline' (default 'primary')
+    - size: 'small' | 'medium' | 'large' (default 'medium')
+    - full_width: boolean (default false)
+    - hover_effect: 'none' | 'fill' | 'darken' | 'lift' | 'outline' | 'glow' (default 'lift')
+    - bg_color_override: hex (optional, overrides color scheme)
+    - bg_color_opacity: 0-100 (default 100)
+    - text_color_override: hex (optional)
+    - text_color_opacity: 0-100 (default 100)
+    - border_color_override: hex (optional)
+    - border_color_opacity: 0-100 (default 100)
+    - border_width: number (default 0)
+    - border_radius: number (default 6)
+    - hover_bg_color: hex (optional)
+    - hover_text_color: hex (optional)
+    - target_blank: boolean (default false)
+    - icon: SVG content or null (optional)
+    - icon_position: 'left' | 'right' (default 'right')
+    - extra_class: string (optional)
+{%- endcomment -%}
+
+{%- liquid
+  assign style = style | default: 'primary'
+  assign size = size | default: 'medium'
+  assign hover_effect = hover_effect | default: 'lift'
+  assign bg_color_opacity = bg_color_opacity | default: 100
+  assign text_color_opacity = text_color_opacity | default: 100
+  assign border_color_opacity = border_color_opacity | default: 100
+  assign border_width = border_width | default: 0
+  assign border_radius = border_radius | default: 6
+
+  case size
+    when 'small'
+      assign padding_x = 16
+      assign padding_y = 10
+      assign font_size = 14
+    when 'large'
+      assign padding_x = 36
+      assign padding_y = 18
+      assign font_size = 18
+    else
+      assign padding_x = 24
+      assign padding_y = 14
+      assign font_size = 16
+  endcase
+-%}
+
+{%- if label != blank -%}
+  <a
+    href="{{ url | default: '#' }}"
+    class="lab_button lab_button--{{ style }} lab_button--{{ size }} lab_button--hover-{{ hover_effect }}{% if full_width %} lab_button--full{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
+    {% if target_blank %}target="_blank" rel="noopener noreferrer"{% endif %}
+    data-lab-button-id="{{ unique_id }}"
+  >
+    {%- if icon and icon_position == 'left' -%}
+      <span class="lab_button__icon lab_button__icon--left" aria-hidden="true">{{ icon }}</span>
+    {%- endif -%}
+    <span class="lab_button__label">{{ label | escape }}</span>
+    {%- if icon and icon_position == 'right' -%}
+      <span class="lab_button__icon lab_button__icon--right" aria-hidden="true">{{ icon }}</span>
+    {%- endif -%}
+  </a>
+{%- endif -%}
+
+<style>
+  [data-lab-button-id="{{ unique_id }}"].lab_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: 44px;
+    padding: {{ padding_y }}px {{ padding_x }}px;
+    font-size: {{ font_size }}px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: {{ border_radius }}px;
+    border: {{ border_width }}px solid {% if border_color_override %}color-mix(in srgb, {{ border_color_override }} {{ border_color_opacity }}%, transparent){% else %}transparent{% endif %};
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    {%- if style == 'primary' -%}
+      background-color: {% if bg_color_override %}color-mix(in srgb, {{ bg_color_override }} {{ bg_color_opacity }}%, transparent){% else %}var(--lab-button-bg){% endif %};
+      color: {% if text_color_override %}color-mix(in srgb, {{ text_color_override }} {{ text_color_opacity }}%, transparent){% else %}var(--lab-button-text){% endif %};
+    {%- elsif style == 'secondary' -%}
+      background-color: {% if bg_color_override %}color-mix(in srgb, {{ bg_color_override }} {{ bg_color_opacity }}%, transparent){% else %}var(--lab-secondary-button-bg){% endif %};
+      color: {% if text_color_override %}color-mix(in srgb, {{ text_color_override }} {{ text_color_opacity }}%, transparent){% else %}var(--lab-secondary-button-text){% endif %};
+    {%- elsif style == 'outline' -%}
+      background-color: transparent;
+      color: {% if text_color_override %}{{ text_color_override }}{% else %}var(--lab-button-bg){% endif %};
+      border-color: {% if border_color_override %}{{ border_color_override }}{% else %}var(--lab-button-bg){% endif %};
+    {%- endif -%}
+  }
+
+  [data-lab-button-id="{{ unique_id }}"].lab_button--full {
+    width: 100%;
+  }
+
+  /* Hover effects */
+  [data-lab-button-id="{{ unique_id }}"].lab_button--hover-fill:hover {
+    {%- if hover_bg_color -%}background-color: {{ hover_bg_color }};{%- endif -%}
+    {%- if hover_text_color -%}color: {{ hover_text_color }};{%- endif -%}
+  }
+  [data-lab-button-id="{{ unique_id }}"].lab_button--hover-darken:hover {
+    filter: brightness(0.88);
+  }
+  [data-lab-button-id="{{ unique_id }}"].lab_button--hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--lab-shadow);
+  }
+  [data-lab-button-id="{{ unique_id }}"].lab_button--hover-outline:hover {
+    background-color: transparent;
+    {%- if hover_text_color -%}color: {{ hover_text_color }};{%- endif -%}
+  }
+  [data-lab-button-id="{{ unique_id }}"].lab_button--hover-glow:hover {
+    box-shadow: 0 0 24px {% if hover_bg_color %}{{ hover_bg_color }}{% else %}var(--lab-button-bg){% endif %};
+  }
+
+  [data-lab-button-id="{{ unique_id }}"].lab_button:focus-visible {
+    outline: 2px solid var(--lab-text);
+    outline-offset: 3px;
+  }
+
+  [data-lab-button-id="{{ unique_id }}"].lab_button .lab_button__icon svg {
+    width: 1em;
+    height: 1em;
+  }
+</style>

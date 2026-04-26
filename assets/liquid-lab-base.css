@@ -180,3 +180,25 @@
   --lab-border: var(--color-border);
   --lab-shadow: rgba(var(--color-shadow-rgb), 0.1);
 }
+
+/* === Spacer utility === */
+.lab_spacer {
+  display: block;
+  width: 100%;
+}
+
+.lab_spacer--xs { height: 16px; }
+.lab_spacer--sm { height: 32px; }
+.lab_spacer--md { height: 60px; }
+.lab_spacer--lg { height: 96px; }
+.lab_spacer--xl { height: 128px; }
+.lab_spacer--custom { height: var(--lab-spacer-mobile, 32px); }
+
+@media screen and (min-width: 750px) {
+  .lab_spacer--xs { height: 24px; }
+  .lab_spacer--sm { height: 48px; }
+  .lab_spacer--md { height: 80px; }
+  .lab_spacer--lg { height: 128px; }
+  .lab_spacer--xl { height: 200px; }
+  .lab_spacer--custom { height: var(--lab-spacer-desktop, 48px); }
+}
