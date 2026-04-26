@@ -1,0 +1,39 @@
+{
+  "current": {
+    "lab_color_schemes": {
+      "scheme-1": {
+        "background": "#FFFFFF",
+        "text": "#0A0B1A",
+        "text_secondary": "#5F5E5A",
+        "button": "#0A0B1A",
+        "button_label": "#FFFFFF",
+        "secondary_button": "#FFFFFF",
+        "secondary_button_label": "#0A0B1A",
+        "border": "#E5E5E5",
+        "shadow": "#000000"
+      },
+      "scheme-2": {
+        "background": "#0A0B1A",
+        "text": "#E8E9FF",
+        "text_secondary": "#9C9EBE",
+        "button": "#5B5FFF",
+        "button_label": "#FFFFFF",
+        "secondary_button": "#0A0B1A",
+        "secondary_button_label": "#5B5FFF",
+        "border": "#2A2D5A",
+        "shadow": "#000000"
+      },
+      "scheme-3": {
+        "background": "#FDF6EE",
+        "text": "#3D2C1E",
+        "text_secondary": "#6B4F3A",
+        "button": "#C8956D",
+        "button_label": "#FFFFFF",
+        "secondary_button": "#FDF6EE",
+        "secondary_button_label": "#3D2C1E",
+        "border": "#E8D5C0",
+        "shadow": "#3D2C1E"
+      }
+    }
+  }
+}

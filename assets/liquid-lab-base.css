@@ -155,3 +155,28 @@
   .lab_container--full.lab_container--inner-x-medium { padding-inline: var(--lab-inner-spacing-medium-desktop); }
   .lab_container--full.lab_container--inner-x-large  { padding-inline: var(--lab-inner-spacing-large-desktop); }
 }
+
+/* === Color scheme application === */
+/* When a section has class .color-{scheme-id}, these CSS variables are set
+   from the merchant's color scheme definitions (defined in theme.liquid via
+   color_scheme.system_color_scheme filter). */
+
+.color-scheme-1, .color-scheme-2, .color-scheme-3, .color-scheme-4 {
+  /* These are set inline by Shopify's color scheme system.
+     We provide fallbacks if no scheme is selected. */
+  background-color: var(--color-background, #FFFFFF);
+  color: var(--color-foreground, #0A0B1A);
+}
+
+/* Aliases for Liquid Lab use — short and consistent */
+.lab_section {
+  --lab-bg: var(--color-background);
+  --lab-text: var(--color-foreground);
+  --lab-text-secondary: rgba(var(--color-foreground-rgb), 0.7);
+  --lab-button-bg: var(--color-button);
+  --lab-button-text: var(--color-button-text);
+  --lab-secondary-button-bg: var(--color-secondary-button);
+  --lab-secondary-button-text: var(--color-secondary-button-text);
+  --lab-border: var(--color-border);
+  --lab-shadow: rgba(var(--color-shadow-rgb), 0.1);
+}
