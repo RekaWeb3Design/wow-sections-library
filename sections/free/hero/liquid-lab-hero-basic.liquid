@@ -6,7 +6,7 @@
 {%- comment -%} 2. HTML structure {%- endcomment -%}
 <section
   id="lab-{{ section.id }}"
-  class="color-{{ s.color_scheme }} lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
+  class="color-{{ s.color_scheme }} gradient lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
   aria-label="{{ s.heading | default: 'Hero' | escape }}"
   data-lab-spacing="{{ s.spacing_size }}"
 >
