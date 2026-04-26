@@ -29,8 +29,9 @@
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_hero_basic lab_hero_basic--align-{{ section.settings.content_alignment }} lab_hero_basic--pos-{{ section.settings.content_position }} lab_hero_basic--width-{{ section.settings.section_width }}{% if section.settings.full_height %} lab_hero_basic--full-height{% endif %} lab_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} lab_section"
+    class="lab_hero_basic lab_hero_basic--align-{{ section.settings.content_alignment }} lab_hero_basic--pos-{{ section.settings.content_position }}{% if section.settings.full_height %} lab_hero_basic--full-height{% endif %} lab_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
     aria-label="{{ section.settings.heading | default: 'Hero section' | escape }}"
+    data-lab-spacing="{{ section.settings.spacing_size }}"
   >
     {% if section.settings.image != blank %}
       <div class="lab_hero_basic__media">
@@ -48,7 +49,7 @@
       </div>
     {% endif %}
 
-    <div class="lab_hero_basic__inner">
+    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_hero_basic__inner">
       <div class="lab_hero_basic__content">
         {% if section.settings.heading != blank %}
           <h2 class="lab_hero_basic__title">{{ section.settings.heading | escape }}</h2>
@@ -80,8 +81,6 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding-top: {{ section.settings.padding_top }}px;
-    padding-bottom: {{ section.settings.padding_bottom }}px;
     color: var(--color-foreground);
     {% if section.settings.bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
@@ -131,12 +130,15 @@
   #shopify-section-{{ section.id }} .lab_hero_basic__inner {
     position: relative;
     z-index: 1;
-    width: 100%;
-    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
-    margin-inline: auto;
-    padding-inline: {% if section.settings.section_width == 'full' %}clamp(1rem, 4vw, 3rem){% else %}clamp(1rem, 4vw, 2rem){% endif %};
     display: flex;
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_hero_basic {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   /* Horizontal placement of the content block within the inner — driven by content_position */
   #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-left .lab_hero_basic__inner,
@@ -458,14 +460,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -522,8 +526,22 @@
     { "type": "range", "id": "button_hover_border_color_opacity", "label": "Button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {
@@ -555,8 +573,7 @@
         "button_border_radius": 8,
         "button_hover_effect": "lift",
         "content_alignment": "center",
-        "content_position": "center",
-        "section_width": "boxed"
+        "content_position": "center"
       }
     },
     {
@@ -580,8 +597,7 @@
         "button_border_radius": 32,
         "button_hover_effect": "glow",
         "content_alignment": "center",
-        "content_position": "center",
-        "section_width": "boxed"
+        "content_position": "center"
       }
     },
     {
@@ -605,8 +621,7 @@
         "button_border_radius": 0,
         "button_hover_effect": "fill",
         "content_alignment": "center",
-        "content_position": "center",
-        "section_width": "boxed"
+        "content_position": "center"
       }
     }
   ]

@@ -15,10 +15,11 @@
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_faq_accordion lab_faq_accordion--align-{{ section.settings.content_alignment }} lab_faq_accordion--pos-{{ section.settings.content_position }} lab_faq_accordion--icon-{{ icon_style }} lab_faq_accordion--width-{{ section.settings.section_width }}{% if show_divider %} lab_faq_accordion--has-divider{% endif %}{% if animation_enabled %} lab_faq_accordion--animated lab_faq_accordion--anim-{{ animation_type }}{% endif %} lab_section"
+    class="lab_faq_accordion lab_faq_accordion--align-{{ section.settings.content_alignment }} lab_faq_accordion--pos-{{ section.settings.content_position }} lab_faq_accordion--icon-{{ icon_style }}{% if show_divider %} lab_faq_accordion--has-divider{% endif %}{% if animation_enabled %} lab_faq_accordion--animated lab_faq_accordion--anim-{{ animation_type }}{% endif %} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
+    data-lab-spacing="{{ section.settings.spacing_size }}"
     aria-label="{{ section.settings.heading | default: 'FAQ' | escape }}"
   >
-    <div class="lab_faq_accordion__inner">
+    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_faq_accordion__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
         <header class="lab_faq_accordion__header">
           {% if section.settings.heading != blank %}
@@ -64,8 +65,6 @@
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
   #shopify-section-{{ section.id }} .lab_faq_accordion {
-    padding-top: {{ section.settings.padding_top }}px;
-    padding-bottom: {{ section.settings.padding_bottom }}px;
     {% if section.settings.bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
     {% else %}
@@ -81,14 +80,17 @@
   }
 
   #shopify-section-{{ section.id }} .lab_faq_accordion__inner {
-    width: 100%;
-    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
-    margin-inline: auto;
-    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
     display: flex;
     flex-direction: column;
     align-items: {% if section.settings.content_position == 'top-left' or section.settings.content_position == 'center-left' or section.settings.content_position == 'bottom-left' %}flex-start{% elsif section.settings.content_position == 'top-right' or section.settings.content_position == 'center-right' or section.settings.content_position == 'bottom-right' %}flex-end{% else %}center{% endif %};
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_faq_accordion {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   #shopify-section-{{ section.id }} .lab_faq_accordion__header {
     width: 100%;
@@ -560,14 +562,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -643,8 +647,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

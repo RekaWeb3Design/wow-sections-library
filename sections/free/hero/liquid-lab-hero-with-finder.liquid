@@ -33,12 +33,13 @@
 <div class="color-{{ s.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_hero_finder lab_hero_finder--width-{{ s.section_width }} lab_hero_finder--transition-{{ s.slider_transition }}{% if anim_enabled %} lab_hero_finder--animated lab_hero_finder--anim-{{ anim_type }}{% endif %} lab_section"
+    class="lab_hero_finder lab_hero_finder--width-{{ s.container_width }} lab_hero_finder--transition-{{ s.slider_transition }}{% if anim_enabled %} lab_hero_finder--animated lab_hero_finder--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}"
     aria-label="{{ s.finder_heading | default: 'Hero with product finder' | escape }}"
     data-lab-position="{{ finder_position }}"
     data-lab-autoplay="{% if autoplay %}true{% else %}false{% endif %}"
     data-lab-speed="{{ s.slider_speed }}"
     data-lab-swipe="{% if s.slider_swipe_mobile %}true{% else %}false{% endif %}"
+    data-lab-spacing="{{ s.spacing_size }}"
   >
     <div class="lab_hero_finder__inner">
       <div
@@ -191,8 +192,6 @@
   /* Section root */
   #shopify-section-{{ section_id }} .lab_hero_finder {
     position: relative;
-    padding-top: {{ s.padding_top }}px;
-    padding-bottom: {{ s.padding_bottom }}px;
     {% if s.bg_color != blank %}
       background-color: color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent);
     {% else %}
@@ -207,14 +206,33 @@
     {% endif %}
   }
 
-  /* Section inner — width control per §8.9 */
+  /* Section inner — width control */
   #shopify-section-{{ section_id }} .lab_hero_finder__inner {
     position: relative;
     width: 100%;
-    max-width: {% if s.section_width == 'full' %}100%{% elsif s.section_width == 'narrow' %}1024px{% else %}var(--page-width, 1400px){% endif %};
+    max-width: {% case s.container_width %}{% when 'full' %}100%{% when 'narrow' %}var(--lab-container-narrow){% when 'wide' %}var(--lab-container-wide){% else %}var(--lab-container-boxed){% endcase %};
     margin-inline: auto;
-    padding-inline: {% if s.section_width == 'full' %}0{% else %}clamp(0rem, 2vw, 1rem){% endif %};
+    padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-mobile){% endif %};
   }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section_id }} .lab_hero_finder__inner {
+      padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-tablet){% endif %};
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section_id }} .lab_hero_finder__inner {
+      padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-desktop){% endif %};
+    }
+  }
+
+  {% if s.spacing_size == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_hero_finder {
+      margin-top: {{ s.spacing_top_custom }}px;
+      margin-bottom: {{ s.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   /* Slider */
   #shopify-section-{{ section_id }} .lab_hero_finder__slider {
@@ -222,7 +240,7 @@
     overflow: hidden;
     width: 100%;
     height: {{ s.slider_height_mobile }}px;
-    {% if s.section_width != 'full' %}
+    {% if s.container_width != 'full' %}
       border-radius: clamp(0px, 1vw, 12px);
     {% endif %}
   }
@@ -1197,14 +1215,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "full"
+      "default": "full",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -1310,8 +1330,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 0 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

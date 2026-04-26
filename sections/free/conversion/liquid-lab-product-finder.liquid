@@ -24,10 +24,11 @@
 <div class="color-{{ s.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_product_finder lab_product_finder--width-{{ s.section_width }}{% if anim_enabled %} lab_product_finder--animated lab_product_finder--anim-{{ anim_type }}{% endif %} lab_section"
+    class="lab_product_finder{% if anim_enabled %} lab_product_finder--animated lab_product_finder--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}"
     aria-label="{{ s.heading | default: 'Product finder' | escape }}"
+    data-lab-spacing="{{ s.spacing_size }}"
   >
-    <div class="lab_product_finder__inner">
+    <div class="lab_container lab_container--{{ s.container_width }} lab_product_finder__inner">
       {%- render 'liquid-lab-product-finder',
         show_heading: s.show_heading,
         heading: s.heading,
@@ -47,8 +48,6 @@
 <style>
   /* Section root — padding + background */
   #shopify-section-{{ section_id }} .lab_product_finder {
-    padding-top: {{ s.padding_top }}px;
-    padding-bottom: {{ s.padding_bottom }}px;
     {% if s.bg_color != blank %}
       background-color: color-mix(in srgb, {{ s.bg_color }} {{ bg_pct }}%, transparent);
     {% else %}
@@ -65,11 +64,14 @@
 
   /* Section inner — width control per §8.9 */
   #shopify-section-{{ section_id }} .lab_product_finder__inner {
-    width: 100%;
-    max-width: {% if s.section_width == 'full' %}100%{% elsif s.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
-    margin-inline: auto;
-    padding-inline: {% if s.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
   }
+
+  {% if s.spacing_size == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_product_finder {
+      margin-top: {{ s.spacing_top_custom }}px;
+      margin-bottom: {{ s.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   /* Finder root — owns card alignment */
   #shopify-section-{{ section_id }} .lab_finder {
@@ -517,14 +519,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -630,8 +634,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

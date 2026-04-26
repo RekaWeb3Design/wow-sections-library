@@ -16,12 +16,13 @@
 <div class="color-{{ section.settings.color_scheme }} gradient lab_announcement_bar__wrap">
   <aside
     id="lab-{{ section_id }}"
-    class="lab_announcement_bar lab_announcement_bar--{{ display_mode }} lab_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} lab_section"
+    class="lab_announcement_bar lab_announcement_bar--{{ display_mode }} lab_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
     role="complementary"
     aria-label="{{ bar_text | default: 'Announcement' | escape }}"
     data-lab-announcement-id="{{ section_id }}"
+    data-lab-spacing="{{ section.settings.spacing_size }}"
   >
-    <div class="lab_announcement_bar__inner">
+    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_announcement_bar__inner">
       {% if display_mode == 'marquee' %}
         <div class="lab_announcement_bar__viewport" aria-hidden="false">
           <div class="lab_announcement_bar__track">
@@ -101,8 +102,6 @@
   #shopify-section-{{ section.id }} .lab_announcement_bar {
     width: 100%;
     min-height: {{ bar_height }}px;
-    padding-top: {{ section.settings.padding_top }}px;
-    padding-bottom: {{ section.settings.padding_bottom }}px;
     color: var(--color-foreground);
     border-bottom: 1px solid var(--color-border);
     overflow: hidden;
@@ -124,13 +123,16 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 100%;
-    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
-    margin-inline: auto;
     min-height: {{ bar_height }}px;
-    padding-inline: clamp(0.75rem, 3vw, 2rem);
     gap: clamp(0.5rem, 2vw, 1.5rem);
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_announcement_bar {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   #shopify-section-{{ section.id }} .lab_announcement_bar__static {
     flex: 1 1 auto;
@@ -449,14 +451,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "full"
+      "default": "full",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -514,8 +518,22 @@
     { "type": "range", "id": "link_hover_border_color_opacity", "label": "Link hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 40, "step": 4, "unit": "px", "default": 0 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 40, "step": 4, "unit": "px", "default": 0 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none",
+      "info": "Vertical space between this section and adjacent sections. Defaults to 'None' for announcement bars."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

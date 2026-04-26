@@ -18,10 +18,11 @@
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_features_icons lab_features_icons--cols-{{ columns }} lab_features_icons--align-{{ alignment }} lab_features_icons--pos-{{ section.settings.content_position }} lab_features_icons--width-{{ section.settings.section_width }} lab_features_icons--shadow-{{ section.settings.feature_card_shadow }} lab_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} lab_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} lab_features_icons--mobile-stack{% endif %}{% if animation_enabled %} lab_features_icons--animated lab_features_icons--anim-{{ animation_type }}{% endif %} lab_section"
+    class="lab_features_icons lab_features_icons--cols-{{ columns }} lab_features_icons--align-{{ alignment }} lab_features_icons--pos-{{ section.settings.content_position }} lab_features_icons--shadow-{{ section.settings.feature_card_shadow }} lab_features_icons--hover-shadow-{{ section.settings.feature_card_hover_shadow }} lab_features_icons--hover-{{ card_hover }}{% if section.settings.mobile_stack %} lab_features_icons--mobile-stack{% endif %}{% if animation_enabled %} lab_features_icons--animated lab_features_icons--anim-{{ animation_type }}{% endif %} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
+    data-lab-spacing="{{ section.settings.spacing_size }}"
     aria-label="{{ section.settings.heading | default: 'Features' | escape }}"
   >
-    <div class="lab_features_icons__inner">
+    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_features_icons__inner">
       {% if section.settings.heading != blank or section.settings.subheading != blank %}
         <header class="lab_features_icons__header">
           {% if section.settings.heading != blank %}
@@ -76,8 +77,6 @@
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
   #shopify-section-{{ section.id }} .lab_features_icons {
-    padding-top: {{ section.settings.padding_top }}px;
-    padding-bottom: {{ section.settings.padding_bottom }}px;
     color: var(--color-foreground);
     {% if section.settings.bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
@@ -94,14 +93,17 @@
   }
 
   #shopify-section-{{ section.id }} .lab_features_icons__inner {
-    width: 100%;
-    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, 1200px){% endif %};
-    margin-inline: auto;
-    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 4vw, 3.5rem);
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_features_icons {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   #shopify-section-{{ section.id }} .lab_features_icons__header {
     display: flex;
@@ -498,14 +500,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -602,8 +606,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {
@@ -696,7 +714,6 @@
         "subheading": "Pro-grade specs in every system we ship.",
         "columns": "3",
         "content_position": "center",
-        "section_width": "boxed",
         "heading_size": 42,
         "heading_weight": "700",
         "heading_transform": "uppercase",
@@ -761,7 +778,6 @@
         "subheading": "Every ingredient earns its place. Nothing extra.",
         "columns": "3",
         "content_position": "center",
-        "section_width": "boxed",
         "heading_size": 38,
         "heading_weight": "300",
         "heading_transform": "none",
@@ -827,7 +843,6 @@
         "subheading": "Considered design. Uncompromising quality. Every piece.",
         "columns": "3",
         "content_position": "center",
-        "section_width": "boxed",
         "heading_size": 44,
         "heading_weight": "700",
         "heading_transform": "uppercase",

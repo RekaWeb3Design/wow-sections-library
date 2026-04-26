@@ -15,10 +15,11 @@
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_contact_form lab_contact_form--align-{{ section.settings.content_alignment }} lab_contact_form--pos-{{ section.settings.content_position }} lab_contact_form--layout-{{ layout_style }} lab_contact_form--width-{{ section.settings.section_width }} lab_contact_form--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} lab_contact_form--animated lab_contact_form--anim-{{ animation_type }}{% endif %} lab_section"
+    class="lab_contact_form lab_contact_form--align-{{ section.settings.content_alignment }} lab_contact_form--pos-{{ section.settings.content_position }} lab_contact_form--layout-{{ layout_style }} lab_contact_form--btn-hover-{{ section.settings.cta_hover_effect }}{% if animation_enabled %} lab_contact_form--animated lab_contact_form--anim-{{ animation_type }}{% endif %} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
     aria-label="{{ section.settings.heading | default: 'Contact form' | escape }}"
+    data-lab-spacing="{{ section.settings.spacing_size }}"
   >
-    <div class="lab_contact_form__inner"
+    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_contact_form__inner"
       {% if animation_enabled %}style="animation-delay: {{ animation_delay }}ms;"{% endif %}>
       {% if section.settings.heading != blank %}
         <h2 class="lab_contact_form__heading">{{ section.settings.heading | escape }}</h2>
@@ -136,9 +137,6 @@
 {% comment %} 3. CSS — section scoped {% endcomment %}
 <style>
   #shopify-section-{{ section.id }} .lab_contact_form {
-    padding-top: {{ section.settings.padding_top }}px;
-    padding-bottom: {{ section.settings.padding_bottom }}px;
-    padding-inline: clamp(1rem, 4vw, 2rem);
     {% if section.settings.bg_color != blank %}
       background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
     {% else %}
@@ -154,14 +152,18 @@
   }
 
   #shopify-section-{{ section.id }} .lab_contact_form__inner {
-    width: 100%;
-    max-width: {{ section.settings.content_max_width }}px;
-    margin-inline: {% if section.settings.content_alignment == 'left' %}0 auto 0 0{% elsif section.settings.content_alignment == 'right' %}0 0 0 auto{% else %}auto{% endif %};
     text-align: {% if section.settings.content_alignment == 'left' %}left{% elsif section.settings.content_alignment == 'right' %}right{% else %}center{% endif %};
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 2.5vw, 1.75rem);
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_contact_form {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   #shopify-section-{{ section.id }} .lab_contact_form__heading {
     margin: 0;
@@ -576,14 +578,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Appearance" },
@@ -673,8 +677,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 80 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

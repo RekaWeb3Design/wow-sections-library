@@ -45,14 +45,15 @@
 
 <section
   id="lab-{{ section_id }}"
-  class="lab_logo_bar lab_logo_bar--{{ layout_type }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.entrance_animation %} lab_logo_bar--anim lab_logo_bar--anim-{{ section.settings.entrance_type }}{% endif %}"
+  class="lab_logo_bar lab_logo_bar--{{ layout_type }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.entrance_animation %} lab_logo_bar--anim lab_logo_bar--anim-{{ section.settings.entrance_type }}{% endif %}{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
   data-lab-direction="{{ section.settings.marquee_direction }}"
   data-lab-pause-hover="{{ section.settings.marquee_pause_hover }}"
   data-lab-edge-fade="{{ section.settings.marquee_edge_fade }}"
   data-lab-layout="{{ layout_type }}"
+  data-lab-spacing="{{ section.settings.spacing_size }}"
   aria-label="{{ aria_label_value | escape }}"
 >
-  <div class="lab_logo_bar__inner">
+  <div class="lab_container lab_container--{{ section.settings.container_width }} lab_logo_bar__inner">
     {%- if show_header -%}
       <header class="lab_logo_bar__header" data-lab-align="{{ section.settings.header_align }}">
         {%- if section.settings.show_heading and section.settings.heading != blank -%}
@@ -132,13 +133,7 @@
     --lab-cols-mobile: {{ section.settings.columns_mobile }};
     --lab-cols-desktop: {{ section.settings.columns_desktop }};
     --lab-content-max: {{ section.settings.content_max_width }}px;
-    --lab-pad-top-mobile: {{ section.settings.padding_top }}px;
-    --lab-pad-bottom-mobile: {{ section.settings.padding_bottom }}px;
-    --lab-pad-top-desktop: {{ section.settings.padding_top_desktop }}px;
-    --lab-pad-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
     position: relative;
-    padding-top: var(--lab-pad-top-mobile);
-    padding-bottom: var(--lab-pad-bottom-mobile);
     color: var(--color-foreground);
     {% if section.settings.bg_color != blank %}background-color: {{ section.settings.bg_color | color_modify: 'alpha', bg_alpha }};{% endif %}
     {% if section.settings.enable_gradient and section.settings.gradient_color != blank and section.settings.bg_color != blank %}
@@ -150,12 +145,15 @@
   }
 
   #shopify-section-{{ section_id }} .lab_logo_bar__inner {
-    width: 100%;
-    max-width: {% if section.settings.section_width == 'full' %}100%{% elsif section.settings.section_width == 'narrow' %}860px{% else %}var(--page-width, var(--lab-content-max)){% endif %};
-    margin-inline: auto;
-    padding-inline: {% if section.settings.section_width == 'full' %}0{% else %}clamp(1rem, 4vw, 2rem){% endif %};
     box-sizing: border-box;
   }
+
+  {% if section.settings.spacing_size == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_logo_bar {
+      margin-top: {{ section.settings.spacing_top_custom }}px;
+      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
 
   /* Header ----------------------------------------------------------------- */
   #shopify-section-{{ section_id }} .lab_logo_bar__header {
@@ -381,11 +379,6 @@
 
   /* Desktop breakpoint ----------------------------------------------------- */
   @media screen and (min-width: 750px) {
-    #shopify-section-{{ section_id }} .lab_logo_bar {
-      padding-top: var(--lab-pad-top-desktop);
-      padding-bottom: var(--lab-pad-bottom-desktop);
-    }
-
     #shopify-section-{{ section_id }} .lab_logo_bar__heading {
       font-size: {{ section.settings.heading_size_desktop }}px;
     }
@@ -566,14 +559,16 @@
     { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "container_width",
+      "label": "Content width",
       "options": [
-        { "value": "full", "label": "Full width" },
-        { "value": "boxed", "label": "Boxed (theme width)" },
-        { "value": "narrow", "label": "Narrow" }
+        { "value": "narrow", "label": "Narrow (1024px)" },
+        { "value": "boxed", "label": "Boxed (1400px)" },
+        { "value": "wide", "label": "Wide (1600px)" },
+        { "value": "full", "label": "Full width" }
       ],
-      "default": "boxed"
+      "default": "boxed",
+      "info": "Maximum width of the section's content."
     },
 
     { "type": "header", "content": "Marquee", "info": "Only applies when layout is Marquee." },
@@ -666,10 +661,22 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding top (mobile)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom (mobile)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
-    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
-    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 60 },
+    {
+      "type": "select",
+      "id": "spacing_size",
+      "label": "Section spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between this section and adjacent sections."
+    },
+    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     { "type": "textarea", "id": "custom_css", "label": "Custom CSS", "info": "Advanced: applies only to this section. Selectors are auto-scoped under #shopify-section-{id}." }
