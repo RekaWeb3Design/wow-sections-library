@@ -1,0 +1,39 @@
+{
+  "name": "lab-heading",
+  "type": "atomic_snippet",
+  "version": "1.0.0",
+  "description": "Renders a heading with optional subheading. Block-compatible.",
+  "parameters": {
+    "required": [
+      {
+        "name": "text",
+        "type": "string",
+        "description": "Heading text (can be inline_richtext)"
+      },
+      {
+        "name": "unique_id",
+        "type": "string",
+        "description": "Unique ID for CSS scoping (use section.id or block.id)"
+      }
+    ],
+    "optional": [
+      { "name": "subtext", "type": "richtext", "description": "Subheading text" },
+      { "name": "level", "type": "enum", "values": ["h1", "h2", "h3", "h4"], "default": "h2" },
+      { "name": "size_mobile", "type": "number", "default": 24 },
+      { "name": "size_desktop", "type": "number", "default": 36 },
+      { "name": "weight", "type": "enum", "values": ["300", "400", "500", "600", "700"], "default": "600" },
+      { "name": "transform", "type": "enum", "values": ["none", "uppercase", "capitalize"], "default": "none" },
+      { "name": "align", "type": "enum", "values": ["left", "center", "right"], "default": "center" },
+      { "name": "color_override", "type": "color", "description": "Hex; leave empty for color scheme" },
+      { "name": "letter_spacing", "type": "number", "default": 0, "description": "1/100em" },
+      { "name": "line_height", "type": "number", "default": 12, "description": "1/10 (12 = 1.2)" }
+    ]
+  },
+  "css_classes": [
+    "lab_heading",
+    "lab_heading__text",
+    "lab_heading__subtext",
+    "lab_heading--align-{left|center|right}"
+  ],
+  "horizon_block_compatible": true
+}

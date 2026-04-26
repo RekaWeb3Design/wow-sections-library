@@ -1,0 +1,39 @@
+{
+  "name": "liquid-lab-hero-basic",
+  "display_name": "🧪 Hero — Basic",
+  "category": "hero",
+  "tier": "free",
+  "version": "2.0.0",
+  "uses_atomic_snippets": ["lab-heading", "lab-button", "lab-image"],
+  "uses_schema_fragments": [
+    "color-scheme-selector",
+    "typography-heading",
+    "typography-subheading",
+    "button-styles",
+    "universal"
+  ],
+  "uses_color_scheme": true,
+  "uses_spacing_system": true,
+  "horizon_block_compatible": "partial",
+  "blocks_supported": false,
+  "presets_count": 1,
+  "use_cases": [
+    "Welcome / store homepage hero",
+    "Landing page top",
+    "Promotional banner"
+  ],
+  "ai_generation_hints": {
+    "common_prompts": [
+      "Create a hero section with a [color] background, a [size] heading, and a [style] button.",
+      "Make a hero with image on the left and text on the right."
+    ],
+    "key_settings_for_ai": [
+      "color_scheme",
+      "heading",
+      "subheading",
+      "button_label",
+      "button_url",
+      "layout"
+    ]
+  }
+}

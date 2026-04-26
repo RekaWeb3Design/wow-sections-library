@@ -1,0 +1,26 @@
+{
+  "name": "lab-spacer",
+  "type": "atomic_snippet",
+  "version": "1.0.0",
+  "description": "Renders an empty div with controlled height for vertical whitespace. Block-compatible.",
+  "parameters": {
+    "required": [],
+    "optional": [
+      { "name": "size", "type": "enum", "values": ["xs", "sm", "md", "lg", "xl", "custom"], "default": "md" },
+      { "name": "height_custom_mobile", "type": "number", "default": 32, "description": "Used only when size=custom" },
+      { "name": "height_custom_desktop", "type": "number", "default": 48, "description": "Used only when size=custom" }
+    ]
+  },
+  "css_classes": [
+    "lab_spacer",
+    "lab_spacer--{xs|sm|md|lg|xl|custom}"
+  ],
+  "size_scale": {
+    "xs": { "mobile": 16, "desktop": 24 },
+    "sm": { "mobile": 32, "desktop": 48 },
+    "md": { "mobile": 60, "desktop": 80 },
+    "lg": { "mobile": 96, "desktop": 128 },
+    "xl": { "mobile": 128, "desktop": 200 }
+  },
+  "horizon_block_compatible": true
+}

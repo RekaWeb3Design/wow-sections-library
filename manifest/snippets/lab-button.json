@@ -1,0 +1,39 @@
+{
+  "name": "lab-button",
+  "type": "atomic_snippet",
+  "version": "1.0.0",
+  "description": "Renders a styled button or link. Block-compatible.",
+  "parameters": {
+    "required": [
+      { "name": "label", "type": "string", "description": "Button text" },
+      { "name": "url", "type": "url", "description": "Button link" },
+      { "name": "unique_id", "type": "string", "description": "Unique ID for CSS scoping" }
+    ],
+    "optional": [
+      { "name": "style", "type": "enum", "values": ["primary", "secondary", "outline"], "default": "primary" },
+      { "name": "size", "type": "enum", "values": ["small", "medium", "large"], "default": "medium" },
+      { "name": "full_width", "type": "boolean", "default": false },
+      { "name": "hover_effect", "type": "enum", "values": ["none", "fill", "darken", "lift", "outline", "glow"], "default": "lift" },
+      { "name": "bg_color_override", "type": "color" },
+      { "name": "text_color_override", "type": "color" },
+      { "name": "border_color_override", "type": "color" },
+      { "name": "border_width", "type": "number", "default": 0 },
+      { "name": "border_radius", "type": "number", "default": 6 },
+      { "name": "hover_bg_color", "type": "color" },
+      { "name": "hover_text_color", "type": "color" },
+      { "name": "target_blank", "type": "boolean", "default": false },
+      { "name": "icon", "type": "html", "description": "SVG content" },
+      { "name": "icon_position", "type": "enum", "values": ["left", "right"], "default": "right" }
+    ]
+  },
+  "css_classes": [
+    "lab_button",
+    "lab_button--{primary|secondary|outline}",
+    "lab_button--{small|medium|large}",
+    "lab_button--hover-{none|fill|darken|lift|outline|glow}",
+    "lab_button--full",
+    "lab_button__icon",
+    "lab_button__label"
+  ],
+  "horizon_block_compatible": true
+}

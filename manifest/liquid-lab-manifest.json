@@ -1,0 +1,53 @@
+{
+  "name": "Liquid Lab",
+  "version": "0.2.0",
+  "tier": "free",
+  "domain": "theliquidlab.io",
+  "description": "Premium Shopify Liquid section library with block-compatible atomic components.",
+  "compatibility": {
+    "shopify_themes": ["dawn", "horizon"],
+    "shopify_version": "2.0+"
+  },
+  "sections": {
+    "count": 13,
+    "categories": ["hero", "social-proof", "conversion", "content", "navigation", "collections", "features", "contact"]
+  },
+  "atomic_snippets": {
+    "count": 4,
+    "snippets": [
+      "lab-heading",
+      "lab-button",
+      "lab-image",
+      "lab-spacer"
+    ]
+  },
+  "design_tokens": {
+    "color_schemes": {
+      "configurable_count": "unlimited",
+      "default_count": 3,
+      "default_names": ["Primary", "Inverse", "Warm"]
+    },
+    "spacing_scale": {
+      "outer": ["none", "small", "medium", "large", "custom"],
+      "inner_y": ["none", "small", "medium", "large", "custom"],
+      "inner_x": ["none", "small", "medium", "large", "custom"]
+    },
+    "container_widths": ["narrow", "boxed", "wide", "full"]
+  },
+  "schema_fragments": [
+    "color-scheme-selector",
+    "typography-heading",
+    "typography-subheading",
+    "button-styles",
+    "card-styles",
+    "universal"
+  ],
+  "phase_2_horizon_blocks": {
+    "status": "planned",
+    "estimated_release": "2026-Q3"
+  },
+  "mcp_server": {
+    "status": "planned",
+    "estimated_release": "2026-Q3"
+  }
+}
