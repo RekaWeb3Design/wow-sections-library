@@ -1,0 +1,79 @@
+/**
+ * Liquid Lab — Base Styles
+ *
+ * Global CSS custom properties, container utilities, and section spacing
+ * system used by all Liquid Lab sections.
+ *
+ * Variables can be overridden in Theme Settings (config/settings_schema.json)
+ * under the "Liquid Lab Spacing" group.
+ */
+
+:root {
+  /* Container max-widths */
+  --lab-container-narrow: 1024px;
+  --lab-container-boxed: 1400px;
+  --lab-container-wide: 1600px;
+
+  /* Horizontal gutter (mobile-first) */
+  --lab-gutter-mobile: 16px;
+  --lab-gutter-tablet: 32px;
+  --lab-gutter-desktop: 48px;
+
+  /* Section spacing presets — applied as MARGIN to <section> */
+  --lab-spacing-none: 0px;
+  --lab-spacing-small-mobile: 32px;
+  --lab-spacing-small-desktop: 48px;
+  --lab-spacing-medium-mobile: 60px;
+  --lab-spacing-medium-desktop: 80px;
+  --lab-spacing-large-mobile: 96px;
+  --lab-spacing-large-desktop: 128px;
+}
+
+/* === Container utility === */
+.lab_container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--lab-gutter-mobile);
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 750px) {
+  .lab_container {
+    padding-inline: var(--lab-gutter-tablet);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .lab_container {
+    padding-inline: var(--lab-gutter-desktop);
+  }
+}
+
+.lab_container--narrow { max-width: var(--lab-container-narrow); }
+.lab_container--boxed  { max-width: var(--lab-container-boxed); }
+.lab_container--wide   { max-width: var(--lab-container-wide); }
+.lab_container--full   {
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+/* === Section spacing utilities === */
+.lab_section--spacing-none   { margin-block: var(--lab-spacing-none); }
+.lab_section--spacing-small  { margin-block: var(--lab-spacing-small-mobile); }
+.lab_section--spacing-medium { margin-block: var(--lab-spacing-medium-mobile); }
+.lab_section--spacing-large  { margin-block: var(--lab-spacing-large-mobile); }
+
+@media screen and (min-width: 750px) {
+  .lab_section--spacing-small  { margin-block: var(--lab-spacing-small-desktop); }
+  .lab_section--spacing-medium { margin-block: var(--lab-spacing-medium-desktop); }
+  .lab_section--spacing-large  { margin-block: var(--lab-spacing-large-desktop); }
+}
+
+/* Asymmetric variants */
+.lab_section--spacing-top-none    { margin-top: var(--lab-spacing-none); }
+.lab_section--spacing-bottom-none { margin-bottom: var(--lab-spacing-none); }
+
+/* Touch adjacent sections (e.g. announcement bars) */
+.lab_section--no-margin {
+  margin: 0;
+}

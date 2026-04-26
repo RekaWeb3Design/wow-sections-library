@@ -1,0 +1,18 @@
+{%- comment -%}
+  Liquid Lab Container — wraps section content in a max-width container.
+
+  Parameters:
+    - width: 'narrow' | 'boxed' | 'wide' | 'full' (required, default: 'boxed')
+    - extra_class: string, optional additional classes
+    - content: yield content (use {% capture %} to pass)
+
+  Usage:
+    {%- capture lab_content -%}
+      <h2>Hello</h2>
+    {%- endcapture -%}
+    {% render 'liquid-lab-container', width: 'boxed', content: lab_content %}
+{%- endcomment -%}
+
+<div class="lab_container lab_container--{{ width | default: 'boxed' }}{% if extra_class %} {{ extra_class }}{% endif %}">
+  {{ content }}
+</div>
