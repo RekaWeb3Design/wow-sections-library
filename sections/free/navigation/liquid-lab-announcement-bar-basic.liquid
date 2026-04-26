@@ -16,13 +16,14 @@
 <div class="color-{{ section.settings.color_scheme }} gradient lab_announcement_bar__wrap">
   <aside
     id="lab-{{ section_id }}"
-    class="lab_announcement_bar lab_announcement_bar--{{ display_mode }} lab_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}"
+    class="lab_announcement_bar lab_announcement_bar--{{ display_mode }} lab_announcement_bar--link-hover-{{ section.settings.link_hover_effect }} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}{% if section.settings.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ section.settings.inner_spacing_y }}{% endif %}"
     role="complementary"
     aria-label="{{ bar_text | default: 'Announcement' | escape }}"
     data-lab-announcement-id="{{ section_id }}"
     data-lab-spacing="{{ section.settings.spacing_size }}"
+    data-lab-inner-y="{{ section.settings.inner_spacing_y }}"
   >
-    <div class="lab_container lab_container--{{ section.settings.container_width }} lab_announcement_bar__inner">
+    <div class="lab_container lab_container--{{ section.settings.container_width }}{% if section.settings.inner_spacing_x != 'custom' and section.settings.inner_spacing_x != 'none' %} lab_container--inner-x-{{ section.settings.inner_spacing_x }}{% endif %} lab_announcement_bar__inner">
       {% if display_mode == 'marquee' %}
         <div class="lab_announcement_bar__viewport" aria-hidden="false">
           <div class="lab_announcement_bar__track">
@@ -131,6 +132,29 @@
     #shopify-section-{{ section.id }} .lab_announcement_bar {
       margin-top: {{ section.settings.spacing_top_custom }}px;
       margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+    }
+  {% endif %}
+
+  {% if section.settings.inner_spacing_y == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_announcement_bar {
+      padding-top: {{ section.settings.inner_spacing_y_top_custom }}px;
+      padding-bottom: {{ section.settings.inner_spacing_y_bottom_custom }}px;
+    }
+  {% endif %}
+
+  {% if section.settings.inner_spacing_x == 'custom' %}
+    #shopify-section-{{ section.id }} .lab_announcement_bar__inner {
+      padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-mobile) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+    }
+    @media screen and (min-width: 750px) {
+      #shopify-section-{{ section.id }} .lab_announcement_bar__inner {
+        padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-tablet) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+      }
+    }
+    @media screen and (min-width: 990px) {
+      #shopify-section-{{ section.id }} .lab_announcement_bar__inner {
+        padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-desktop) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+      }
     }
   {% endif %}
 
@@ -534,6 +558,37 @@
     },
     { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
     { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_y",
+      "label": "Inner vertical spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "small",
+      "info": "Vertical space between the section's content and the top/bottom edges, inside the background."
+    },
+    { "type": "range", "id": "inner_spacing_y_top_custom", "label": "Custom top inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    { "type": "range", "id": "inner_spacing_y_bottom_custom", "label": "Custom bottom inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_x",
+      "label": "Inner horizontal spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "small",
+      "info": "Extra horizontal space between content and the section's left/right edges (additive to gutter)."
+    },
+    { "type": "range", "id": "inner_spacing_x_custom", "label": "Custom horizontal inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 32, "visible_if": "{{ section.settings.inner_spacing_x == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {

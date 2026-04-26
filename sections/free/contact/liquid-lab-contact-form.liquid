@@ -42,11 +42,12 @@
 <div class="color-{{ s.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_contact lab_contact--layout-{{ s.layout_style }} lab_contact--btn-hover-{{ s.submit_hover_effect }}{% if anim_enabled %} lab_contact--animated lab_contact--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}"
+    class="lab_contact lab_contact--layout-{{ s.layout_style }} lab_contact--btn-hover-{{ s.submit_hover_effect }}{% if anim_enabled %} lab_contact--animated lab_contact--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
     aria-label="{{ s.heading | default: 'Contact form' | escape }}"
     data-lab-spacing="{{ s.spacing_size }}"
+    data-lab-inner-y="{{ s.inner_spacing_y }}"
   >
-    <div class="lab_container lab_container--{{ s.container_width }}">
+    <div class="lab_container lab_container--{{ s.container_width }}{% if s.inner_spacing_x != 'custom' and s.inner_spacing_x != 'none' %} lab_container--inner-x-{{ s.inner_spacing_x }}{% endif %} lab_contact__inner">
       <div class="lab_contact__layout">
         {%- if show_info_aside -%}
           <aside class="lab_contact__info lab_contact__info--align-{{ s.info_column_align }}">
@@ -344,6 +345,29 @@
     #shopify-section-{{ section_id }} .lab_contact {
       margin-top: {{ s.spacing_top_custom }}px;
       margin-bottom: {{ s.spacing_bottom_custom }}px;
+    }
+  {% endif %}
+
+  {% if s.inner_spacing_y == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_contact {
+      padding-top: {{ s.inner_spacing_y_top_custom }}px;
+      padding-bottom: {{ s.inner_spacing_y_bottom_custom }}px;
+    }
+  {% endif %}
+
+  {% if s.inner_spacing_x == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_contact__inner {
+      padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-mobile) + {{ s.inner_spacing_x_custom }}px){% endif %};
+    }
+    @media screen and (min-width: 750px) {
+      #shopify-section-{{ section_id }} .lab_contact__inner {
+        padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-tablet) + {{ s.inner_spacing_x_custom }}px){% endif %};
+      }
+    }
+    @media screen and (min-width: 990px) {
+      #shopify-section-{{ section_id }} .lab_contact__inner {
+        padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-desktop) + {{ s.inner_spacing_x_custom }}px){% endif %};
+      }
     }
   {% endif %}
 
@@ -1141,6 +1165,37 @@
     },
     { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
     { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_y",
+      "label": "Inner vertical spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "medium",
+      "info": "Vertical space between the section's content and the top/bottom edges, inside the background."
+    },
+    { "type": "range", "id": "inner_spacing_y_top_custom", "label": "Custom top inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    { "type": "range", "id": "inner_spacing_y_bottom_custom", "label": "Custom bottom inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_x",
+      "label": "Inner horizontal spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none",
+      "info": "Extra horizontal space between content and the section's left/right edges (additive to gutter)."
+    },
+    { "type": "range", "id": "inner_spacing_x_custom", "label": "Custom horizontal inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 32, "visible_if": "{{ section.settings.inner_spacing_x == 'custom' }}" },
     {
       "type": "select",
       "id": "container_width",

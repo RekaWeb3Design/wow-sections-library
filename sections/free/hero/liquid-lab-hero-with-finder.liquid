@@ -27,19 +27,42 @@
 
   assign overlay_style = s.slide_overlay_style
   assign finder_position = s.finder_position
+
+  comment
+    Resolve inner-x to a CSS expression we can interpolate into the existing
+    padding-inline rules — keeps the __inner div using one cohesive rule per breakpoint.
+  endcomment
+  case s.inner_spacing_x
+    when 'small'
+      assign inner_x_mobile = 'var(--lab-inner-spacing-small-mobile)'
+      assign inner_x_desktop = 'var(--lab-inner-spacing-small-desktop)'
+    when 'medium'
+      assign inner_x_mobile = 'var(--lab-inner-spacing-medium-mobile)'
+      assign inner_x_desktop = 'var(--lab-inner-spacing-medium-desktop)'
+    when 'large'
+      assign inner_x_mobile = 'var(--lab-inner-spacing-large-mobile)'
+      assign inner_x_desktop = 'var(--lab-inner-spacing-large-desktop)'
+    when 'custom'
+      assign inner_x_mobile = s.inner_spacing_x_custom | append: 'px'
+      assign inner_x_desktop = s.inner_spacing_x_custom | append: 'px'
+    else
+      assign inner_x_mobile = '0px'
+      assign inner_x_desktop = '0px'
+  endcase
 -%}
 
 {%- comment -%} 2. HTML structure {%- endcomment -%}
 <div class="color-{{ s.color_scheme }} gradient">
   <section
     id="lab-{{ section_id }}"
-    class="lab_hero_finder lab_hero_finder--width-{{ s.container_width }} lab_hero_finder--transition-{{ s.slider_transition }}{% if anim_enabled %} lab_hero_finder--animated lab_hero_finder--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}"
+    class="lab_hero_finder lab_hero_finder--width-{{ s.container_width }} lab_hero_finder--transition-{{ s.slider_transition }}{% if anim_enabled %} lab_hero_finder--animated lab_hero_finder--anim-{{ anim_type }}{% endif %} lab_section{% if s.spacing_size != 'custom' %} lab_section--spacing-{{ s.spacing_size }}{% endif %}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
     aria-label="{{ s.finder_heading | default: 'Hero with product finder' | escape }}"
     data-lab-position="{{ finder_position }}"
     data-lab-autoplay="{% if autoplay %}true{% else %}false{% endif %}"
     data-lab-speed="{{ s.slider_speed }}"
     data-lab-swipe="{% if s.slider_swipe_mobile %}true{% else %}false{% endif %}"
     data-lab-spacing="{{ s.spacing_size }}"
+    data-lab-inner-y="{{ s.inner_spacing_y }}"
   >
     <div class="lab_hero_finder__inner">
       <div
@@ -206,24 +229,24 @@
     {% endif %}
   }
 
-  /* Section inner — width control */
+  /* Section inner — width control + inner_spacing_x */
   #shopify-section-{{ section_id }} .lab_hero_finder__inner {
     position: relative;
     width: 100%;
     max-width: {% case s.container_width %}{% when 'full' %}100%{% when 'narrow' %}var(--lab-container-narrow){% when 'wide' %}var(--lab-container-wide){% else %}var(--lab-container-boxed){% endcase %};
     margin-inline: auto;
-    padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-mobile){% endif %};
+    padding-inline: {% if s.container_width == 'full' %}{{ inner_x_mobile }}{% else %}calc(var(--lab-gutter-mobile) + {{ inner_x_mobile }}){% endif %};
   }
 
   @media screen and (min-width: 750px) {
     #shopify-section-{{ section_id }} .lab_hero_finder__inner {
-      padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-tablet){% endif %};
+      padding-inline: {% if s.container_width == 'full' %}{{ inner_x_desktop }}{% else %}calc(var(--lab-gutter-tablet) + {{ inner_x_desktop }}){% endif %};
     }
   }
 
   @media screen and (min-width: 990px) {
     #shopify-section-{{ section_id }} .lab_hero_finder__inner {
-      padding-inline: {% if s.container_width == 'full' %}0{% else %}var(--lab-gutter-desktop){% endif %};
+      padding-inline: {% if s.container_width == 'full' %}{{ inner_x_desktop }}{% else %}calc(var(--lab-gutter-desktop) + {{ inner_x_desktop }}){% endif %};
     }
   }
 
@@ -231,6 +254,13 @@
     #shopify-section-{{ section_id }} .lab_hero_finder {
       margin-top: {{ s.spacing_top_custom }}px;
       margin-bottom: {{ s.spacing_bottom_custom }}px;
+    }
+  {% endif %}
+
+  {% if s.inner_spacing_y == 'custom' %}
+    #shopify-section-{{ section_id }} .lab_hero_finder {
+      padding-top: {{ s.inner_spacing_y_top_custom }}px;
+      padding-bottom: {{ s.inner_spacing_y_bottom_custom }}px;
     }
   {% endif %}
 
@@ -1346,6 +1376,37 @@
     },
     { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 0, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
     { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_y",
+      "label": "Inner vertical spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none",
+      "info": "Vertical space between the section's content and the top/bottom edges, inside the background. The slider always fills the section height; this padding moves the finder card inward."
+    },
+    { "type": "range", "id": "inner_spacing_y_top_custom", "label": "Custom top inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    { "type": "range", "id": "inner_spacing_y_bottom_custom", "label": "Custom bottom inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+    {
+      "type": "select",
+      "id": "inner_spacing_x",
+      "label": "Inner horizontal spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none",
+      "info": "Extra horizontal space between content and the section's left/right edges (additive to gutter)."
+    },
+    { "type": "range", "id": "inner_spacing_x_custom", "label": "Custom horizontal inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 32, "visible_if": "{{ section.settings.inner_spacing_x == 'custom' }}" },
 
     { "type": "header", "content": "Custom CSS" },
     {
