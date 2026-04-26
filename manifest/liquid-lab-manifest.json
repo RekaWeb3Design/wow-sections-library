@@ -23,9 +23,8 @@
   },
   "design_tokens": {
     "color_schemes": {
-      "configurable_count": "unlimited",
-      "default_count": 3,
-      "default_names": ["Primary", "Inverse", "Warm"]
+      "source": "host_theme",
+      "note": "Liquid Lab sections consume the host theme's color_schemes group (Dawn or Horizon native). Sections expose a color_scheme setting that picks from the merchant's defined schemes."
     },
     "spacing_scale": {
       "outer": ["none", "small", "medium", "large", "custom"],
