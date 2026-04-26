@@ -1,342 +1,140 @@
-{% comment %} 1. Assigns & LCP optimization {% endcomment %}
-{% liquid
-  assign section_id = section.id
-  assign overlay_opacity = section.settings.image_overlay_opacity | divided_by: 100.0
-  assign overlay_color_pct = section.settings.image_overlay_color_opacity
-  assign bg_pct = section.settings.bg_opacity
-  assign bg_grad_pct = section.settings.bg_gradient_color_opacity
-%}
+{%- comment -%} 1. Liquid assigns {%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+-%}
 
-{% if section.index <= 2 %}
-  {% assign image_loading = 'eager' %}
-  {% assign image_fetchpriority = 'high' %}
-{% else %}
-  {% assign image_loading = 'lazy' %}
-  {% assign image_fetchpriority = 'auto' %}
-{% endif %}
+{%- comment -%} 2. HTML structure {%- endcomment -%}
+<section
+  id="lab-{{ section.id }}"
+  class="color-{{ s.color_scheme }} lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
+  aria-label="{{ s.heading | default: 'Hero' | escape }}"
+  data-lab-spacing="{{ s.spacing_size }}"
+>
+  <div class="lab_container lab_container--{{ s.container_width }}{% if s.inner_spacing_x != 'custom' %} lab_container--inner-x-{{ s.inner_spacing_x }}{% endif %}">
+    <div class="lab_hero_basic__layout lab_hero_basic__layout--{{ s.layout }}">
 
-{% comment %} Aspect-ratio value for CSS {% endcomment %}
-{% case section.settings.image_aspect_ratio %}
-  {% when '1-1' %}{% assign aspect_ratio_css = '1 / 1' %}
-  {% when '4-3' %}{% assign aspect_ratio_css = '4 / 3' %}
-  {% when '16-9' %}{% assign aspect_ratio_css = '16 / 9' %}
-  {% when '3-2' %}{% assign aspect_ratio_css = '3 / 2' %}
-  {% when '2-3' %}{% assign aspect_ratio_css = '2 / 3' %}
-  {% else %}{% assign aspect_ratio_css = 'auto' %}
-{% endcase %}
+      {%- if s.image != blank -%}
+        <div class="lab_hero_basic__media">
+          {% render 'lab-image',
+              image: s.image,
+              mobile_image: s.image_mobile,
+              is_lcp: true,
+              aspect_ratio: s.image_aspect_ratio
+          %}
+        </div>
+      {%- endif -%}
 
-{% comment %} 2. HTML structure {% endcomment %}
-<div class="color-{{ section.settings.color_scheme }} gradient">
-  <section
-    id="lab-{{ section_id }}"
-    class="lab_hero_basic lab_hero_basic--align-{{ section.settings.content_alignment }} lab_hero_basic--pos-{{ section.settings.content_position }}{% if section.settings.full_height %} lab_hero_basic--full-height{% endif %} lab_hero_basic--btn-hover-{{ section.settings.button_hover_effect }} lab_section{% if section.settings.spacing_size != 'custom' %} lab_section--spacing-{{ section.settings.spacing_size }}{% endif %}{% if section.settings.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ section.settings.inner_spacing_y }}{% endif %}"
-    aria-label="{{ section.settings.heading | default: 'Hero section' | escape }}"
-    data-lab-spacing="{{ section.settings.spacing_size }}"
-    data-lab-inner-y="{{ section.settings.inner_spacing_y }}"
-  >
-    {% if section.settings.image != blank %}
-      <div class="lab_hero_basic__media">
-        {{ section.settings.image
-          | image_url: width: 1920
-          | image_tag:
-            alt: section.settings.image_alt | default: section.settings.heading | default: 'Hero image',
-            loading: image_loading,
-            fetchpriority: image_fetchpriority,
-            class: 'lab_hero_basic__image',
-            widths: '400, 600, 800, 1000, 1200, 1600, 1920',
-            sizes: '100vw'
-        }}
-        <div class="lab_hero_basic__overlay"></div>
-      </div>
-    {% endif %}
-
-    <div class="lab_container lab_container--{{ section.settings.container_width }}{% if section.settings.inner_spacing_x != 'custom' and section.settings.inner_spacing_x != 'none' %} lab_container--inner-x-{{ section.settings.inner_spacing_x }}{% endif %} lab_hero_basic__inner">
       <div class="lab_hero_basic__content">
-        {% if section.settings.heading != blank %}
-          <h2 class="lab_hero_basic__title">{{ section.settings.heading | escape }}</h2>
-        {% endif %}
+        {% render 'lab-heading',
+            text: s.heading,
+            subtext: s.subheading,
+            level: 'h1',
+            size_mobile: s.heading_size_mobile,
+            size_desktop: s.heading_size_desktop,
+            weight: s.heading_weight,
+            transform: s.heading_transform,
+            align: s.heading_align,
+            color_override: s.heading_color_override,
+            color_opacity: s.heading_color_opacity,
+            letter_spacing: s.heading_letter_spacing,
+            line_height: s.heading_line_height,
+            subtext_size_mobile: s.subheading_size_mobile,
+            subtext_size_desktop: s.subheading_size_desktop,
+            subtext_weight: s.subheading_weight,
+            subtext_color_override: s.subheading_color_override,
+            unique_id: section.id
+        %}
 
-        {% if section.settings.subheading != blank %}
-          <p class="lab_hero_basic__subtitle">{{ section.settings.subheading | escape | newline_to_br }}</p>
-        {% endif %}
-
-        {% if section.settings.button_label != blank %}
-          <a
-            href="{{ section.settings.button_url | default: '#' }}"
-            class="lab_hero_basic__btn"
-            aria-label="{{ section.settings.button_label | escape }}"
-          >
-            {{ section.settings.button_label | escape }}
-          </a>
-        {% endif %}
+        {%- if s.button_label != blank -%}
+          <div class="lab_hero_basic__cta">
+            {% render 'lab-button',
+                label: s.button_label,
+                url: s.button_url,
+                style: s.button_style,
+                size: s.button_size,
+                full_width: s.button_full_width,
+                hover_effect: s.button_hover_effect,
+                border_radius: s.button_border_radius,
+                unique_id: section.id
+            %}
+          </div>
+        {%- endif -%}
       </div>
+
     </div>
-  </section>
-</div>
+  </div>
+</section>
 
-{% comment %} 3. CSS — section scoped {% endcomment %}
+{%- comment -%} 3. CSS — section-specific layout only (typography/buttons/images own their own CSS in the snippets) {%- endcomment -%}
 <style>
-  #shopify-section-{{ section.id }} .lab_hero_basic {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--color-foreground);
-    {% if section.settings.bg_color != blank %}
-      background-color: color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent);
-    {% else %}
-      background-color: var(--color-background);
-    {% endif %}
-    {% if section.settings.bg_gradient and section.settings.bg_color != blank and section.settings.bg_gradient_color != blank %}
-      background-image: linear-gradient(
-        {{ section.settings.bg_gradient_direction }},
-        color-mix(in srgb, {{ section.settings.bg_color }} {{ bg_pct }}%, transparent),
-        color-mix(in srgb, {{ section.settings.bg_gradient_color }} {{ bg_grad_pct }}%, transparent)
-      );
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic--full-height {
-    min-height: 100vh;
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    {% if section.settings.image_border_radius > 0 %}
-      border-radius: {{ section.settings.image_border_radius }}px;
-      overflow: hidden;
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__image {
-    width: 100%;
-    height: 100%;
-    object-fit: {{ section.settings.image_object_fit }};
-    {% if aspect_ratio_css != 'auto' %}
-      aspect-ratio: {{ aspect_ratio_css }};
-    {% endif %}
-    display: block;
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__overlay {
-    position: absolute;
-    inset: 0;
-    background-color: color-mix(in srgb, {{ section.settings.image_overlay_color }} {{ overlay_color_pct }}%, transparent);
-    opacity: {{ overlay_opacity }};
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-  }
-
-  {% if section.settings.spacing_size == 'custom' %}
-    #shopify-section-{{ section.id }} .lab_hero_basic {
-      margin-top: {{ section.settings.spacing_top_custom }}px;
-      margin-bottom: {{ section.settings.spacing_bottom_custom }}px;
+  {%- if s.spacing_size == 'custom' -%}
+    #shopify-section-{{ section.id }} .lab_section {
+      margin-top: {{ s.spacing_top_custom }}px;
+      margin-bottom: {{ s.spacing_bottom_custom }}px;
     }
-  {% endif %}
+  {%- endif -%}
 
-  {% if section.settings.inner_spacing_y == 'custom' %}
-    #shopify-section-{{ section.id }} .lab_hero_basic {
-      padding-top: {{ section.settings.inner_spacing_y_top_custom }}px;
-      padding-bottom: {{ section.settings.inner_spacing_y_bottom_custom }}px;
+  {%- if s.inner_spacing_y == 'custom' -%}
+    #shopify-section-{{ section.id }} .lab_section {
+      padding-top: {{ s.inner_spacing_y_top_custom }}px;
+      padding-bottom: {{ s.inner_spacing_y_bottom_custom }}px;
     }
-  {% endif %}
+  {%- endif -%}
 
-  {% if section.settings.inner_spacing_x == 'custom' %}
-    #shopify-section-{{ section.id }} .lab_hero_basic__inner {
-      padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-mobile) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+  {%- if s.inner_spacing_x == 'custom' -%}
+    #shopify-section-{{ section.id }} .lab_container {
+      padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-mobile) + {{ s.inner_spacing_x_custom }}px){% endif %};
     }
     @media screen and (min-width: 750px) {
-      #shopify-section-{{ section.id }} .lab_hero_basic__inner {
-        padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-tablet) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+      #shopify-section-{{ section.id }} .lab_container {
+        padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-tablet) + {{ s.inner_spacing_x_custom }}px){% endif %};
       }
     }
     @media screen and (min-width: 990px) {
-      #shopify-section-{{ section.id }} .lab_hero_basic__inner {
-        padding-inline: {% if section.settings.container_width == 'full' %}{{ section.settings.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-desktop) + {{ section.settings.inner_spacing_x_custom }}px){% endif %};
+      #shopify-section-{{ section.id }} .lab_container {
+        padding-inline: {% if s.container_width == 'full' %}{{ s.inner_spacing_x_custom }}px{% else %}calc(var(--lab-gutter-desktop) + {{ s.inner_spacing_x_custom }}px){% endif %};
       }
     }
-  {% endif %}
+  {%- endif -%}
 
-  /* Horizontal placement of the content block within the inner — driven by content_position */
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-left .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-left .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-left .lab_hero_basic__inner {
-    justify-content: flex-start;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-center .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-center .lab_hero_basic__inner {
-    justify-content: center;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-right .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-right .lab_hero_basic__inner,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-right .lab_hero_basic__inner {
-    justify-content: flex-end;
+  /* Layout-specific styles for hero-basic */
+  #shopify-section-{{ section.id }} .lab_hero_basic__layout {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
   }
 
-  /* Vertical placement of the content block within the section — driven by content_position */
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-left,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-center,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-top-right {
-    align-items: flex-start;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-left,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-center-right {
-    align-items: center;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-left,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-center,
-  #shopify-section-{{ section.id }} .lab_hero_basic--pos-bottom-right {
-    align-items: flex-end;
+  #shopify-section-{{ section.id }} .lab_hero_basic__layout--stacked {
+    grid-template-columns: 1fr;
+    text-align: {{ s.heading_align }};
   }
 
-  #shopify-section-{{ section.id }} .lab_hero_basic__content {
-    max-width: {{ section.settings.content_max_width }}px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: {{ section.settings.items_gap }}px;
-  }
-
-  /* Text alignment of items within the content block — driven by content_alignment */
-  #shopify-section-{{ section.id }} .lab_hero_basic--align-left .lab_hero_basic__content {
-    text-align: left;
-    align-items: flex-start;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--align-center .lab_hero_basic__content {
-    text-align: center;
-    align-items: center;
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--align-right .lab_hero_basic__content {
-    text-align: right;
-    align-items: flex-end;
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__title {
-    margin: 0;
-    font-size: {{ section.settings.heading_size }}px;
-    font-weight: {{ section.settings.heading_weight }};
-    text-transform: {{ section.settings.heading_transform }};
-    letter-spacing: calc({{ section.settings.heading_letter_spacing }} / 100 * 1em);
-    line-height: calc({{ section.settings.heading_line_height }} / 10);
-    {% if section.settings.heading_color != blank %}
-      color: color-mix(in srgb, {{ section.settings.heading_color }} {{ section.settings.heading_color_opacity }}%, transparent);
-    {% else %}
-      color: var(--color-foreground);
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__subtitle {
-    margin: 0;
-    font-size: {{ section.settings.subheading_size }}px;
-    font-weight: {{ section.settings.subheading_weight }};
-    text-transform: {{ section.settings.subheading_transform }};
-    letter-spacing: calc({{ section.settings.subheading_letter_spacing }} / 100 * 1em);
-    line-height: calc({{ section.settings.subheading_line_height }} / 10);
-    {% if section.settings.subheading_color != blank %}
-      color: color-mix(in srgb, {{ section.settings.subheading_color }} {{ section.settings.subheading_color_opacity }}%, transparent);
-    {% else %}
-      color: var(--color-foreground-75);
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: {{ section.settings.button_padding_y }}px {{ section.settings.button_padding_x }}px;
-    border-radius: {{ section.settings.button_border_radius }}px;
-    border: {{ section.settings.button_border_width }}px solid {% if section.settings.button_border_color != blank %}color-mix(in srgb, {{ section.settings.button_border_color }} {{ section.settings.button_border_color_opacity }}%, transparent){% else %}transparent{% endif %};
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-    {% if section.settings.button_bg_color != blank %}
-      background-color: color-mix(in srgb, {{ section.settings.button_bg_color }} {{ section.settings.button_bg_color_opacity }}%, transparent);
-    {% else %}
-      background-color: var(--color-button);
-    {% endif %}
-    {% if section.settings.button_text_color != blank %}
-      color: color-mix(in srgb, {{ section.settings.button_text_color }} {{ section.settings.button_text_color_opacity }}%, transparent);
-    {% else %}
-      color: var(--color-button-text);
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-fill .lab_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-darken .lab_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-lift .lab_hero_basic__btn:hover,
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-glow .lab_hero_basic__btn:hover {
-    {% if section.settings.button_hover_bg_color != blank %}
-      background-color: color-mix(in srgb, {{ section.settings.button_hover_bg_color }} {{ section.settings.button_hover_bg_color_opacity }}%, transparent);
-    {% endif %}
-    {% if section.settings.button_hover_text_color != blank %}
-      color: color-mix(in srgb, {{ section.settings.button_hover_text_color }} {{ section.settings.button_hover_text_color_opacity }}%, transparent);
-    {% endif %}
-    {% if section.settings.button_hover_border_color != blank %}
-      border-color: color-mix(in srgb, {{ section.settings.button_hover_border_color }} {{ section.settings.button_hover_border_color_opacity }}%, transparent);
-    {% endif %}
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-darken .lab_hero_basic__btn:hover {
-    filter: brightness(0.88);
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-lift .lab_hero_basic__btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-glow .lab_hero_basic__btn:hover {
-    box-shadow: 0 0 24px {% if section.settings.button_hover_bg_color != blank %}color-mix(in srgb, {{ section.settings.button_hover_bg_color }} 60%, transparent){% else %}rgba(0, 0, 0, 0.18){% endif %};
-  }
-  #shopify-section-{{ section.id }} .lab_hero_basic--btn-hover-outline .lab_hero_basic__btn:hover {
-    background-color: transparent;
-    {% if section.settings.button_hover_text_color != blank %}
-      color: color-mix(in srgb, {{ section.settings.button_hover_text_color }} {{ section.settings.button_hover_text_color_opacity }}%, transparent);
-    {% endif %}
-    {% if section.settings.button_hover_border_color != blank %}
-      border-color: color-mix(in srgb, {{ section.settings.button_hover_border_color }} {{ section.settings.button_hover_border_color_opacity }}%, transparent);
-    {% endif %}
-  }
-
-  #shopify-section-{{ section.id }} .lab_hero_basic__btn:focus-visible {
-    outline: 2px solid var(--color-foreground);
-    outline-offset: 3px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #shopify-section-{{ section.id }} .lab_hero_basic__btn {
-      transition: none;
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side,
+    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side-reverse {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
     }
-    #shopify-section-{{ section.id }} .lab_hero_basic__btn:hover {
-      transform: none;
+    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side-reverse .lab_hero_basic__media {
+      order: 2;
     }
   }
 
-  {% if section.settings.hide_on_mobile %}
-    #shopify-section-{{ section.id }} { display: none; }
-    @media screen and (min-width: 750px) {
-      #shopify-section-{{ section.id }} {
-        display: {% if section.settings.hide_on_desktop %}none{% else %}revert{% endif %};
-      }
+  {%- if s.hide_on_mobile -%}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} { display: none; }
     }
-  {% elsif section.settings.hide_on_desktop %}
+  {%- endif -%}
+  {%- if s.hide_on_desktop -%}
     @media screen and (min-width: 750px) {
       #shopify-section-{{ section.id }} { display: none; }
     }
-  {% endif %}
+  {%- endif -%}
 
-  {% if section.settings.custom_css != blank %}
+  {%- if s.custom_css != blank -%}
     #shopify-section-{{ section.id }} {
-      {{ section.settings.custom_css }}
+      {{ s.custom_css }}
     }
-  {% endif %}
+  {%- endif -%}
 </style>
 
 {% schema %}
@@ -344,339 +142,58 @@
   "name": "🧪 Hero — Basic",
   "tag": "section",
   "class": "lab_section",
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  },
+  "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
+    { "type": "header", "content": "Color scheme" },
+    <<INCLUDE: color-scheme-selector>>,
+
     { "type": "header", "content": "Content" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Make it wow." },
-    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "A short supporting line that explains the value." },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
-    { "type": "url", "id": "button_url", "label": "Button link" },
-
-    { "type": "header", "content": "Typography" },
-    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 48 },
-    {
-      "type": "select",
-      "id": "heading_weight",
-      "label": "Heading weight",
-      "options": [
-        { "value": "300", "label": "Thin" },
-        { "value": "400", "label": "Regular" },
-        { "value": "500", "label": "Medium" },
-        { "value": "600", "label": "Semibold" },
-        { "value": "700", "label": "Bold" }
-      ],
-      "default": "700"
-    },
-    {
-      "type": "select",
-      "id": "heading_transform",
-      "label": "Heading transform",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" }
-      ],
-      "default": "none"
-    },
-    { "type": "color", "id": "heading_color", "label": "Heading color" },
-    { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": -2, "info": "1/100em (0 = 0em, 10 = 0.1em)" },
-    { "type": "range", "id": "heading_line_height", "label": "Heading line height", "min": 10, "max": 30, "step": 1, "default": 11, "info": "1/10 (15 = 1.5)" },
-
-    { "type": "range", "id": "subheading_size", "label": "Subheading size", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 18 },
-    {
-      "type": "select",
-      "id": "subheading_weight",
-      "label": "Subheading weight",
-      "options": [
-        { "value": "300", "label": "Thin" },
-        { "value": "400", "label": "Regular" },
-        { "value": "500", "label": "Medium" },
-        { "value": "600", "label": "Semibold" },
-        { "value": "700", "label": "Bold" }
-      ],
-      "default": "400"
-    },
-    {
-      "type": "select",
-      "id": "subheading_transform",
-      "label": "Subheading transform",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" }
-      ],
-      "default": "none"
-    },
-    { "type": "color", "id": "subheading_color", "label": "Subheading color" },
-    { "type": "range", "id": "subheading_color_opacity", "label": "Subheading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "range", "id": "subheading_letter_spacing", "label": "Subheading letter spacing", "min": -5, "max": 20, "step": 1, "unit": "em", "default": 0 },
-    { "type": "range", "id": "subheading_line_height", "label": "Subheading line height", "min": 10, "max": 30, "step": 1, "default": 15 },
-
-    { "type": "header", "content": "Media" },
-    { "type": "image_picker", "id": "image", "label": "Background image" },
-    { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Hero background" },
-    { "type": "range", "id": "image_border_radius", "label": "Image border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 0 },
-    { "type": "color", "id": "image_overlay_color", "label": "Image overlay color", "default": "#000000" },
-    { "type": "range", "id": "image_overlay_color_opacity", "label": "Image overlay color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "range", "id": "image_overlay_opacity", "label": "Image overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 30 },
-    {
-      "type": "select",
-      "id": "image_object_fit",
-      "label": "Image object fit",
-      "options": [
-        { "value": "cover", "label": "Cover" },
-        { "value": "contain", "label": "Contain" },
-        { "value": "fill", "label": "Fill" }
-      ],
-      "default": "cover"
-    },
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile image (optional)" },
     {
       "type": "select",
       "id": "image_aspect_ratio",
       "label": "Image aspect ratio",
       "options": [
         { "value": "natural", "label": "Natural" },
-        { "value": "1-1", "label": "1:1" },
-        { "value": "4-3", "label": "4:3" },
-        { "value": "16-9", "label": "16:9" },
-        { "value": "3-2", "label": "3:2" },
-        { "value": "2-3", "label": "2:3" }
+        { "value": "16/9", "label": "16:9" },
+        { "value": "1/1", "label": "1:1 (square)" },
+        { "value": "4/5", "label": "4:5 (portrait)" }
       ],
-      "default": "natural"
+      "default": "16/9"
     },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Welcome to our store" },
+    { "type": "richtext", "id": "subheading", "label": "Subheading", "default": "<p>Discover what's new this season.</p>" },
+
+    <<INCLUDE: typography-heading>>,
+    <<INCLUDE: typography-subheading>>,
+
+    { "type": "header", "content": "Button" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
+    { "type": "url", "id": "button_url", "label": "Button link" },
+    <<INCLUDE: button-styles>>,
 
     { "type": "header", "content": "Layout" },
     {
       "type": "select",
-      "id": "content_alignment",
-      "label": "Content alignment",
+      "id": "layout",
+      "label": "Layout style",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "side-by-side", "label": "Image left, content right" },
+        { "value": "side-by-side-reverse", "label": "Content left, image right" }
       ],
-      "default": "center"
-    },
-    { "type": "checkbox", "id": "full_height", "label": "Full viewport height", "default": false },
-    {
-      "type": "select",
-      "id": "content_position",
-      "label": "Content position",
-      "options": [
-        { "value": "top-left", "label": "Top left" },
-        { "value": "top-center", "label": "Top center" },
-        { "value": "top-right", "label": "Top right" },
-        { "value": "center-left", "label": "Middle left" },
-        { "value": "center", "label": "Middle center" },
-        { "value": "center-right", "label": "Middle right" },
-        { "value": "bottom-left", "label": "Bottom left" },
-        { "value": "bottom-center", "label": "Bottom center" },
-        { "value": "bottom-right", "label": "Bottom right" }
-      ],
-      "default": "center"
-    },
-    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 400, "max": 1400, "step": 50, "unit": "px", "default": 800 },
-    { "type": "range", "id": "items_gap", "label": "Gap between items", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 24 },
-    { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
-    { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
-    {
-      "type": "select",
-      "id": "container_width",
-      "label": "Content width",
-      "options": [
-        { "value": "narrow", "label": "Narrow (1024px)" },
-        { "value": "boxed", "label": "Boxed (1400px)" },
-        { "value": "wide", "label": "Wide (1600px)" },
-        { "value": "full", "label": "Full width" }
-      ],
-      "default": "boxed",
-      "info": "Maximum width of the section's content."
+      "default": "stacked"
     },
 
-    { "type": "header", "content": "Appearance" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
-
-    { "type": "color", "id": "bg_color", "label": "Background color" },
-    { "type": "range", "id": "bg_opacity", "label": "Background opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "checkbox", "id": "bg_gradient", "label": "Enable gradient background", "default": false },
-    { "type": "color", "id": "bg_gradient_color", "label": "Gradient second color", "visible_if": "{{ section.settings.bg_gradient }}" },
-    { "type": "range", "id": "bg_gradient_color_opacity", "label": "Gradient second color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100, "visible_if": "{{ section.settings.bg_gradient }}" },
-    {
-      "type": "select",
-      "id": "bg_gradient_direction",
-      "label": "Gradient direction",
-      "options": [
-        { "value": "to bottom", "label": "To bottom" },
-        { "value": "to right", "label": "To right" },
-        { "value": "to bottom right", "label": "To bottom right" },
-        { "value": "to bottom left", "label": "To bottom left" }
-      ],
-      "default": "to bottom",
-      "visible_if": "{{ section.settings.bg_gradient }}"
-    },
-
-    { "type": "color", "id": "button_bg_color", "label": "Button background color" },
-    { "type": "range", "id": "button_bg_color_opacity", "label": "Button background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "color", "id": "button_text_color", "label": "Button text color" },
-    { "type": "range", "id": "button_text_color_opacity", "label": "Button text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "color", "id": "button_border_color", "label": "Button border color" },
-    { "type": "range", "id": "button_border_color_opacity", "label": "Button border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "range", "id": "button_border_width", "label": "Button border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 0 },
-    { "type": "range", "id": "button_border_radius", "label": "Button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
-    { "type": "range", "id": "button_padding_x", "label": "Button horizontal padding", "min": 8, "max": 80, "step": 2, "unit": "px", "default": 28 },
-    { "type": "range", "id": "button_padding_y", "label": "Button vertical padding", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
-    {
-      "type": "select",
-      "id": "button_hover_effect",
-      "label": "Button hover effect",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "fill", "label": "Fill" },
-        { "value": "darken", "label": "Darken" },
-        { "value": "lift", "label": "Lift" },
-        { "value": "outline", "label": "Outline" },
-        { "value": "glow", "label": "Glow" }
-      ],
-      "default": "darken"
-    },
-    { "type": "color", "id": "button_hover_bg_color", "label": "Button hover background color" },
-    { "type": "range", "id": "button_hover_bg_color_opacity", "label": "Button hover background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "color", "id": "button_hover_text_color", "label": "Button hover text color" },
-    { "type": "range", "id": "button_hover_text_color_opacity", "label": "Button hover text color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "color", "id": "button_hover_border_color", "label": "Button hover border color" },
-    { "type": "range", "id": "button_hover_border_color_opacity", "label": "Button hover border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
-
-    { "type": "header", "content": "Spacing" },
-    {
-      "type": "select",
-      "id": "spacing_size",
-      "label": "Section spacing",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "small", "label": "Small" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "large", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "medium",
-      "info": "Vertical space between this section and adjacent sections."
-    },
-    { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
-    { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
-    {
-      "type": "select",
-      "id": "inner_spacing_y",
-      "label": "Inner vertical spacing",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "small", "label": "Small" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "large", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "medium",
-      "info": "Vertical space between the section's content and the top/bottom edges, inside the background."
-    },
-    { "type": "range", "id": "inner_spacing_y_top_custom", "label": "Custom top inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
-    { "type": "range", "id": "inner_spacing_y_bottom_custom", "label": "Custom bottom inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
-    {
-      "type": "select",
-      "id": "inner_spacing_x",
-      "label": "Inner horizontal spacing",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "small", "label": "Small" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "large", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "none",
-      "info": "Extra horizontal space between content and the section's left/right edges (additive to gutter)."
-    },
-    { "type": "range", "id": "inner_spacing_x_custom", "label": "Custom horizontal inner spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 32, "visible_if": "{{ section.settings.inner_spacing_x == 'custom' }}" },
-
-    { "type": "header", "content": "Custom CSS" },
-    {
-      "type": "textarea",
-      "id": "custom_css",
-      "label": "Custom CSS",
-      "info": "Advanced: add custom CSS that applies only to this section. Wrap selectors in #shopify-section-{{ section.id }} for proper scoping."
-    }
+    <<INCLUDE: universal>>
   ],
   "presets": [
     {
-      "name": "🧪 Hero — Dark",
+      "name": "🧪 Hero — Basic",
       "category": "Liquid Lab",
       "settings": {
-        "heading": "Engineered for performance.",
-        "subheading": "Pro-grade hardware. Zero compromises.",
-        "button_label": "Shop the system",
-        "heading_size": 42,
-        "heading_weight": "700",
-        "heading_transform": "uppercase",
-        "heading_letter_spacing": 2,
-        "heading_color": "#e8e9ff",
-        "subheading_color": "#8b8fc4",
-        "bg_color": "#0a0b1a",
-        "button_bg_color": "#7c6ff7",
-        "button_text_color": "#ffffff",
-        "button_border_color": "#7c6ff7",
-        "button_border_width": 0,
-        "button_border_radius": 8,
-        "button_hover_effect": "lift",
-        "content_alignment": "center",
-        "content_position": "center"
-      }
-    },
-    {
-      "name": "🧪 Hero — Warm",
-      "category": "Liquid Lab",
-      "settings": {
-        "heading": "Soft on skin. Real results.",
-        "subheading": "Clean ingredients, formulated to actually do something.",
-        "button_label": "Discover the ritual",
-        "heading_size": 38,
-        "heading_weight": "300",
-        "heading_transform": "none",
-        "heading_letter_spacing": -1,
-        "heading_color": "#3d2c1e",
-        "subheading_color": "#7a5c45",
-        "bg_color": "#fdf6ee",
-        "button_bg_color": "#d4956a",
-        "button_text_color": "#ffffff",
-        "button_border_color": "#d4956a",
-        "button_border_width": 0,
-        "button_border_radius": 32,
-        "button_hover_effect": "glow",
-        "content_alignment": "center",
-        "content_position": "center"
-      }
-    },
-    {
-      "name": "🧪 Hero — Bold",
-      "category": "Liquid Lab",
-      "settings": {
-        "heading": "Made to last.",
-        "subheading": "Pieces designed to outlive every trend cycle.",
-        "button_label": "Shop the collection",
-        "heading_size": 44,
-        "heading_weight": "700",
-        "heading_transform": "uppercase",
-        "heading_letter_spacing": 5,
-        "heading_color": "#1a1a1a",
-        "subheading_color": "#555550",
-        "bg_color": "#f2f0eb",
-        "button_bg_color": "#1a1a1a",
-        "button_text_color": "#ffffff",
-        "button_border_color": "#1a1a1a",
-        "button_border_width": 1,
-        "button_border_radius": 0,
-        "button_hover_effect": "fill",
-        "content_alignment": "center",
-        "content_position": "center"
+        "color_scheme": "scheme-1"
       }
     }
   ]
