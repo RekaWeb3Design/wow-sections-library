@@ -26,6 +26,18 @@ const syncTargets = [
     targetDir: path.join(dawnRoot, 'assets'),
     extensions: ['.css', '.js', '.svg'],
   },
+  {
+    label: 'layout',
+    sourceRoots: [path.join(projectRoot, 'layout')],
+    targetDir: path.join(dawnRoot, 'layout'),
+    extensions: ['.liquid'],
+  },
+  {
+    label: 'config',
+    sourceRoots: [path.join(projectRoot, 'config')],
+    targetDir: path.join(dawnRoot, 'config'),
+    extensions: ['.json'],
+  },
 ];
 
 function collectFiles(dir, extensions) {
