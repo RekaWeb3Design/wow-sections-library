@@ -12,7 +12,7 @@
     "validate-all": "shopify theme check --path . && node scripts/validate/mobile-check.js && node scripts/validate/accessibility-check.js",
     "registry": "node scripts/registry/generate-index.js",
     "build-schemas": "node scripts/build-section-schemas.js",
-    "sync": "npm run build-schemas && node scripts/sync-sections.js",
+    "sync": "node scripts/sync-sections.js && npm run build-schemas",
     "pipeline": "npm run extract && npm run generate && npm run validate && npm run registry",
     "dev": "shopify theme dev",
     "push": "shopify theme push"
