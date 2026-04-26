@@ -1,0 +1,22 @@
+[
+  { "type": "header", "content": "Card styles" },
+  { "type": "color", "id": "card_bg_color", "label": "Card background color" },
+  { "type": "range", "id": "card_bg_color_opacity", "label": "Card background color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+  { "type": "color", "id": "card_border_color", "label": "Card border color" },
+  { "type": "range", "id": "card_border_color_opacity", "label": "Card border color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+  { "type": "range", "id": "card_border_width", "label": "Card border width", "min": 0, "max": 6, "step": 1, "unit": "px", "default": 1 },
+  { "type": "range", "id": "card_border_radius", "label": "Card border radius", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 8 },
+  {
+    "type": "select",
+    "id": "card_shadow",
+    "label": "Card shadow",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "soft", "label": "Soft" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "strong", "label": "Strong" }
+    ],
+    "default": "none"
+  },
+  { "type": "range", "id": "card_padding", "label": "Card padding", "min": 8, "max": 80, "step": 4, "unit": "px", "default": 24 }
+]

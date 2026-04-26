@@ -1,0 +1,69 @@
+[
+  { "type": "header", "content": "Spacing" },
+  {
+    "type": "select",
+    "id": "spacing_size",
+    "label": "Section spacing",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" },
+      { "value": "custom", "label": "Custom" }
+    ],
+    "default": "medium"
+  },
+  { "type": "range", "id": "spacing_top_custom", "label": "Custom top spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+  { "type": "range", "id": "spacing_bottom_custom", "label": "Custom bottom spacing", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 80, "visible_if": "{{ section.settings.spacing_size == 'custom' }}" },
+  {
+    "type": "select",
+    "id": "inner_spacing_y",
+    "label": "Inner vertical spacing",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" },
+      { "value": "custom", "label": "Custom" }
+    ],
+    "default": "medium"
+  },
+  { "type": "range", "id": "inner_spacing_y_top_custom", "label": "Custom top inner", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+  { "type": "range", "id": "inner_spacing_y_bottom_custom", "label": "Custom bottom inner", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 60, "visible_if": "{{ section.settings.inner_spacing_y == 'custom' }}" },
+  {
+    "type": "select",
+    "id": "inner_spacing_x",
+    "label": "Inner horizontal spacing",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" },
+      { "value": "custom", "label": "Custom" }
+    ],
+    "default": "none"
+  },
+  { "type": "range", "id": "inner_spacing_x_custom", "label": "Custom horizontal inner", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 32, "visible_if": "{{ section.settings.inner_spacing_x == 'custom' }}" },
+  {
+    "type": "select",
+    "id": "container_width",
+    "label": "Content width",
+    "options": [
+      { "value": "narrow", "label": "Narrow" },
+      { "value": "boxed", "label": "Boxed" },
+      { "value": "wide", "label": "Wide" },
+      { "value": "full", "label": "Full" }
+    ],
+    "default": "boxed"
+  },
+  { "type": "header", "content": "Visibility" },
+  { "type": "checkbox", "id": "hide_on_mobile", "label": "Hide on mobile", "default": false },
+  { "type": "checkbox", "id": "hide_on_desktop", "label": "Hide on desktop", "default": false },
+  { "type": "header", "content": "Custom CSS" },
+  {
+    "type": "textarea",
+    "id": "custom_css",
+    "label": "Custom CSS",
+    "info": "Advanced: scope selectors with #shopify-section-{{ section.id }}"
+  }
+]

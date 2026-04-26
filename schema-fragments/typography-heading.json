@@ -1,0 +1,44 @@
+[
+  { "type": "header", "content": "Heading typography" },
+  { "type": "range", "id": "heading_size_mobile", "label": "Size (mobile)", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 24 },
+  { "type": "range", "id": "heading_size_desktop", "label": "Size (desktop)", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 36 },
+  {
+    "type": "select",
+    "id": "heading_weight",
+    "label": "Weight",
+    "options": [
+      { "value": "300", "label": "Thin" },
+      { "value": "400", "label": "Regular" },
+      { "value": "500", "label": "Medium" },
+      { "value": "600", "label": "Semibold" },
+      { "value": "700", "label": "Bold" }
+    ],
+    "default": "600"
+  },
+  {
+    "type": "select",
+    "id": "heading_transform",
+    "label": "Transform",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "uppercase", "label": "Uppercase" },
+      { "value": "capitalize", "label": "Capitalize" }
+    ],
+    "default": "none"
+  },
+  {
+    "type": "select",
+    "id": "heading_align",
+    "label": "Alignment",
+    "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ],
+    "default": "center"
+  },
+  { "type": "color", "id": "heading_color_override", "label": "Color override", "info": "Leave empty to use color scheme" },
+  { "type": "range", "id": "heading_color_opacity", "label": "Color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
+  { "type": "range", "id": "heading_letter_spacing", "label": "Letter spacing", "min": -5, "max": 20, "step": 1, "default": 0, "info": "1/100em units" },
+  { "type": "range", "id": "heading_line_height", "label": "Line height", "min": 8, "max": 30, "step": 1, "default": 12, "info": "1/10 units (12 = 1.2)" }
+]

@@ -1,0 +1,41 @@
+[
+  { "type": "header", "content": "Button styles" },
+  {
+    "type": "select",
+    "id": "button_style",
+    "label": "Style",
+    "options": [
+      { "value": "primary", "label": "Primary" },
+      { "value": "secondary", "label": "Secondary" },
+      { "value": "outline", "label": "Outline" }
+    ],
+    "default": "primary"
+  },
+  {
+    "type": "select",
+    "id": "button_size",
+    "label": "Size",
+    "options": [
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" }
+    ],
+    "default": "medium"
+  },
+  { "type": "checkbox", "id": "button_full_width", "label": "Full width", "default": false },
+  {
+    "type": "select",
+    "id": "button_hover_effect",
+    "label": "Hover effect",
+    "options": [
+      { "value": "none", "label": "None" },
+      { "value": "fill", "label": "Fill" },
+      { "value": "darken", "label": "Darken" },
+      { "value": "lift", "label": "Lift" },
+      { "value": "outline", "label": "Outline" },
+      { "value": "glow", "label": "Glow" }
+    ],
+    "default": "lift"
+  },
+  { "type": "range", "id": "button_border_radius", "label": "Border radius", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 6 }
+]
