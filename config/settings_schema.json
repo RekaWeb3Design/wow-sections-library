@@ -1559,7 +1559,7 @@
         "label": "Narrow width",
         "min": 600,
         "max": 1200,
-        "step": 16,
+        "step": 8,
         "unit": "px",
         "default": 1024
       },
@@ -1638,7 +1638,7 @@
         "id": "lab_spacing_small_desktop",
         "label": "Small spacing — desktop",
         "min": 0,
-        "max": 150,
+        "max": 152,
         "step": 4,
         "unit": "px",
         "default": 48
@@ -1648,7 +1648,7 @@
         "id": "lab_spacing_medium_mobile",
         "label": "Medium spacing — mobile",
         "min": 0,
-        "max": 150,
+        "max": 152,
         "step": 4,
         "unit": "px",
         "default": 60
@@ -1678,7 +1678,7 @@
         "id": "lab_spacing_large_desktop",
         "label": "Large spacing — desktop",
         "min": 0,
-        "max": 250,
+        "max": 252,
         "step": 4,
         "unit": "px",
         "default": 128
@@ -1703,7 +1703,7 @@
         "id": "lab_inner_spacing_small_desktop",
         "label": "Small inner spacing — desktop",
         "min": 0,
-        "max": 150,
+        "max": 152,
         "step": 4,
         "unit": "px",
         "default": 48
@@ -1713,7 +1713,7 @@
         "id": "lab_inner_spacing_medium_mobile",
         "label": "Medium inner spacing — mobile",
         "min": 0,
-        "max": 150,
+        "max": 152,
         "step": 4,
         "unit": "px",
         "default": 60
@@ -1743,7 +1743,7 @@
         "id": "lab_inner_spacing_large_desktop",
         "label": "Large inner spacing — desktop",
         "min": 0,
-        "max": 250,
+        "max": 252,
         "step": 4,
         "unit": "px",
         "default": 128
