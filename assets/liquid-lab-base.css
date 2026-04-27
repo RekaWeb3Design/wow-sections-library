@@ -157,16 +157,11 @@
 }
 
 /* === Color scheme application === */
-/* When a section has class .color-{scheme-id}, these CSS variables are set
-   from the merchant's color scheme definitions (defined in theme.liquid via
-   color_scheme.system_color_scheme filter). */
-
-.color-scheme-1, .color-scheme-2, .color-scheme-3, .color-scheme-4 {
-  /* These are set inline by Shopify's color scheme system.
-     We provide fallbacks if no scheme is selected. */
-  background-color: var(--color-background, #FFFFFF);
-  color: var(--color-foreground, #0A0B1A);
-}
+/* Dawn already handles `.color-{scheme-id}` background via the `.gradient` class
+   on the wrapper. Do NOT redefine `background-color` here — Dawn stores
+   `--color-background` as a raw `r,g,b` triplet that must be wrapped with
+   `rgb()`, and any selector list that omits scheme-5+ would only break some
+   schemes. Use `rgb(var(--color-background))` at the call site instead. */
 
 /* Aliases for Liquid Lab use — short and consistent */
 .lab_section {
