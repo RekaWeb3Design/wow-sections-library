@@ -2,8 +2,8 @@
 {%- liquid
   assign s = section.settings
   assign layout_style = s.layout_style | default: 'stacked'
-  assign content_position = s.content_position | default: 'middle-center'
-  assign content_align = s.content_align | default: 'center'
+  assign content_box_alignment = s.content_box_alignment | default: 'middle-center'
+  assign content_alignment = s.content_alignment | default: 'center'
 -%}
 
 {%- comment -%} 2. HTML structure {%- endcomment -%}
@@ -42,7 +42,7 @@
         </div>
       {%- endif -%}
 
-      <div class="lab_hero_basic__content lab_hero_basic__content--{{ content_position }} lab_hero_basic__content--align-{{ content_align }}">
+      <div class="lab_hero_basic__content lab_hero_basic__content--box-{{ content_box_alignment }} lab_hero_basic__content--align-{{ content_alignment }}">
         {% render 'lab-heading',
             text: s.heading,
             subtext: s.subheading,
@@ -51,7 +51,6 @@
             size_desktop: s.heading_size_desktop,
             weight: s.heading_weight,
             transform: s.heading_transform,
-            align: s.heading_align,
             color_override: s.heading_color_override,
             color_opacity: s.heading_color_opacity,
             letter_spacing: s.heading_letter_spacing,
@@ -220,23 +219,68 @@
     gap: clamp(0.75rem, 2vw, 1.5rem);
   }
 
-  /* 3×3 content position grid (vertical × horizontal placement of the
-     content block within its grid cell). text-align is applied by the
-     content_align rules below, which override the position-derived default. */
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-left      { align-self: start;  justify-self: start;  }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-center    { align-self: start;  justify-self: center; }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-right     { align-self: start;  justify-self: end;    }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-left   { align-self: center; justify-self: start;  }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-center { align-self: center; justify-self: center; }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-right  { align-self: center; justify-self: end;    }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-left   { align-self: end;    justify-self: start;  }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-center { align-self: end;    justify-self: center; }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-right  { align-self: end;    justify-self: end;    }
+  /* === Content box alignment ===
+     3×3 grid placement of the content WRAPPER within its layout cell.
+     align-self drives vertical position; justify-self drives horizontal.
+     Text and button alignment INSIDE the wrapper is independent — see
+     content_alignment rules below. */
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-top-left      { align-self: start;  justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-top-center    { align-self: start;  justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-top-right     { align-self: start;  justify-self: end;    }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-middle-left   { align-self: center; justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-middle-center { align-self: center; justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-middle-right  { align-self: center; justify-self: end;    }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-bottom-left   { align-self: end;    justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-bottom-center { align-self: end;    justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--box-bottom-right  { align-self: end;    justify-self: end;    }
 
-  /* Content text alignment */
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left   { text-align: left;   align-items: flex-start; }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center { text-align: center; align-items: center;     }
-  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right  { text-align: right;  align-items: flex-end;    }
+  /* === Content alignment ===
+     One direction (left/center/right) applied to heading + subheading + button
+     together. text-align drives the heading and subheading; align-items drives
+     the CTA wrapper's flex placement; the lab-heading subtext is also forced
+     so a parent text-align can't be lost across nested block elements. */
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left {
+    text-align: left;
+    align-items: flex-start;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left .lab_heading__text,
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left .lab_heading__subtext {
+    text-align: left;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left .lab_hero_basic__cta {
+    align-self: flex-start;
+  }
+
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center {
+    text-align: center;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center .lab_heading__text,
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center .lab_heading__subtext {
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center .lab_hero_basic__cta {
+    align-self: center;
+  }
+
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right {
+    text-align: right;
+    align-items: flex-end;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right .lab_heading__text,
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right .lab_heading__subtext {
+    text-align: right;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right .lab_hero_basic__cta {
+    align-self: flex-end;
+  }
+
+  /* When the button is full-width, the CTA wrapper must stretch — overrides
+     the align-self set by content_alignment above. */
+  #shopify-section-{{ section.id }} .lab_hero_basic__cta:has(.lab_button--full) {
+    width: 100%;
+    align-self: stretch;
+  }
 
   /* Entrance animation */
   {%- if s.entrance_animation -%}
@@ -330,9 +374,9 @@
     },
     {
       "type": "select",
-      "id": "content_position",
-      "label": "Content position",
-      "info": "Where the content sits within the section frame (most visible in 'background' layout).",
+      "id": "content_box_alignment",
+      "label": "Content box alignment",
+      "info": "Where the content wrapper is positioned within the section frame (most visible in 'background' layout).",
       "options": [
         { "value": "top-left", "label": "Top left" },
         { "value": "top-center", "label": "Top center" },
@@ -348,9 +392,9 @@
     },
     {
       "type": "select",
-      "id": "content_align",
+      "id": "content_alignment",
       "label": "Content alignment",
-      "info": "Text alignment within the content area.",
+      "info": "Aligns the heading, subheading, and button together (left, center, or right).",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "center", "label": "Center" },
