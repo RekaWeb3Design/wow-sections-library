@@ -12,14 +12,11 @@
 >
   {%- if s.section_bg_image != blank -%}
     <div class="lab_hero_basic__bg-image" aria-hidden="true">
-      <img
-        src="{{ s.section_bg_image | image_url: width: 2000 }}"
-        srcset="{{ s.section_bg_image | image_url: width: 600 }} 600w, {{ s.section_bg_image | image_url: width: 1200 }} 1200w, {{ s.section_bg_image | image_url: width: 2000 }} 2000w"
-        sizes="100vw"
-        loading="lazy"
-        decoding="async"
-        alt=""
-      >
+      {{ s.section_bg_image | image_url: width: 2000 | image_tag:
+        loading: 'lazy',
+        widths: '600, 1200, 2000',
+        sizes: '100vw',
+        alt: '' }}
       {%- if s.section_bg_overlay_color != blank -%}
         <div class="lab_hero_basic__bg-overlay" aria-hidden="true"></div>
       {%- endif -%}
