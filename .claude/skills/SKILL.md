@@ -186,15 +186,34 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 ### 4.2 Settings sorrend — KÖTELEZŐ
 
-A settings-eket mindig ebben a sorrendben add meg:
+Minden Liquid Lab szekció ezt a sorrendet követi a stabil merchant UX érdekében.
+A `<<INCLUDE: ...>>` markereket a build script (`scripts/build-section-schemas.js`)
+oldja fel a `schema-fragments/` mappából:
 
-1. **Content** — szövegek, gombok, linkek
-2. **Typography** — betűméret, betűstílus
-3. **Media** — képek, videók
-4. **Layout** — elrendezés, oszlopok
-5. **Appearance** — színek, háttér
-6. **Animation** — átmenetek, animációk
-7. **Spacing** — padding, margin
+1. **Color scheme** — `<<INCLUDE: color-scheme-selector>>`
+2. **Content** — szöveges/médiamezők (heading, subheading, image, link, …)
+3. **Heading typography** — `<<INCLUDE: typography-heading>>`
+4. **Subheading typography** — `<<INCLUDE: typography-subheading>>`
+5. **Button** — gomb-szövegek, majd `<<INCLUDE: button-styles>>` (a button color override is ebben van)
+6. **Layout** — szekció-specifikus elrendezés (oszlopok, layout style, …)
+7. **Section background** — `<<INCLUDE: section-background>>` (color override + image overlay)
+8. **Animation** — szekció-specifikus animáció (entrance, transition, …)
+9. **Spacing + Visibility + Custom CSS** — `<<INCLUDE: universal>>` (három header egyetlen fragmentben)
+
+### 4.2.1 Color override naming convention — KÖTELEZŐ
+
+Minden color override label-jében benne van a kontextus, hogy a Theme Editorban
+egyértelmű legyen mit szabályoz amikor több override stack-elődik:
+
+- ✅ "Heading color override"
+- ✅ "Subheading color override"
+- ✅ "Button background color"
+- ✅ "Section background color override"
+- ❌ "Color override" (nem egyértelmű)
+- ❌ "Color" (nem specifikus)
+
+A setting `id`-ket NE változtasd meg fragment refactor során — csak a `label`-eket.
+A szekció liquid fájlok az `id`-re hivatkoznak, label-re nem.
 
 ### 4.3 Kötelező settings minden szekcióban
 
