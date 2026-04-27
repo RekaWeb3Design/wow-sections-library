@@ -14,11 +14,12 @@
     - size: 'small' | 'medium' | 'large' (default 'medium')
     - full_width: boolean (default false)
     - hover_effect: 'none' | 'fill' | 'darken' | 'lift' | 'outline' | 'glow' (default 'lift')
-    - bg_color_override: hex (optional, overrides color scheme)
+    - use_color_override: boolean — gate for the override fields below (default false)
+    - bg_color_override: hex (only applied when use_color_override is true)
     - bg_color_opacity: 0-100 (default 100)
-    - text_color_override: hex (optional)
+    - text_color_override: hex (only applied when use_color_override is true)
     - text_color_opacity: 0-100 (default 100)
-    - border_color_override: hex (optional)
+    - border_color_override: hex (only applied when use_color_override is true)
     - border_color_opacity: 0-100 (default 100)
     - border_width: number (default 0)
     - border_radius: number (default 6)
@@ -39,6 +40,13 @@
   assign border_color_opacity = border_color_opacity | default: 100
   assign border_width = border_width | default: 0
   assign border_radius = border_radius | default: 6
+
+  unless use_color_override
+    assign bg_color_override = blank
+    assign text_color_override = blank
+    assign border_color_override = blank
+    assign border_width = 0
+  endunless
 
   case size
     when 'small'

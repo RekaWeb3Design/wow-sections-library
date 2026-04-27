@@ -6,10 +6,26 @@
 {%- comment -%} 2. HTML structure {%- endcomment -%}
 <section
   id="lab-{{ section.id }}"
-  class="color-{{ s.color_scheme }} gradient lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}"
+  class="color-{{ s.color_scheme }} gradient lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}{% if s.entrance_animation %} lab_hero_basic--anim-{{ s.entrance_type }}{% endif %}"
   aria-label="{{ s.heading | default: 'Hero' | escape }}"
   data-lab-spacing="{{ s.spacing_size }}"
 >
+  {%- if s.section_bg_image != blank -%}
+    <div class="lab_hero_basic__bg-image" aria-hidden="true">
+      <img
+        src="{{ s.section_bg_image | image_url: width: 2000 }}"
+        srcset="{{ s.section_bg_image | image_url: width: 600 }} 600w, {{ s.section_bg_image | image_url: width: 1200 }} 1200w, {{ s.section_bg_image | image_url: width: 2000 }} 2000w"
+        sizes="100vw"
+        loading="lazy"
+        decoding="async"
+        alt=""
+      >
+      {%- if s.section_bg_overlay_color != blank -%}
+        <div class="lab_hero_basic__bg-overlay" aria-hidden="true"></div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
   <div class="lab_container lab_container--{{ s.container_width }}{% if s.inner_spacing_x != 'custom' %} lab_container--inner-x-{{ s.inner_spacing_x }}{% endif %}">
     <div class="lab_hero_basic__layout lab_hero_basic__layout--{{ s.layout }}">
 
@@ -55,6 +71,12 @@
                 full_width: s.button_full_width,
                 hover_effect: s.button_hover_effect,
                 border_radius: s.button_border_radius,
+                use_color_override: s.button_colors_override_enabled,
+                bg_color_override: s.button_bg_color_override,
+                bg_color_opacity: s.button_bg_color_opacity,
+                text_color_override: s.button_text_color_override,
+                border_color_override: s.button_border_color_override,
+                border_width: s.button_border_width,
                 unique_id: section.id
             %}
           </div>
@@ -97,6 +119,48 @@
     }
   {%- endif -%}
 
+  /* Section background — color override and/or image */
+  {%- if s.section_bg_color_override_enabled and s.section_bg_color_override != blank -%}
+    #shopify-section-{{ section.id }} .lab_hero_basic {
+      background: color-mix(in srgb, {{ s.section_bg_color_override }} {{ s.section_bg_color_opacity }}%, transparent);
+    }
+  {%- endif -%}
+
+  {%- if s.section_bg_image != blank -%}
+    #shopify-section-{{ section.id }} .lab_hero_basic {
+      position: relative;
+      isolation: isolate;
+    }
+    #shopify-section-{{ section.id }} .lab_hero_basic__bg-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #shopify-section-{{ section.id }} .lab_hero_basic__bg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: {{ s.section_bg_image_size }};
+      object-position: {{ s.section_bg_image_position }};
+      opacity: {{ s.section_bg_image_opacity | divided_by: 100.0 }};
+      display: block;
+    }
+    {%- if s.section_bg_overlay_color != blank -%}
+      #shopify-section-{{ section.id }} .lab_hero_basic__bg-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: {{ s.section_bg_overlay_color }};
+        opacity: {{ s.section_bg_overlay_opacity | divided_by: 100.0 }};
+        pointer-events: none;
+      }
+    {%- endif -%}
+    #shopify-section-{{ section.id }} .lab_hero_basic > .lab_container {
+      position: relative;
+      z-index: 1;
+    }
+  {%- endif -%}
+
   /* Layout-specific styles for hero-basic */
   #shopify-section-{{ section.id }} .lab_hero_basic__layout {
     display: grid;
@@ -118,6 +182,27 @@
       order: 2;
     }
   }
+
+  /* Entrance animation */
+  {%- if s.entrance_animation -%}
+    @media (prefers-reduced-motion: no-preference) {
+      #shopify-section-{{ section.id }} .lab_hero_basic__content {
+        animation: lab_hero_basic_{{ s.entrance_type | replace: '-', '_' }}_{{ section.id }} 0.6s ease-out both;
+      }
+      @keyframes lab_hero_basic_fade_{{ section.id }} {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes lab_hero_basic_slide_up_{{ section.id }} {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes lab_hero_basic_slide_down_{{ section.id }} {
+        from { opacity: 0; transform: translateY(-24px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    }
+  {%- endif -%}
 
   {%- if s.hide_on_mobile -%}
     @media screen and (max-width: 749px) {
@@ -184,6 +269,23 @@
         { "value": "side-by-side-reverse", "label": "Content left, image right" }
       ],
       "default": "stacked"
+    },
+
+    <<INCLUDE: section-background>>,
+
+    { "type": "header", "content": "Animation" },
+    { "type": "checkbox", "id": "entrance_animation", "label": "Enable entrance animation", "default": false },
+    {
+      "type": "select",
+      "id": "entrance_type",
+      "label": "Entrance animation type",
+      "options": [
+        { "value": "fade", "label": "Fade in" },
+        { "value": "slide-up", "label": "Slide up" },
+        { "value": "slide-down", "label": "Slide down" }
+      ],
+      "default": "fade",
+      "visible_if": "{{ section.settings.entrance_animation }}"
     },
 
     <<INCLUDE: universal>>
