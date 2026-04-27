@@ -1,11 +1,11 @@
 [
   { "type": "header", "content": "Subheading typography" },
-  { "type": "range", "id": "subheading_size_mobile", "label": "Size (mobile)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 14 },
-  { "type": "range", "id": "subheading_size_desktop", "label": "Size (desktop)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 16 },
+  { "type": "range", "id": "subheading_size_mobile", "label": "Subheading size (mobile)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 14 },
+  { "type": "range", "id": "subheading_size_desktop", "label": "Subheading size (desktop)", "min": 10, "max": 40, "step": 1, "unit": "px", "default": 16 },
   {
     "type": "select",
     "id": "subheading_weight",
-    "label": "Weight",
+    "label": "Subheading weight",
     "options": [
       { "value": "300", "label": "Thin" },
       { "value": "400", "label": "Regular" },
@@ -14,5 +14,5 @@
     ],
     "default": "400"
   },
-  { "type": "color", "id": "subheading_color_override", "label": "Color override", "info": "Leave empty to use color scheme" }
+  { "type": "color", "id": "subheading_color_override", "label": "Subheading color override", "info": "Leave empty to use color scheme" }
 ]
