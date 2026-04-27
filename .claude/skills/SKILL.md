@@ -186,19 +186,17 @@ Minden `.liquid` fájl ebben a sorrendben épül fel:
 
 ### 4.2 Settings sorrend — KÖTELEZŐ
 
-Minden Liquid Lab szekció ezt a sorrendet követi a stabil merchant UX érdekében.
+Minden Liquid Lab szekció ezt a 7-csoportos sorrendet követi a stabil merchant UX érdekében.
 A `<<INCLUDE: ...>>` markereket a build script (`scripts/build-section-schemas.js`)
 oldja fel a `schema-fragments/` mappából:
 
-1. **Color scheme** — `<<INCLUDE: color-scheme-selector>>`
-2. **Content** — szöveges/médiamezők (heading, subheading, image, link, …)
+1. **Color scheme & background** — `<<INCLUDE: color-scheme-selector>>` (color_scheme select + section background color override + section background image/overlay)
+2. **Content & layout** — image, image_aspect_ratio, image_fit, layout_style, content_position (3×3 grid), content_align, content_max_width, heading, subheading
 3. **Heading typography** — `<<INCLUDE: typography-heading>>`
 4. **Subheading typography** — `<<INCLUDE: typography-subheading>>`
-5. **Button** — gomb-szövegek, majd `<<INCLUDE: button-styles>>` (a button color override is ebben van)
-6. **Layout** — szekció-specifikus elrendezés (oszlopok, layout style, …)
-7. **Section background** — `<<INCLUDE: section-background>>` (color override + image overlay)
-8. **Animation** — szekció-specifikus animáció (entrance, transition, …)
-9. **Spacing + Visibility + Custom CSS** — `<<INCLUDE: universal>>` (három header egyetlen fragmentben)
+5. **Button** — `button_label` + `button_url`, majd `<<INCLUDE: button-styles>>` (a button color override is ebben van)
+6. **Animation** — szekció-specifikus animáció (entrance, transition, …)
+7. **Spacing + Visibility + Custom CSS** — `<<INCLUDE: universal>>` (három header egyetlen fragmentben)
 
 ### 4.2.1 Color override naming convention — KÖTELEZŐ
 
@@ -214,6 +212,26 @@ egyértelmű legyen mit szabályoz amikor több override stack-elődik:
 
 A setting `id`-ket NE változtasd meg fragment refactor során — csak a `label`-eket.
 A szekció liquid fájlok az `id`-re hivatkoznak, label-re nem.
+
+### 4.2.2 Image rendering — KÖTELEZŐ
+
+Minden Liquid Lab kép a `lab-image` snippet-en keresztül jelenik meg. A snippet
+szigorúan kezeli az aspect ratio-t és az object-fit-et, hogy a kép sose nyúljon
+ki a frame-ből:
+
+- A wrapper-en (`.lab_image`) van az `aspect-ratio` CSS property — class-szal:
+  `lab_image--ratio-16-9`, `lab_image--ratio-1-1`, stb. A `lab_image--natural`
+  modifier kikapcsolja a constraint-et, és `height: auto`-t ad az `<img>`-nek.
+- Az `<img>` mindig `width: 100%; max-width: 100%; height: 100%` (kivéve
+  natural). Az `object-fit` modifier class-szal (`lab_image--fit-cover` /
+  `lab_image--fit-contain`), nem inline Liquid interpolációval — így ugyanazon
+  oldalon több render NEM írja felül egymás stílusát.
+- Dawn `img { height: auto }` global rule-ját a class selector specificity
+  felülírja. NE használj `!important`-ot.
+
+A fix layout grid-ekben (image-left, image-right) használj `minmax(0, 1fr)`
+column track-eket, hogy hosszú szavak ne robbantsák szét az oszlopokat
+1-betűs stack-re.
 
 ### 4.3 Kötelező settings minden szekcióban
 
