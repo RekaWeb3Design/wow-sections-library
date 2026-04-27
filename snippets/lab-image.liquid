@@ -1,20 +1,20 @@
 {%- comment -%}
   Liquid Lab — Image Snippet
 
-  Renders a responsive image with lazy loading or eager (LCP).
+  Renders a responsive image with strict aspect-ratio + object-fit control.
   Block-compatible.
 
   Required parameters:
-    - image: Shopify image object (e.g. section.settings.image, block.settings.image, product.featured_image)
+    - image: Shopify image object
 
   Optional parameters:
     - mobile_image: separate mobile version (image object)
-    - alt: alt text override (default uses image.alt)
+    - alt_text: alt text override (defaults to image.alt)
     - sizes: sizes attribute (default '100vw')
     - widths: comma-separated widths string (default '375,550,750,1100,1500,1780,2000')
     - max_width: max width in px (default 2000)
-    - aspect_ratio: '16/9' | '1/1' | '4/5' | '3/2' | 'natural' (default 'natural')
-    - object_fit: 'cover' | 'contain' (default 'cover')
+    - aspect_ratio: 'natural' | '21/9' | '16/9' | '4/3' | '3/2' | '1/1' | '4/5' | '9/16' (default 'natural')
+    - fit: 'cover' | 'contain' (default 'cover')
     - loading: 'lazy' | 'eager' (default 'lazy')
     - fetchpriority: 'auto' | 'high' (default 'auto')
     - is_lcp: boolean (when true, sets eager + high — overrides loading & fetchpriority)
@@ -27,8 +27,9 @@
   assign sizes = sizes | default: '100vw'
   assign widths = widths | default: '375,550,750,1100,1500,1780,2000'
   assign aspect_ratio = aspect_ratio | default: 'natural'
-  assign object_fit = object_fit | default: 'cover'
+  assign image_fit = fit | default: 'cover'
   assign placeholder_svg = placeholder_svg | default: 'lifestyle-1'
+  assign alt_value = alt_text | default: image.alt | default: ''
 
   if is_lcp
     assign loading = 'eager'
@@ -38,13 +39,14 @@
     assign fetchpriority = fetchpriority | default: 'auto'
   endif
 
-  assign aspect_ratio_class = ''
-  if aspect_ratio != 'natural'
-    assign aspect_ratio_class = ' lab_image--ratio-' | append: aspect_ratio | replace: '/', '-'
+  if aspect_ratio == 'natural'
+    assign ratio_class = 'lab_image--natural'
+  else
+    assign ratio_class = 'lab_image--ratio-' | append: aspect_ratio | replace: '/', '-'
   endif
 -%}
 
-<div class="lab_image{{ aspect_ratio_class }}{% if extra_class %} {{ extra_class }}{% endif %}">
+<div class="lab_image {{ ratio_class }} lab_image--fit-{{ image_fit }}{% if extra_class %} {{ extra_class }}{% endif %}">
   {%- if image -%}
     {%- if mobile_image -%}
       <picture>
@@ -52,7 +54,7 @@
         {{- image
           | image_url: width: max_width
           | image_tag:
-              alt: alt | default: image.alt | default: '',
+              alt: alt_value,
               loading: loading,
               fetchpriority: fetchpriority,
               widths: widths,
@@ -64,7 +66,7 @@
       {{- image
         | image_url: width: max_width
         | image_tag:
-            alt: alt | default: image.alt | default: '',
+            alt: alt_value,
             loading: loading,
             fetchpriority: fetchpriority,
             widths: widths,
@@ -78,17 +80,42 @@
 </div>
 
 <style>
-  .lab_image { display: block; width: 100%; }
+  .lab_image {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
   .lab_image__img {
     display: block;
     width: 100%;
-    height: 100%;
-    object-fit: {{ object_fit }};
+    max-width: 100%;
   }
-  .lab_image--ratio-16-9 { aspect-ratio: 16/9; }
-  .lab_image--ratio-1-1 { aspect-ratio: 1/1; }
-  .lab_image--ratio-4-5 { aspect-ratio: 4/5; }
-  .lab_image--ratio-3-2 { aspect-ratio: 3/2; }
+  /* Natural — image keeps its native aspect ratio. Override Dawn's
+     `img { height: auto }` is unnecessary here because we want auto. */
+  .lab_image--natural .lab_image__img {
+    height: auto;
+  }
+  /* Constrained ratios — wrapper has fixed aspect, image fills it */
+  .lab_image--ratio-21-9 { aspect-ratio: 21 / 9; }
+  .lab_image--ratio-16-9 { aspect-ratio: 16 / 9; }
+  .lab_image--ratio-4-3  { aspect-ratio: 4 / 3; }
+  .lab_image--ratio-3-2  { aspect-ratio: 3 / 2; }
+  .lab_image--ratio-1-1  { aspect-ratio: 1 / 1; }
+  .lab_image--ratio-4-5  { aspect-ratio: 4 / 5; }
+  .lab_image--ratio-9-16 { aspect-ratio: 9 / 16; }
+  .lab_image--ratio-21-9 .lab_image__img,
+  .lab_image--ratio-16-9 .lab_image__img,
+  .lab_image--ratio-4-3 .lab_image__img,
+  .lab_image--ratio-3-2 .lab_image__img,
+  .lab_image--ratio-1-1 .lab_image__img,
+  .lab_image--ratio-4-5 .lab_image__img,
+  .lab_image--ratio-9-16 .lab_image__img {
+    height: 100%;
+  }
+  /* Fit modifiers — applied as classes so multiple snippet renders on the
+     same page can each have a different fit without overwriting each other. */
+  .lab_image--fit-cover .lab_image__img { object-fit: cover; }
+  .lab_image--fit-contain .lab_image__img { object-fit: contain; }
   .lab_image__img--placeholder {
     background-color: rgba(var(--color-foreground-rgb, 10, 11, 26), 0.05);
   }
