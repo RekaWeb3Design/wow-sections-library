@@ -15,7 +15,6 @@
     - size_desktop: number in px (default 36)
     - weight: '300' | '400' | '500' | '600' | '700' (default '600')
     - transform: 'none' | 'uppercase' | 'capitalize' (default 'none')
-    - align: 'left' | 'center' | 'right' (default 'center')
     - color_override: hex color (optional, overrides color scheme)
     - color_opacity: 0-100 (default 100)
     - letter_spacing: number (default 0, in 1/100em units)
@@ -25,6 +24,10 @@
     - subtext_weight: string (default '400')
     - subtext_color_override: hex (optional)
     - extra_class: string (optional)
+
+  Note: text-align is NOT a snippet concern — the parent section controls
+  alignment via its own content alignment classes. The snippet inherits
+  text-align from the parent's flow.
 {%- endcomment -%}
 
 {%- liquid
@@ -33,7 +36,6 @@
   assign size_desktop = size_desktop | default: 36
   assign weight = weight | default: '600'
   assign transform = transform | default: 'none'
-  assign align = align | default: 'center'
   assign color_opacity = color_opacity | default: 100
   assign letter_spacing = letter_spacing | default: 0
   assign line_height = line_height | default: 12
@@ -42,7 +44,7 @@
   assign subtext_weight = subtext_weight | default: '400'
 -%}
 
-<div class="lab_heading lab_heading--align-{{ align }}{% if extra_class %} {{ extra_class }}{% endif %}" data-lab-heading-id="{{ unique_id }}">
+<div class="lab_heading{% if extra_class %} {{ extra_class }}{% endif %}" data-lab-heading-id="{{ unique_id }}">
   {%- if text != blank -%}
     <{{ level }} class="lab_heading__text">{{ text }}</{{ level }}>
   {%- endif -%}
@@ -52,9 +54,6 @@
 </div>
 
 <style>
-  [data-lab-heading-id="{{ unique_id }}"].lab_heading {
-    text-align: {{ align }};
-  }
   [data-lab-heading-id="{{ unique_id }}"] .lab_heading__text {
     margin: 0;
     font-size: {{ size_mobile }}px;

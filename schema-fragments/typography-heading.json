@@ -26,17 +26,6 @@
     ],
     "default": "none"
   },
-  {
-    "type": "select",
-    "id": "heading_align",
-    "label": "Heading alignment",
-    "options": [
-      { "value": "left", "label": "Left" },
-      { "value": "center", "label": "Center" },
-      { "value": "right", "label": "Right" }
-    ],
-    "default": "center"
-  },
   { "type": "color", "id": "heading_color_override", "label": "Heading color override", "info": "Leave empty to use color scheme" },
   { "type": "range", "id": "heading_color_opacity", "label": "Heading color opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 100 },
   { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -5, "max": 20, "step": 1, "default": 0, "info": "1/100em units" },
