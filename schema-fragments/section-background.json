@@ -1,0 +1,88 @@
+[
+  { "type": "header", "content": "Section background" },
+  {
+    "type": "checkbox",
+    "id": "section_bg_color_override_enabled",
+    "label": "Override scheme background color",
+    "default": false,
+    "info": "By default, the section uses the color scheme's background. Enable to override with a custom color."
+  },
+  {
+    "type": "color",
+    "id": "section_bg_color_override",
+    "label": "Background color override",
+    "visible_if": "{{ section.settings.section_bg_color_override_enabled }}"
+  },
+  {
+    "type": "range",
+    "id": "section_bg_color_opacity",
+    "label": "Background color opacity",
+    "min": 0,
+    "max": 100,
+    "step": 5,
+    "unit": "%",
+    "default": 100,
+    "visible_if": "{{ section.settings.section_bg_color_override_enabled }}"
+  },
+  {
+    "type": "image_picker",
+    "id": "section_bg_image",
+    "label": "Background image",
+    "info": "Optional. Layered above the background color."
+  },
+  {
+    "type": "select",
+    "id": "section_bg_image_position",
+    "label": "Image position",
+    "options": [
+      { "value": "center center", "label": "Center" },
+      { "value": "top center", "label": "Top" },
+      { "value": "bottom center", "label": "Bottom" },
+      { "value": "left center", "label": "Left" },
+      { "value": "right center", "label": "Right" }
+    ],
+    "default": "center center",
+    "visible_if": "{{ section.settings.section_bg_image != blank }}"
+  },
+  {
+    "type": "select",
+    "id": "section_bg_image_size",
+    "label": "Image size",
+    "options": [
+      { "value": "cover", "label": "Cover" },
+      { "value": "contain", "label": "Contain" },
+      { "value": "auto", "label": "Original" }
+    ],
+    "default": "cover",
+    "visible_if": "{{ section.settings.section_bg_image != blank }}"
+  },
+  {
+    "type": "range",
+    "id": "section_bg_image_opacity",
+    "label": "Image opacity",
+    "min": 0,
+    "max": 100,
+    "step": 5,
+    "unit": "%",
+    "default": 100,
+    "visible_if": "{{ section.settings.section_bg_image != blank }}"
+  },
+  {
+    "type": "color",
+    "id": "section_bg_overlay_color",
+    "label": "Image overlay color",
+    "info": "Color overlay on top of the background image. Leave empty for no overlay.",
+    "visible_if": "{{ section.settings.section_bg_image != blank }}"
+  },
+  {
+    "type": "range",
+    "id": "section_bg_overlay_opacity",
+    "label": "Overlay opacity",
+    "min": 0,
+    "max": 100,
+    "step": 5,
+    "unit": "%",
+    "default": 30,
+    "visible_if": "{{ section.settings.section_bg_image != blank }}"
+  }
+]
