@@ -1,12 +1,15 @@
 {%- comment -%} 1. Liquid assigns {%- endcomment -%}
 {%- liquid
   assign s = section.settings
+  assign layout_style = s.layout_style | default: 'stacked'
+  assign content_position = s.content_position | default: 'middle-center'
+  assign content_align = s.content_align | default: 'center'
 -%}
 
 {%- comment -%} 2. HTML structure {%- endcomment -%}
 <section
   id="lab-{{ section.id }}"
-  class="color-{{ s.color_scheme }} gradient lab_section lab_hero_basic lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}{% if s.entrance_animation %} lab_hero_basic--anim-{{ s.entrance_type }}{% endif %}"
+  class="color-{{ s.color_scheme }} gradient lab_section lab_hero_basic lab_hero_basic--layout-{{ layout_style }} lab_section--spacing-{{ s.spacing_size }}{% if s.inner_spacing_y != 'custom' %} lab_section--inner-y-{{ s.inner_spacing_y }}{% endif %}{% if s.entrance_animation %} lab_hero_basic--anim-{{ s.entrance_type }}{% endif %}"
   aria-label="{{ s.heading | default: 'Hero' | escape }}"
   data-lab-spacing="{{ s.spacing_size }}"
 >
@@ -24,20 +27,22 @@
   {%- endif -%}
 
   <div class="lab_container lab_container--{{ s.container_width }}{% if s.inner_spacing_x != 'custom' %} lab_container--inner-x-{{ s.inner_spacing_x }}{% endif %}">
-    <div class="lab_hero_basic__layout lab_hero_basic__layout--{{ s.layout }}">
+    <div class="lab_hero_basic__layout">
 
       {%- if s.image != blank -%}
         <div class="lab_hero_basic__media">
           {% render 'lab-image',
               image: s.image,
               mobile_image: s.image_mobile,
+              aspect_ratio: s.image_aspect_ratio,
+              fit: s.image_fit,
               is_lcp: true,
-              aspect_ratio: s.image_aspect_ratio
+              alt_text: s.heading
           %}
         </div>
       {%- endif -%}
 
-      <div class="lab_hero_basic__content">
+      <div class="lab_hero_basic__content lab_hero_basic__content--{{ content_position }} lab_hero_basic__content--align-{{ content_align }}">
         {% render 'lab-heading',
             text: s.heading,
             subtext: s.subheading,
@@ -158,27 +163,80 @@
     }
   {%- endif -%}
 
-  /* Layout-specific styles for hero-basic */
+  /* === Layout grid ===
+     Stacked / image-left / image-right share the grid model.
+     Background layout overlays content on the image (no grid columns). */
   #shopify-section-{{ section.id }} .lab_hero_basic__layout {
     display: grid;
     gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
   }
 
-  #shopify-section-{{ section.id }} .lab_hero_basic__layout--stacked {
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-stacked .lab_hero_basic__layout {
     grid-template-columns: 1fr;
-    text-align: {{ s.heading_align }};
   }
 
   @media screen and (min-width: 750px) {
-    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side,
-    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side-reverse {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
+    #shopify-section-{{ section.id }} .lab_hero_basic--layout-image-left .lab_hero_basic__layout,
+    #shopify-section-{{ section.id }} .lab_hero_basic--layout-image-right .lab_hero_basic__layout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
-    #shopify-section-{{ section.id }} .lab_hero_basic__layout--side-by-side-reverse .lab_hero_basic__media {
+    #shopify-section-{{ section.id }} .lab_hero_basic--layout-image-right .lab_hero_basic__media {
       order: 2;
     }
   }
+
+  /* Background layout — image fills the section, content overlays it */
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(320px, 60vh);
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__media,
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__content {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__media {
+    z-index: 0;
+    height: 100%;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__media .lab_image,
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__media .lab_image__img {
+    height: 100%;
+  }
+  #shopify-section-{{ section.id }} .lab_hero_basic--layout-background .lab_hero_basic__content {
+    z-index: 1;
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  /* === Content wrapper ===
+     Constrains width and applies position-derived alignment. */
+  #shopify-section-{{ section.id }} .lab_hero_basic__content {
+    width: 100%;
+    max-width: {{ s.content_max_width }}px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  /* 3×3 content position grid (vertical × horizontal placement of the
+     content block within its grid cell). text-align is applied by the
+     content_align rules below, which override the position-derived default. */
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-left      { align-self: start;  justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-center    { align-self: start;  justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--top-right     { align-self: start;  justify-self: end;    }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-left   { align-self: center; justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-center { align-self: center; justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--middle-right  { align-self: center; justify-self: end;    }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-left   { align-self: end;    justify-self: start;  }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-center { align-self: end;    justify-self: center; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--bottom-right  { align-self: end;    justify-self: end;    }
+
+  /* Content text alignment */
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-left   { text-align: left;   align-items: flex-start; }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-center { text-align: center; align-items: center;     }
+  #shopify-section-{{ section.id }} .lab_hero_basic__content--align-right  { text-align: right;  align-items: flex-end;    }
 
   /* Entrance animation */
   {%- if s.entrance_animation -%}
@@ -226,10 +284,10 @@
   "class": "lab_section",
   "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
-    { "type": "header", "content": "Color scheme" },
+    { "type": "header", "content": "Color scheme & background" },
     <<INCLUDE: color-scheme-selector>>,
 
-    { "type": "header", "content": "Content" },
+    { "type": "header", "content": "Content & layout" },
     { "type": "image_picker", "id": "image", "label": "Hero image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile image (optional)" },
     {
@@ -238,11 +296,77 @@
       "label": "Image aspect ratio",
       "options": [
         { "value": "natural", "label": "Natural" },
-        { "value": "16/9", "label": "16:9" },
+        { "value": "21/9", "label": "21:9 (cinematic)" },
+        { "value": "16/9", "label": "16:9 (widescreen)" },
+        { "value": "4/3", "label": "4:3 (classic)" },
         { "value": "1/1", "label": "1:1 (square)" },
-        { "value": "4/5", "label": "4:5 (portrait)" }
+        { "value": "4/5", "label": "4:5 (portrait)" },
+        { "value": "9/16", "label": "9:16 (mobile portrait)" }
       ],
       "default": "16/9"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Cover (fill frame, may crop)" },
+        { "value": "contain", "label": "Contain (whole image visible)" }
+      ],
+      "default": "cover",
+      "info": "How the image fills the aspect ratio frame."
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout style",
+      "options": [
+        { "value": "stacked", "label": "Stacked (image above content)" },
+        { "value": "image-left", "label": "Image left, content right" },
+        { "value": "image-right", "label": "Content left, image right" },
+        { "value": "background", "label": "Image as background, content overlay" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "info": "Where the content sits within the section frame (most visible in 'background' layout).",
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "middle-left", "label": "Middle left" },
+        { "value": "middle-center", "label": "Middle center" },
+        { "value": "middle-right", "label": "Middle right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "middle-center"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content alignment",
+      "info": "Text alignment within the content area.",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 300,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 600
     },
     { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Welcome to our store" },
     { "type": "richtext", "id": "subheading", "label": "Subheading", "default": "<p>Discover what's new this season.</p>" },
@@ -254,21 +378,6 @@
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
     { "type": "url", "id": "button_url", "label": "Button link" },
     <<INCLUDE: button-styles>>,
-
-    { "type": "header", "content": "Layout" },
-    {
-      "type": "select",
-      "id": "layout",
-      "label": "Layout style",
-      "options": [
-        { "value": "stacked", "label": "Stacked" },
-        { "value": "side-by-side", "label": "Image left, content right" },
-        { "value": "side-by-side-reverse", "label": "Content left, image right" }
-      ],
-      "default": "stacked"
-    },
-
-    <<INCLUDE: section-background>>,
 
     { "type": "header", "content": "Animation" },
     { "type": "checkbox", "id": "entrance_animation", "label": "Enable entrance animation", "default": false },
